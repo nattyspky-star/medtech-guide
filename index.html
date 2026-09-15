@@ -133,7 +133,7 @@
       width:100%;flex:0 0 auto;display:flex;overflow-x:auto;gap:4px;padding:10px 10px;
       border-right:none;border-bottom:1px solid var(--line);white-space:nowrap;
     }
-    nav.sections .sec-btn{border-left:none;border-bottom:3px solid transparent;flex:0 0 auto;}
+    nav.sections .sec-btn{border-left:none;border-bottom:3px solid transparent;flex:0 0 auto;width:auto;}
     nav.sections .sec-btn.active{border-left:none;border-bottom-color:var(--teal);}
     main{padding:16px 14px 50px;}
     .brand .sub{display:none;}
@@ -859,9 +859,9 @@ svg:`<svg viewBox="0 0 800 190" xmlns="http://www.w3.org/2000/svg">
     <circle cx="726" cy="62" r="3" fill="#F3D9DE"/><circle cx="744" cy="66" r="3" fill="#F3D9DE"/><circle cx="734" cy="80" r="3" fill="#F3D9DE"/>
   </g>
   <text x="735" y="126" text-anchor="middle" font-size="12" font-weight="700" fill="#A73B2E">Blast cell ⚠</text>
-  <text x="735" y="141" text-anchor="middle" font-size="10.5" fill="#A73B2E">N:C ratio สูง, เห็น nucleoli — พบใน Acute Leukemia</text>
+  <text x="735" y="141" text-anchor="middle" font-size="10" fill="#A73B2E">พบใน Acute Leukemia</text>
 </svg>`,
-legend:'สังเกต N:C ratio (สัดส่วนนิวเคลียสต่อไซโทพลาซึม) และการมี nucleoli เป็นตัวช่วยแยก blast cell จากเซลล์ปกติ',
+legend:'สังเกต N:C ratio (สัดส่วนนิวเคลียสต่อไซโทพลาซึม) สูง และมี nucleoli ชัดเจน เป็นตัวช่วยแยก blast cell จากเซลล์ปกติ',
 links:[{label:'ASH Image Bank — ภาพเซลล์เลือดจริงจากผู้ป่วย (ใช้อ้างอิง ไม่ใช่เพื่อเผยแพร่ซ้ำ)', url:'https://imagebank.hematology.org'}]
 },
 
@@ -1085,7 +1085,7 @@ svg:`<svg viewBox="0 0 800 190" xmlns="http://www.w3.org/2000/svg">
   <rect x="195" y="55" width="60" height="30" rx="15" fill="#F1EAD6" stroke="#C79A2E" stroke-width="3"/>
   <rect x="185" y="66" width="10" height="8" fill="#C79A2E"/><rect x="255" y="66" width="10" height="8" fill="#C79A2E"/>
   <text x="225" y="128" text-anchor="middle" font-size="11.5" font-weight="600" fill="#122E29">Trichuris</text>
-  <text x="225" y="141" text-anchor="middle" font-size="9.5" fill="#6B7C78">รูปถัง มี polar plug 2 ข้าง</text>
+  <text x="225" y="141" text-anchor="middle" font-size="9.5" fill="#6B7C78">รูปถัง มี polar plug</text>
 
   <ellipse cx="360" cy="72" rx="24" ry="15" fill="#FBFDFC" stroke="#C79A2E" stroke-width="2.5"/>
   <line x1="342" y1="72" x2="378" y2="72" stroke="#C79A2E" stroke-width="1.2"/>
@@ -1107,7 +1107,7 @@ svg:`<svg viewBox="0 0 800 190" xmlns="http://www.w3.org/2000/svg">
   <circle cx="718" cy="66" r="5" fill="none" stroke="#A73B2E" stroke-width="2.5"/>
   <circle cx="716" cy="64" r="1.6" fill="#A73B2E"/>
   <text x="725" y="128" text-anchor="middle" font-size="11.5" font-weight="700" fill="#A73B2E">Plasmodium ⚠</text>
-  <text x="725" y="141" text-anchor="middle" font-size="9.5" fill="#A73B2E">Ring form ใน RBC — มาลาเรีย</text>
+  <text x="725" y="141" text-anchor="middle" font-size="9" fill="#A73B2E">Ring form — มาลาเรีย</text>
 </svg>`,
 legend:'การพบ Plasmodium ใน thick/thin blood film ต้องรายงานเป็น critical value และระบุชนิด/ระดับ parasitemia',
 links:[{label:'CDC DPDx — ภาพปรสิตจริงจากกล้องจุลทรรศน์ (สาธารณสมบัติ)', url:'https://www.cdc.gov/dpdx/index.html'}]
