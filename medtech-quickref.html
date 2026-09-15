@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedTech Quick Reference — คู่มืออ้างอิงงานเทคนิคการแพทย์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F6F5;
+    --surface:#FFFFFF;
+    --ink:#122E29;
+    --ink-soft:#3F5651;
+    --muted:#6B7C78;
+    --line:#DCE6E2;
+    --teal:#2F6F63;
+    --teal-deep:#1B463C;
+    --teal-tint:#E7F0EC;
+    --amber:#B8863A;
+    --amber-tint:#FBF1DF;
+    --crit:#A73B2E;
+    --crit-tint:#FBEAE7;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+  body{font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;line-height:1.55;}
+  h1,h2,h3{font-family:'IBM Plex Serif',serif;margin:0;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+  #app{min-height:100vh;display:flex;flex-direction:column;}
+
+  /* ---- Top bar ---- */
+  .topbar{
+    position:sticky;top:0;z-index:20;background:var(--teal-deep);color:#EFF6F3;
+    padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    border-bottom:3px solid var(--amber);
+  }
+  .brand{display:flex;flex-direction:column;gap:2px;margin-right:auto;}
+  .brand .title{font-family:'IBM Plex Serif',serif;font-weight:600;font-size:19px;letter-spacing:.2px;}
+  .brand .sub{font-size:12px;color:#B9D3CB;}
+  .search-wrap{flex:1 1 280px;max-width:420px;position:relative;}
+  .search-wrap input{
+    width:100%;padding:10px 14px 10px 36px;border-radius:8px;border:1px solid transparent;
+    background:#0F332B;color:#EFF6F3;font-size:14px;outline:none;
+  }
+  .search-wrap input::placeholder{color:#9DBAB1;}
+  .search-wrap input:focus{border-color:var(--amber);}
+  .search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.7;}
+
+  /* ---- Layout ---- */
+  .layout{display:flex;flex:1;min-height:0;}
+  nav.sections{
+    width:230px;flex:0 0 230px;background:var(--surface);border-right:1px solid var(--line);
+    padding:14px 10px;overflow-y:auto;
+  }
+  nav.sections .sec-btn{
+    display:flex;align-items:baseline;gap:8px;width:100%;text-align:left;background:none;border:none;
+    padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14.5px;color:var(--ink-soft);
+    border-left:3px solid transparent;
+  }
+  nav.sections .sec-btn .n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+  nav.sections .sec-btn:hover{background:var(--teal-tint);}
+  nav.sections .sec-btn.active{background:var(--teal-tint);color:var(--teal-deep);font-weight:600;border-left-color:var(--teal);}
+
+  main{flex:1;min-width:0;padding:22px 26px 60px;overflow-y:auto;}
+  .section-head{margin-bottom:6px;}
+  .section-head h2{font-size:23px;color:var(--teal-deep);}
+  .section-head p{margin:4px 0 0;color:var(--muted);font-size:13.5px;}
+
+  .category{margin-top:26px;}
+  .category h3{font-size:15px;color:var(--ink-soft);text-transform:none;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px;}
+
+  .test-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+  .test-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;}
+  .test-head:hover{background:#FAFCFB;}
+  .test-head .name{font-weight:600;font-size:15px;color:var(--ink);}
+  .test-head .specimen{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .chev{color:var(--muted);transition:transform .15s ease;flex:0 0 auto;}
+  .test-card.open .chev{transform:rotate(180deg);}
+
+  .test-body{padding:0 16px 16px;display:none;}
+  .test-card.open .test-body{display:block;}
+
+  table.params{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:13.5px;}
+  table.params th{text-align:left;font-weight:600;color:var(--muted);font-size:11.5px;letter-spacing:.3px;padding:6px 10px;border-bottom:1px solid var(--line);}
+  table.params td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.params td.rng{font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  table.params tr:last-child td{border-bottom:none;}
+  .crit-tag{display:inline-block;margin-top:2px;font-size:11.5px;background:var(--crit-tint);color:var(--crit);padding:1px 7px;border-radius:5px;font-family:'IBM Plex Mono',monospace;}
+
+  .block{margin-top:12px;}
+  .block h4{font-size:12px;letter-spacing:.3px;color:var(--teal-deep);margin:0 0 6px;font-weight:600;}
+  .block ul{margin:0;padding-left:19px;}
+  .block li{margin-bottom:4px;font-size:13.8px;}
+  .block p{margin:0;font-size:13.8px;}
+  .qc-block h4{color:var(--amber);}
+
+  .art-panel{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px 14px;margin:14px 0 22px;
+  }
+  .art-panel h3{font-size:14px;color:var(--teal-deep);margin:0 0 3px;border:none;padding:0;}
+  .art-panel .art-desc{font-size:12.5px;color:var(--muted);margin:0 0 12px;}
+  .art-panel svg{width:100%;height:auto;display:block;}
+  .art-panel .art-legend{margin-top:10px;font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;}
+  .art-panel .art-legend .crit{color:var(--crit);font-weight:600;}
+  .art-panel .art-links{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+  .art-panel .art-links a{display:inline-block;font-size:12px;color:var(--teal);text-decoration:none;}
+  .art-panel .art-links a:hover{text-decoration:underline;}
+
+  .note-area{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px;}
+  .note-area h4{font-size:12px;color:var(--muted);margin:0 0 6px;font-weight:600;}
+  .note-area textarea{
+    width:100%;min-height:60px;resize:vertical;border:1px solid var(--line);border-radius:8px;
+    padding:9px 10px;font-family:inherit;font-size:13.5px;background:#FCFDFC;color:var(--ink);
+  }
+  .note-status{font-size:11px;color:var(--muted);margin-top:4px;height:14px;}
+
+  .search-results-head{font-size:13px;color:var(--muted);margin-bottom:14px;}
+  .badge-path{display:inline-block;font-size:11px;background:var(--teal-tint);color:var(--teal-deep);padding:2px 8px;border-radius:6px;margin-bottom:6px;}
+
+  .disclaimer{
+    margin:26px 0 0;padding:12px 14px;background:var(--amber-tint);border:1px solid #E8D6AE;
+    border-radius:8px;font-size:12.5px;color:#6B5322;
+  }
+
+  /* mobile */
+  @media (max-width:760px){
+    .layout{flex-direction:column;}
+    nav.sections{
+      width:100%;flex:0 0 auto;display:flex;overflow-x:auto;gap:4px;padding:10px 10px;
+      border-right:none;border-bottom:1px solid var(--line);white-space:nowrap;
+    }
+    nav.sections .sec-btn{border-left:none;border-bottom:3px solid transparent;flex:0 0 auto;}
+    nav.sections .sec-btn.active{border-left:none;border-bottom-color:var(--teal);}
+    main{padding:16px 14px 50px;}
+    .brand .sub{display:none;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =====================================================================
+   DATA — เพิ่ม/แก้ไขรายการตรวจได้ที่นี่
+   โครงสร้าง: sections -> categories -> tests
+   test = { id, name, specimen, params:[{name, range, critical}], method, procedure:[...], qc:[...] }
+   ===================================================================== */
+const SECTIONS = [
+{
+  id:'heme', name:'โลหิตวิทยา', sub:'Hematology',
+  categories:[
+    { name:'Complete Blood Count & Indices', tests:[
+      { id:'cbc', name:'CBC (Complete Blood Count)', specimen:'EDTA (จุกม่วง) whole blood',
+        params:[
+          {name:'WBC', range:'4.5–11.0 ×10³/µL', critical:'<2.0 หรือ >30.0'},
+          {name:'RBC', range:'ชาย 4.5–5.9 / หญิง 4.0–5.2 ×10⁶/µL'},
+          {name:'Hemoglobin (Hb)', range:'ชาย 13.5–17.5 / หญิง 12.0–15.5 g/dL', critical:'<7.0 หรือ >20.0'},
+          {name:'Hematocrit (Hct)', range:'ชาย 41–53% / หญิง 36–46%', critical:'<15% หรือ >60%'},
+          {name:'MCV', range:'80–100 fL'},
+          {name:'MCH', range:'27–33 pg'},
+          {name:'MCHC', range:'32–36 g/dL'},
+          {name:'RDW', range:'11.5–14.5%'},
+          {name:'Platelet', range:'150–450 ×10³/µL', critical:'<20 หรือ >1,000'}
+        ],
+        method:'Automated hematology analyzer (impedance/optical + flow cytometry) ยืนยันผลผิดปกติด้วยการดู peripheral blood smear',
+        procedure:[
+          'ผสมหลอด EDTA เบา ๆ 8–10 ครั้งทันทีหลังเจาะ',
+          'ควรวิเคราะห์ภายใน 4 ชม. (ตัวนับเกล็ดเลือดควรวิเคราะห์เร็วที่สุด <30 นาทีถ้าเป็นไปได้)',
+          'โหลดหลอดเข้าเครื่อง ตรวจสอบ flag ที่เครื่องแจ้งเตือน',
+          'ทำ smear ทบทวนด้วยตาหากมี flag ผิดปกติหรือค่าไม่สอดคล้องกับอาการทางคลินิก'
+        ],
+        qc:[
+          'รัน control 2–3 ระดับทุกกะ ตรวจสอบว่าอยู่ในช่วงที่กำหนด',
+          'ติดตามแนวโน้มด้วย Levey-Jennings chart',
+          'ทำ delta check เทียบผลเดิมของผู้ป่วย',
+          'สหสัมพันธ์ผลนับกับสัณฐานวิทยาบน smear เสมอเมื่อมี flag'
+        ]
+      }
+    ]},
+    { name:'Differential & Morphology', tests:[
+      { id:'diff', name:'WBC Differential (Manual/Automated)', specimen:'EDTA whole blood / blood smear',
+        params:[
+          {name:'Neutrophil (Segmented)', range:'40–70%'},
+          {name:'Band form', range:'0–5%'},
+          {name:'Lymphocyte', range:'20–45%'},
+          {name:'Monocyte', range:'2–10%'},
+          {name:'Eosinophil', range:'1–6%'},
+          {name:'Basophil', range:'0–2%'}
+        ],
+        method:'Wright-Giemsa stained smear ดูด้วยกล้องจุลทรรศน์กำลังขยาย 100x oil immersion หรือ automated flow-based differential พร้อมยืนยันด้วยมือเมื่อมี flag',
+        procedure:[
+          'ทำ smear บาง ๆ ปลายเรียว (feather edge) ผึ่งให้แห้ง',
+          'ย้อมด้วย Wright-Giemsa ตามเวลาที่กำหนด',
+          'ตรวจในบริเวณ monolayer นับเม็ดเลือดขาว 100 เซลล์แบบ battlement pattern',
+          'บันทึกสัณฐานของ RBC และ platelet ร่วมด้วย'
+        ],
+        qc:[
+          'เปรียบเทียบผล manual กับ automated differential เมื่อมี flag',
+          'ตรวจคุณภาพสียืนย้อมด้วย control slide',
+          'ให้หัวหน้างาน/ผู้ชำนาญทบทวนเซลล์ผิดปกติ (atypical cells)'
+        ]
+      },
+      { id:'retic', name:'Reticulocyte Count', specimen:'EDTA whole blood',
+        params:[{name:'Reticulocyte %', range:'ผู้ใหญ่ 0.5–2.5%'},{name:'Absolute retic', range:'25–75 ×10³/µL'}],
+        method:'Supravital stain (New Methylene Blue) หรือ automated flow cytometry',
+        procedure:['ผสมเลือดกับสีย้อมอัตราส่วน 1:1','บ่ม 10–15 นาที','ทำ smear และนับ reticulocyte ต่อ RBC 1,000 เซลล์'],
+        qc:['รัน control ตามคู่มือผู้ผลิต','สหสัมพันธ์กับการวินิจฉัยภาวะโลหิตจาง (retic ควรสูงขึ้นเมื่อมีการชดเชยจากไขกระดูก)']
+      }
+    ]},
+    { name:'ESR', tests:[
+      { id:'esr', name:'Erythrocyte Sedimentation Rate (ESR)', specimen:'Sodium citrate หรือ EDTA (ตามวิธี)',
+        params:[
+          {name:'ชาย <50 ปี', range:'0–15 mm/hr'},
+          {name:'ชาย >50 ปี', range:'0–20 mm/hr'},
+          {name:'หญิง <50 ปี', range:'0–20 mm/hr'},
+          {name:'หญิง >50 ปี', range:'0–30 mm/hr'}
+        ],
+        method:'Westergren method (มาตรฐาน) หรือ modified/automated method',
+        procedure:['เติมเลือดลงหลอด Westergren ถึงขีด 200 มม.','ตั้งหลอดในแนวดิ่งสนิท ห่างจากแรงสั่นสะเทือนและแสงแดดจัด','อ่านผลที่เวลา 60 นาทีพอดี'],
+        qc:['หลอดต้องตั้งตรงแนวดิ่งจริง ๆ','อ่านผลตรงเวลาที่กำหนดเท่านั้น','อุณหภูมิห้องควรอยู่ 18–25°C']
+      }
+    ]},
+    { name:'RBC & Platelet Morphology และการรายงานผล', tests:[
+      { id:'rbcmorph', name:'RBC Morphology & Reporting', specimen:'Peripheral blood smear (Wright-Giemsa stain)',
+        params:[
+          {name:'Anisocytosis (ขนาดไม่เท่ากัน)', range:'รายงานเป็น 1+ ถึง 4+ (สัมพันธ์กับ RDW)'},
+          {name:'Poikilocytosis (รูปร่างผิดปกติ)', range:'รายงานเป็น 1+ ถึง 4+ พร้อมระบุชนิด'},
+          {name:'Hypochromia', range:'พื้นที่ central pallor >1/3 ของเซลล์ = hypochromic'},
+          {name:'Polychromasia', range:'RBC ติดสีน้ำเงินอมม่วง บ่งชี้ reticulocyte เพิ่ม'}
+        ],
+        method:'ตรวจในบริเวณ monolayer (เซลล์ไม่ทับซ้อน ไม่บางเกินไป) กำลังขยาย 100x oil immersion อย่างน้อย 10 ฟิลด์',
+        procedure:[
+          'เลือกบริเวณ monolayer ของ smear ที่ RBC เรียงตัวพอดี ไม่ซ้อนทับกัน',
+          'ประเมิน size (anisocytosis): เทียบกับ small lymphocyte nucleus เป็นเกณฑ์',
+          'ประเมิน shape (poikilocytosis): มองหารูปร่างผิดปกติเฉพาะ เช่น spherocyte (กลมไม่มี central pallor), target cell (มีจุดกลางเข้ม), sickle cell (รูปเคียว), schistocyte (เศษเซลล์แตก), teardrop cell (หยดน้ำตา), burr cell/echinocyte (หนามเล็กสม่ำเสมอ), acanthocyte (หนามใหญ่ไม่สม่ำเสมอ)',
+          'ประเมินสี (chromia): ดูขนาด central pallor เทียบกับเส้นผ่านศูนย์กลางเซลล์',
+          'นับสัดส่วนเซลล์ผิดปกติแล้วให้เกรดตามตารางมาตรฐานของห้องปฏิบัติการ (เช่น 1+ = 5–10%, 2+ = 10–25%, 3+ = 25–50%, 4+ = >50%)',
+          'บันทึกร่วมกับ RBC inclusion หากพบ เช่น Howell-Jolly body, basophilic stippling, malaria parasite',
+          'รายงานผลรวมในใบรายงาน CBC เป็นคำอธิบายสัณฐานวิทยา ควบคู่กับตัวเลข indices (MCV, MCH, MCHC, RDW)'
+        ],
+        qc:['ต้องรายงานสัณฐานวิทยาให้สอดคล้องกับ indices เช่น MCV ต่ำ + hypochromia เข้าได้กับ iron deficiency หรือ thalassemia','ให้ผู้ตรวจสอบระดับสูงทบทวนเมื่อพบเซลล์ผิดปกติชนิดที่มีนัยสำคัญ (เช่น schistocyte จำนวนมาก สงสัย MAHA/TTP ต้องรายงาน critical value)']
+      },
+      { id:'pltmorph', name:'Platelet Estimate & Reporting', specimen:'Peripheral blood smear (Wright-Giemsa stain)',
+        params:[
+          {name:'ค่าประมาณจากการนับด้วยตา (Estimate)', range:'เฉลี่ยจำนวนเกล็ดเลือดต่อ oil-immersion field (100x) × 15,000–20,000 = ค่าประมาณต่อ µL'},
+          {name:'Adequate', range:'สอดคล้องกับค่าที่เครื่องนับอัตโนมัติรายงาน'},
+          {name:'Decreased', range:'<150 ×10³/µL — ให้ยืนยันว่าไม่ใช่ platelet clumping'},
+          {name:'Increased', range:'>450 ×10³/µL'}
+        ],
+        method:'นับจำนวนเกล็ดเลือดเฉลี่ยจาก 10 ฟิลด์ในบริเวณ monolayer ที่กำลังขยาย 100x oil immersion',
+        procedure:[
+          'เลือกบริเวณ monolayer ที่ RBC ไม่ซ้อนทับและกระจายสม่ำเสมอ',
+          'นับจำนวนเกล็ดเลือดใน 10 ฟิลด์ (100x oil) แล้วหาค่าเฉลี่ยต่อฟิลด์',
+          'คูณค่าเฉลี่ยด้วยตัวคูณของกล้อง/ห้องปฏิบัติการ (โดยทั่วไป 15,000–20,000) เพื่อประมาณค่าต่อ µL',
+          'เปรียบเทียบค่าประมาณกับผลจากเครื่องนับอัตโนมัติ หากต่างกันมากให้ตรวจสอบสาเหตุ',
+          'ตรวจสอบ platelet morphology: ขนาด (giant platelet เข้าได้กับ ITP หรือ myeloproliferative), granularity, การจับกลุ่ม (clumping)',
+          'หากพบ platelet clumping จำนวนมากบน smear แต่เครื่องรายงานเกล็ดเลือดต่ำ ให้สงสัย pseudothrombocytopenia จาก EDTA และแนะนำเก็บซ้ำด้วย sodium citrate tube',
+          'รายงานผลเป็นทั้งค่าประมาณและคำอธิบาย (เช่น "Platelet adequate, few giant forms noted")'
+        ],
+        qc:['เกล็ดเลือดต่ำมากที่ยืนยันแล้วว่าไม่ใช่ clumping (<20 ×10³/µL) ต้องรายงานเป็น critical value ทันที','ตรวจสอบ EDTA-induced platelet clumping/satellitism เสมอเมื่อผลเกล็ดเลือดจากเครื่องต่ำผิดปกติโดยไม่มีอาการทางคลินิก']
+      }
+    ]},
+    { name:'เทคนิคการย้อมสีและการคำนวณแก้ไขผล', tests:[
+      { id:'giemsa', name:'การย้อมสี Wright-Giemsa (Peripheral Blood Smear Staining)', specimen:'Blood smear ที่ทำแห้งสนิทแล้ว (air-dried)',
+        params:[
+          {name:'Wright stain (undiluted)', range:'ย้อมนาน 1–3 นาที (ตามคู่มือน้ำยาแต่ละ lot)'},
+          {name:'Buffer (phosphate buffered water)', range:'pH 6.4–6.8 เติมปริมาณเท่ากับ stain แล้วผสม 3–5 นาที'},
+          {name:'ล้างด้วยน้ำไหลผ่านเบา ๆ', range:'จนน้ำที่ไหลออกใส ไม่มีคราบสีตกค้าง'}
+        ],
+        method:'Romanowsky-type stain — Wright stain (methanol-fixed eosin-methylene blue) ผสมกับ buffer เพื่อให้เกิดสีที่จำเพาะต่อโครงสร้างเซลล์',
+        procedure:[
+          'ตรวจสอบว่า smear แห้งสนิทแล้ว (อย่างน้อย 10 นาทีหลังทำ smear) ก่อนเริ่มย้อม',
+          'วาง slide บนราวย้อม หยด/ท่วม Wright stain (undiluted) ให้ทั่วแผ่น smear ทิ้งไว้ตามเวลาที่กำหนด (โดยทั่วไป 1–3 นาที) — ขั้นตอนนี้ทำหน้าที่ fix เซลล์ด้วย methanol ใน stain ไปพร้อมกัน',
+          'เติม phosphate buffer (pH 6.4–6.8) ปริมาณเท่ากับ stain ที่หยดไว้ลงบน slide โดยไม่เทน้ำยาเดิมทิ้ง ผสมให้เข้ากันเบา ๆ (เป่าลมหรือเขย่าราว) จนเห็นเป็นฝ้าโลหะ (metallic sheen) ผิวหน้า',
+          'ทิ้งไว้ตามเวลาที่กำหนด (โดยทั่วไป 3–5 นาที) ให้ buffer ทำปฏิกิริยากับสี',
+          'ล้างด้วยน้ำสะอาดไหลผ่านเบา ๆ (ไม่ใช้แรงฉีดตรง) จนน้ำที่ไหลออกจาก slide ใส',
+          'ตั้ง slide ให้แห้งสนิทในแนวตั้งที่อุณหภูมิห้อง หรือเป่าลมเย็นช่วยให้แห้งเร็วขึ้น',
+          'ตรวจสอบคุณภาพการย้อมด้วยกำลังขยายต่ำก่อน — RBC ควรเป็นสีชมพูส้ม (salmon pink), นิวเคลียส WBC สีม่วงน้ำเงินเข้ม, granule ติดสีชัดเจน',
+          'หากย้อมเข้ม/อ่อนเกินไป ให้ปรับเวลาการย้อมหรือสัดส่วน stain:buffer ในรอบถัดไป'
+        ],
+        qc:['ย้อม control slide (ที่ทราบผลปกติ) คู่กับตัวอย่างเมื่อเปลี่ยน lot น้ำยาใหม่ทุกครั้ง','pH ของ buffer มีผลต่อสีที่ได้มาก — pH สูงเกินทำให้ติดสีน้ำเงินเกิน (too basophilic) pH ต่ำเกินทำให้ติดสีชมพูเกิน (too eosinophilic)','เปลี่ยนน้ำยา stain และ buffer ตามรอบที่ห้องปฏิบัติการกำหนด และกรองตะกอนสีที่ตกค้างเป็นระยะ']
+      },
+      { id:'corrwbc', name:'Corrected WBC Count (แก้ไขค่า WBC เมื่อมี NRBC)', specimen:'EDTA whole blood + Blood smear',
+        params:[
+          {name:'สูตรคำนวณ', range:'Corrected WBC = (Uncorrected WBC × 100) ÷ (100 + จำนวน NRBC ต่อ WBC 100 เซลล์)'},
+          {name:'เกณฑ์ที่ต้องแก้ไขค่า', range:'พบ NRBC (nucleated RBC) ≥ 5 ตัวต่อ WBC 100 เซลล์บน differential'}
+        ],
+        method:'เครื่องนับเม็ดเลือดอัตโนมัติบางรุ่นนับ NRBC ปนไปกับ WBC เนื่องจากขนาดและการติดสีนิวเคลียสใกล้เคียงกัน จึงต้องแก้ไขค่าด้วยมือเมื่อพบ NRBC จำนวนมากบน smear',
+        procedure:[
+          'เมื่อเครื่องนับอัตโนมัติ flag ว่าพบ NRBC หรือรีวิว smear แล้วเห็น NRBC ให้ทำการนับแยกทันที',
+          'นับจำนวน NRBC ที่พบร่วมกับการทำ WBC differential (นับต่อ WBC 100 เซลล์ในบริเวณ monolayer)',
+          'บันทึกจำนวน NRBC ต่อ WBC 100 เซลล์ (เช่น "10 NRBC/100 WBC")',
+          'คำนวณค่า Corrected WBC ด้วยสูตร: Corrected WBC = (Uncorrected WBC จากเครื่อง × 100) ÷ (100 + จำนวน NRBC)',
+          'ตัวอย่าง: Uncorrected WBC = 20,000/µL, พบ NRBC 20 ตัว/100 WBC → Corrected WBC = (20,000×100)/(100+20) = 16,667/µL',
+          'รายงานทั้งค่า Uncorrected และ Corrected WBC พร้อมระบุจำนวน NRBC ที่พบในใบรายงานผล',
+          'แจ้งแพทย์หากพบ NRBC จำนวนมากในผู้ป่วยที่ไม่ใช่ทารกแรกเกิด เนื่องจากอาจบ่งชี้ภาวะไขกระดูกถูกกระตุ้นรุนแรง (severe hemolysis, myelofibrosis, metastatic cancer to bone marrow)'
+        ],
+        qc:['ต้องแก้ไขค่า WBC ทุกครั้งที่พบ NRBC ≥5 ตัวต่อ WBC 100 เซลล์ เพื่อไม่ให้ WBC สูงเกินจริงและนำไปสู่การแปลผลที่ผิดพลาด']
+      }
+    ]}
+  ]
+},
+{
+  id:'coag', name:'โคแอกกูเลชั่น', sub:'Coagulation',
+  categories:[
+    { name:'การตรวจคัดกรองการแข็งตัวของเลือด', tests:[
+      { id:'pt', name:'PT / INR', specimen:'Sodium citrate (จุกฟ้า) อัตราส่วนเลือด:น้ำยา 9:1',
+        params:[
+          {name:'PT', range:'11–13.5 วินาที (ขึ้นกับรีเอเจนต์)'},
+          {name:'INR (รักษาด้วย warfarin ทั่วไป)', range:'2.0–3.0', critical:'INR >5.0 หรือ PT >3 เท่าของ control'}
+        ],
+        method:'Clot-based photo-optical หรือ mechanical clot detection ด้วย thromboplastin + calcium reagent',
+        procedure:[
+          'เก็บเลือดลงหลอด sodium citrate ให้ถึงขีดพอดี (อัตราส่วน 9:1) แล้วผสมเบา ๆ ทันที',
+          'ปั่นเหวี่ยงที่ 1,500g นาน 15 นาที เพื่อแยก platelet-poor plasma (PPP)',
+          'ถ่ายพลาสมาส่วนบนใส่หลอดสะอาด หลีกเลี่ยงการดูดชั้นเซลล์เม็ดเลือด',
+          'หากไม่วิเคราะห์ทันที เก็บพลาสมาที่อุณหภูมิห้องและวิเคราะห์ให้เสร็จภายในเวลาที่รีเอเจนต์กำหนด (โดยทั่วไป 1–4 ชม.)',
+          'ตั้งค่าเครื่องและใส่ตัวอย่างพร้อม normal/abnormal control ก่อนรันตัวอย่างผู้ป่วย',
+          'เติม thromboplastin-calcium reagent ตามปริมาตรที่กำหนด เครื่องจะจับเวลาจนเกิดลิ่มเลือด',
+          'บันทึกค่า PT (วินาที) และคำนวณ INR โดยอัตโนมัติจากค่า ISI ของรีเอเจนต์',
+          'ตรวจสอบผลผิดปกติ/ค่า critical ก่อนรายงาน และแจ้งแพทย์ทันทีหากเข้าเกณฑ์ critical value'
+        ],
+        qc:['รัน normal และ abnormal control ทุกครั้งที่ทดสอบ','ตรวจปริมาณเลือดในหลอดให้ตรงขีด (เติมน้อยเกินไปทำให้ค่าค้างสูงเกินจริง)','ปฏิเสธตัวอย่างที่แข็งตัวหรือ hemolyzed']
+      },
+      { id:'aptt', name:'aPTT', specimen:'Sodium citrate',
+        params:[{name:'aPTT', range:'25–35 วินาที (ขึ้นกับรีเอเจนต์)'},{name:'Heparin monitoring', range:'1.5–2.5 เท่าของ control'}],
+        method:'Activated partial thromboplastin reagent + calcium วัดเวลาแข็งตัว',
+        procedure:[
+          'เตรียม platelet-poor plasma เช่นเดียวกับการทดสอบ PT',
+          'เติม aPTT reagent (phospholipid + activator เช่น silica/kaolin) ลงในพลาสมา บ่มตามเวลาที่กำหนด (โดยทั่วไป 3–5 นาที ที่ 37°C) เพื่อกระตุ้น intrinsic pathway',
+          'เติม calcium chloride เพื่อเริ่มปฏิกิริยาการแข็งตัว และเริ่มจับเวลาทันที',
+          'บันทึกเวลาที่เกิดลิ่มเลือด (clot detection) เป็นค่า aPTT',
+          'เปรียบเทียบกับค่า control mean เพื่อแปลผลและติดตามการให้ยา heparin หากมีคำสั่งแพทย์'
+        ],
+        qc:['รัน level 1/2 control','สงสัย lupus anticoagulant หากค่ายาวผิดปกติโดยไม่ทราบสาเหตุ — พิจารณาทำ mixing study']
+      },
+      { id:'fib', name:'Fibrinogen', specimen:'Sodium citrate',
+        params:[{name:'Fibrinogen', range:'200–400 mg/dL', critical:'<100 mg/dL (เสี่ยงเลือดออก)'}],
+        method:'Clauss method — plasma เจือจาง + thrombin reagent วัดเวลาแข็งตัว',
+        procedure:[
+          'เจือจางพลาสมาผู้ป่วยด้วย buffer ตามอัตราส่วนที่กำหนด (เพื่อให้ค่าที่วัดได้อยู่ในช่วงเส้นมาตรฐาน)',
+          'เติม thrombin reagent เข้มข้นสูง เพื่อให้ปฏิกิริยาไม่ขึ้นกับปัจจัยการแข็งตัวอื่น',
+          'จับเวลาจนเกิดลิ่มเลือด แล้วเทียบกับกราฟมาตรฐาน (standard curve) เพื่อแปลงเป็นค่า mg/dL',
+          'รายงานผลพร้อมระบุหน่วยและเปรียบเทียบกับค่าวิกฤต'
+        ],
+        qc:['รัน control ทุกวันที่ทดสอบและตรวจสอบ standard curve ยังใช้ได้','ค่าต่ำมากร่วมกับเลือดออกผิดปกติต้องรายงานทันที']
+      },
+      { id:'ddimer', name:'D-dimer', specimen:'Sodium citrate',
+        params:[{name:'D-dimer', range:'<0.5 µg/mL FEU (ขึ้นกับชุดทดสอบ)'}],
+        method:'Immunoturbidimetric หรือ ELISA-based latex agglutination — ใช้ร่วมกับ clinical probability เพื่อคัดกรอง VTE',
+        procedure:[
+          'เตรียม platelet-poor plasma เช่นเดียวกับ PT/aPTT',
+          'ผสมพลาสมากับ latex particle ที่เคลือบ monoclonal antibody จำเพาะต่อ D-dimer',
+          'วัดการเปลี่ยนแปลงความขุ่น (turbidity) ที่เกิดจากการจับกลุ่มของ latex เมื่อมี D-dimer ในตัวอย่าง',
+          'เทียบกับกราฟมาตรฐานเพื่อคำนวณความเข้มข้น และรายงานหน่วยตามชุดทดสอบ (µg/mL FEU หรือ ng/mL DDU)'
+        ],
+        qc:['ผล D-dimer ปกติมีค่าในการ "คัดออก" ภาวะ VTE เมื่อ pre-test probability ต่ำ แต่ผลบวกไม่จำเพาะเจาะจง ต้องแปลผลร่วมกับคลินิกเสมอ']
+      }
+    ]}
+  ]
+},
+{
+  id:'chem', name:'เคมีคลินิก', sub:'Clinical Chemistry',
+  categories:[
+    { name:'น้ำตาลและเมตาบอลิก', tests:[
+      { id:'glu', name:'Fasting Blood Glucose (FBS)', specimen:'Serum/Plasma (Sodium fluoride tube) หรือ fingerstick',
+        params:[
+          {name:'ปกติ (fasting)', range:'70–99 mg/dL'},
+          {name:'Prediabetes', range:'100–125 mg/dL'},
+          {name:'Diabetes', range:'≥126 mg/dL'}
+        ],
+        params2:null,
+        method:'Hexokinase หรือ Glucose oxidase enzymatic method',
+        procedure:[
+          'เก็บตัวอย่างในหลอด sodium fluoride/potassium oxalate เพื่อยับยั้ง glycolysis (หากใช้หลอดธรรมดาต้องปั่นแยกซีรั่มภายใน 30 นาที)',
+          'ปั่นเหวี่ยงแยกซีรั่ม/พลาสมา ตรวจสอบว่าไม่มี hemolysis',
+          'ใส่ตัวอย่างเข้าเครื่องวิเคราะห์อัตโนมัติ ให้ทำปฏิกิริยากับ hexokinase/G6PD reagent',
+          'เครื่องวัดค่าการดูดกลืนแสงที่เปลี่ยนแปลง (NADH) แล้วคำนวณความเข้มข้นกลูโคสเทียบกับ calibration curve',
+          'ตรวจสอบค่าที่ได้กับ critical value ก่อนรายงาน (<40 หรือ >500 mg/dL ต้องแจ้งแพทย์ทันที)'
+        ],
+        qc:['สังเกต critical value <40 หรือ >500 mg/dL ต้องรายงานแพทย์ทันที','ตัวอย่างที่ไม่ได้ปั่นแยกทันทีจะได้ค่ากลูโคสต่ำเทียมจาก glycolysis ของเม็ดเลือด']
+      },
+      { id:'hba1c', name:'HbA1c', specimen:'EDTA whole blood',
+        params:[{name:'ปกติ', range:'<5.7%'},{name:'Prediabetes', range:'5.7–6.4%'},{name:'Diabetes', range:'≥6.5%'}],
+        method:'HPLC หรือ Immunoassay สะท้อนค่าน้ำตาลเฉลี่ยประมาณ 3 เดือน',
+        procedure:[
+          'ผสมหลอด EDTA ให้เข้ากันดี ไม่จำเป็นต้องงดอาหารก่อนเจาะ',
+          'ใส่ตัวอย่างเข้าเครื่อง HPLC หรือ immunoassay analyzer โดยตรง',
+          'เครื่องจะแยก/ตรวจวัดสัดส่วนของ glycated hemoglobin ต่อ total hemoglobin',
+          'รายงานผลเป็นเปอร์เซ็นต์ (%) หรือหน่วย mmol/mol ตามมาตรฐาน IFCC ที่ห้องปฏิบัติการใช้'
+        ],
+        qc:['ภาวะที่มีอายุ RBC ผิดปกติ (hemolytic anemia, hemoglobinopathy) อาจทำให้ค่า HbA1c คลาดเคลื่อนจากค่าน้ำตาลจริง ควรระบุในรายงานหากทราบประวัติ']
+      },
+      { id:'renal', name:'BUN / Creatinine', specimen:'Serum',
+        params:[
+          {name:'BUN', range:'7–20 mg/dL'},
+          {name:'Creatinine ชาย', range:'0.7–1.3 mg/dL'},
+          {name:'Creatinine หญิง', range:'0.6–1.1 mg/dL', critical:'>10 mg/dL หรือเพิ่มขึ้นเฉียบพลัน'}
+        ],
+        method:'Urease-GLDH (BUN); Jaffe หรือ enzymatic method (Creatinine)',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่มจากหลอดที่ไม่มีสารกันเลือดแข็งตัว (clot tube)',
+          'BUN: ตัวอย่างทำปฏิกิริยากับ urease เปลี่ยนยูเรียเป็นแอมโมเนีย จากนั้นวัดด้วย GLDH-coupled enzymatic reaction',
+          'Creatinine (Jaffe): ครีเอตินินทำปฏิกิริยากับ alkaline picrate เกิดสารสีส้ม-แดง วัดค่าการดูดกลืนแสง (ระวังสารรบกวนจากบิลิรูบิน คีโตน โปรตีน)',
+          'Creatinine (Enzymatic): ใช้ creatininase/creatinase/sarcosine oxidase ให้ความจำเพาะสูงกว่า Jaffe',
+          'คำนวณ eGFR อัตโนมัติจากค่า creatinine ร่วมกับอายุ เพศ (ตามสูตร CKD-EPI หรือ MDRD ที่ห้องปฏิบัติการเลือกใช้)'
+        ],
+        qc:['ค่า creatinine ที่เพิ่มขึ้นเฉียบพลันหรือสูงมากต้องรายงานแพทย์ทันที (บ่งชี้ acute kidney injury)']
+      },
+      { id:'lyte', name:'Electrolytes (Na, K, Cl, CO2)', specimen:'Serum/Plasma (heparin) — ห้ามใช้หลอด EDTA',
+        params:[
+          {name:'Na⁺', range:'135–145 mmol/L', critical:'<120 หรือ >160'},
+          {name:'K⁺', range:'3.5–5.0 mmol/L', critical:'<2.5 หรือ >6.5'},
+          {name:'Cl⁻', range:'98–107 mmol/L'},
+          {name:'CO2 (Bicarbonate)', range:'22–29 mmol/L'}
+        ],
+        method:'Ion-Selective Electrode (ISE) แบบ direct หรือ indirect',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่ม/พลาสมาโดยเร็วหลังเจาะ (ภายใน 1 ชม.) เพื่อลด K⁺ รั่วจากเม็ดเลือด',
+          'ตรวจสอบด้วยตาว่าไม่มี hemolysis ก่อนวิเคราะห์',
+          'ใส่ตัวอย่างเข้าเครื่อง ISE ซึ่งใช้ electrode เฉพาะไอออนแต่ละชนิดวัดค่าศักย์ไฟฟ้าเทียบกับสารละลายมาตรฐาน',
+          'เครื่องคำนวณความเข้มข้นไอออนจากสมการ Nernst และรายงานผลเป็น mmol/L',
+          'ตรวจสอบค่าที่ผิดปกติมากกับ critical value list ก่อนรายงาน'
+        ],
+        qc:['ตรวจสอบ hemolysis เสมอ (ทำให้ K⁺ สูงเทียม)','ปฏิเสธตัวอย่างที่แข็งตัวหรือปนเปื้อน EDTA (ทำให้ K⁺ สูงเทียม/Ca²⁺ ต่ำเทียม)']
+      }
+    ]},
+    { name:'เทคนิคการเจือจางตัวอย่าง (Dilution Technique)', tests:[
+      { id:'dilution', name:'การเจือจางตัวอย่าง (Manual Dilution) เมื่อผลเกินช่วง Linearity', specimen:'Serum/Plasma ที่ผลตรวจครั้งแรกสูง/ต่ำเกินช่วงที่เครื่องวัดได้แม่นยำ',
+        params:[
+          {name:'สูตรคำนวณค่าจริง', range:'ค่าจริง = ค่าที่วัดได้จากตัวอย่างเจือจาง × Dilution Factor (DF)'},
+          {name:'Dilution Factor (DF)', range:'DF = ปริมาตรรวมหลังเจือจาง ÷ ปริมาตรตัวอย่างเดิม (เช่น เจือจาง 1:4 → DF = 4)'},
+          {name:'สูตรผสมสาร', range:'C1V1 = C2V2 (ความเข้มข้นเดิม×ปริมาตรเดิม = ความเข้มข้นใหม่×ปริมาตรใหม่)'}
+        ],
+        method:'ใช้เมื่อผลตรวจเบื้องต้นสูง/ต่ำเกินช่วง linearity ของวิธีวิเคราะห์ (analytical measurement range) ทำให้ค่าที่เครื่องรายงานไม่แม่นยำ ต้องเจือจางตัวอย่างด้วย diluent ที่เหมาะสมแล้ววัดซ้ำ',
+        procedure:[
+          'ตรวจสอบว่าค่าที่ได้เกินช่วง linearity ของชุดทดสอบจริงหรือไม่ (ดูจาก flag ของเครื่องหรือเปรียบเทียบกับ upper limit of linearity ในเอกสารกำกับชุดทดสอบ)',
+          'เลือกอัตราส่วนเจือจางที่เหมาะสม (เช่น 1:2, 1:4, 1:10) โดยใช้ diluent ที่ผู้ผลิตแนะนำ (เช่น normal saline หรือ diluent เฉพาะของชุดทดสอบ — ห้ามใช้น้ำกลั่นถ้าไม่ได้ระบุ)',
+          'ปิเปตตัวอย่างและ diluent ตามอัตราส่วนที่เลือกอย่างแม่นยำด้วย micropipette ที่ผ่านการสอบเทียบ (เช่น เจือจาง 1:4 = ตัวอย่าง 1 ส่วน + diluent 3 ส่วน รวมเป็น 4 ส่วน)',
+          'ผสมให้เข้ากันดีด้วยการปั่น vortex เบา ๆ หลีกเลี่ยงการเกิดฟองอากาศ',
+          'นำตัวอย่างที่เจือจางแล้วไปวิเคราะห์ซ้ำในเครื่องเดิม',
+          'นำค่าที่ได้จากตัวอย่างเจือจางมาคูณด้วย Dilution Factor เพื่อคำนวณค่าจริงของผู้ป่วย',
+          'บันทึกอัตราส่วนเจือจางที่ใช้ลงในระบบ/ใบบันทึกคุณภาพ เพื่อให้ตรวจสอบย้อนกลับได้',
+          'รายงานผลพร้อมหมายเหตุว่า "ผลจากตัวอย่างเจือจาง (Diluted Xเท่า)" เพื่อความโปร่งใสในการตรวจสอบภายหลัง'
+        ],
+        qc:['หากเจือจางแล้วยังได้ค่าเกินช่วง linearity ให้เพิ่มอัตราส่วนเจือจางแล้ววัดซ้ำ','ตรวจสอบว่า diluent ที่ใช้ไม่รบกวนปฏิกิริยาเคมีของชุดทดสอบนั้น ๆ (อ่านจากเอกสารกำกับ)','บันทึกทุกครั้งที่เจือจางเพื่อการตรวจสอบย้อนกลับ (traceability) ตามระบบคุณภาพห้องปฏิบัติการ']
+      }
+    ]},
+    { name:'ตับ ไขมัน และเอนไซม์', tests:[
+      { id:'liver', name:'Liver Panel (AST, ALT, ALP, Bilirubin)', specimen:'Serum',
+        params:[
+          {name:'AST', range:'10–40 U/L'},
+          {name:'ALT', range:'7–56 U/L'},
+          {name:'ALP', range:'44–147 U/L'},
+          {name:'Total Bilirubin', range:'0.3–1.2 mg/dL', critical:'>15 mg/dL (ทารกแรกเกิด >20)'},
+          {name:'Direct Bilirubin', range:'0–0.3 mg/dL'}
+        ],
+        method:'Enzymatic kinetic method (AST/ALT); colorimetric diazo method (Bilirubin)',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่ม หลีกเลี่ยง hemolysis (รบกวนค่า AST อย่างมากเพราะ RBC มี AST สูง)',
+          'AST/ALT: วัดอัตราการเปลี่ยนแปลง NADH ต่อหน่วยเวลา (kinetic assay) ในปฏิกิริยาที่มีเอนไซม์เป็นตัวเร่ง',
+          'ALP: ใช้ p-nitrophenyl phosphate เป็น substrate วัดสารสีเหลืองที่เกิดขึ้น',
+          'Bilirubin: ใช้ diazo reaction กับ diazotized sulfanilic acid วัดสีที่เกิดขึ้น (direct bilirubin ทำปฏิกิริยาได้เร็วกว่า indirect)',
+          'ป้องกันตัวอย่างจากแสง หากตรวจ bilirubin เพราะสารสลายตัวได้ง่ายเมื่อโดนแสง'
+        ],
+        qc:['ตัวอย่างที่ hemolyzed ทำให้ AST สูงเทียมชัดเจน — ควรปฏิเสธและเก็บใหม่']
+      },
+      { id:'lipid', name:'Lipid Profile', specimen:'Serum (งดอาหาร 9–12 ชม. เพื่อความแม่นยำของ TG)',
+        params:[
+          {name:'Total Cholesterol', range:'<200 mg/dL (desirable)'},
+          {name:'LDL-C', range:'<100 mg/dL (optimal)'},
+          {name:'HDL-C', range:'ชาย >40 / หญิง >50 mg/dL'},
+          {name:'Triglycerides', range:'<150 mg/dL'}
+        ],
+        method:'Enzymatic colorimetric method',
+        procedure:[
+          'ยืนยันผู้ป่วยงดอาหาร (ยกเว้นน้ำเปล่า) อย่างน้อย 9–12 ชม. ก่อนเจาะเลือด เพื่อความแม่นยำของ Triglyceride',
+          'ปั่นเหวี่ยงแยกซีรั่ม ตรวจสอบลักษณะ lipemic ด้วยตา',
+          'วัด Total Cholesterol และ Triglycerides ด้วยปฏิกิริยา enzymatic (cholesterol oxidase/GPO-PAP) วัดสีที่เกิดขึ้น',
+          'วัด HDL-C หลังตกตะกอน LDL/VLDL ด้วยรีเอเจนต์เฉพาะ หรือใช้ direct homogeneous assay',
+          'คำนวณ LDL-C ด้วยสูตร Friedewald (LDL = TC − HDL − TG/5) เมื่อ TG <400 mg/dL หรือวัดโดยตรงหาก TG สูงมาก'
+        ],
+        qc:['หากตัวอย่าง lipemic มาก อาจต้องใช้วิธี ultracentrifugation หรือ direct LDL assay แทนสูตรคำนวณ']
+      },
+      { id:'panc', name:'Amylase / Lipase', specimen:'Serum',
+        params:[{name:'Amylase', range:'30–110 U/L'},{name:'Lipase', range:'10–140 U/L'}],
+        method:'ค่า >3 เท่าของค่าสูงสุดปกติ (ULN) เข้าได้กับ acute pancreatitis',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่มโดยเร็ว',
+          'Amylase: ใช้ substrate ที่จำเพาะ (เช่น CNPG3) ให้เอนไซม์ย่อยแล้ววัดสารสีที่เกิดขึ้นแบบ kinetic',
+          'Lipase: ใช้ substrate ไขมันจำเพาะ วัดอัตราการเกิดปฏิกิริยาไฮโดรไลซิส',
+          'รายงานผลเทียบกับค่าอ้างอิงของห้องปฏิบัติการ และแจ้งเตือนหากสูงกว่า 3 เท่าของค่าสูงสุดปกติ'
+        ]
+      },
+      { id:'cardiac', name:'Cardiac Markers (Troponin, CK-MB)', specimen:'Serum/Plasma',
+        params:[
+          {name:'Troponin I/T', range:'<99th percentile URL (ตามชุดทดสอบ)', critical:'ค่าใด ๆ ที่สูงเกิน cutoff = critical value'},
+          {name:'CK-MB', range:'0–6.3 ng/mL'}
+        ],
+        method:'High-sensitivity immunoassay (chemiluminescence) — ดูรูปแบบขึ้น/ลง (rise and fall pattern) เพื่อวินิจฉัย MI',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่ม/พลาสมาทันทีที่ได้รับตัวอย่าง (มักเป็น STAT order)',
+          'ใส่ตัวอย่างเข้าเครื่อง immunoassay analyzer ซึ่งใช้ sandwich assay: antibody จับ troponin แล้วเติม labeled antibody ตัวที่สอง',
+          'วัดสัญญาณ chemiluminescence ที่เกิดขึ้น แปลงเป็นความเข้มข้นเทียบกับ calibration curve',
+          'เปรียบเทียบผลกับค่า 99th percentile URL ของชุดทดสอบ และรายงานเวลาที่เจาะเทียบกับอาการเจ็บหน้าอก',
+          'หากผลสูงกว่า cutoff แจ้งแพทย์ทันทีในฐานะ critical value พร้อมแนะนำเจาะซ้ำตาม serial troponin protocol'
+        ],
+        qc:['ผล Troponin บวกต้องแจ้ง critical value ให้แพทย์ทราบทันที ตามนโยบายห้องปฏิบัติการ']
+      }
+    ]}
+  ]
+},
+{
+  id:'bb', name:'ธนาคารเลือด', sub:'Blood Bank / Immunohematology',
+  categories:[
+    { name:'การตรวจหมู่เลือดและความเข้ากันได้', tests:[
+      { id:'abo', name:'ABO & Rh(D) Typing', specimen:'EDTA whole blood + clotted serum',
+        params:[{name:'Forward vs Reverse typing', range:'ต้องสอดคล้องกันก่อนรายงานผล'},{name:'Rh(D)', range:'Positive / Negative (ตรวจ weak D หาก D negative เบื้องต้น)'}],
+        method:'Tube / Gel / Column agglutination โดยใช้ anti-A, anti-B, anti-D และ A1/B reverse cells',
+        procedure:['Forward type: ผสมเม็ดเลือดผู้ป่วยกับแอนติซีรั่มที่ทราบชนิด','Reverse type: ผสมซีรั่มผู้ป่วยกับเม็ดเลือด A1/B ที่ทราบชนิด','แก้ไข discrepancy ให้เสร็จก่อนรายงานผลหรือจ่ายเลือด'],
+        qc:['รัน reagent antisera control (positive/negative) ทุกวันที่ใช้งาน','ABO discrepancy ต้องสอบสวนให้แล้วเสร็จก่อนจ่ายเลือด']
+      },
+      { id:'absc', name:'Antibody Screen', specimen:'Clotted serum/plasma',
+        params:[{name:'ผลลบ', range:'ไม่พบ unexpected antibody'},{name:'ผลบวก', range:'ต้องทำ antibody identification panel ต่อ'}],
+        method:'Indirect Antiglobulin Test (IAT) โดยใช้ screening cells 2–3 ชนิดที่ทราบ phenotype',
+        procedure:[
+          'ผสมซีรั่ม/พลาสมาผู้ป่วยกับ screening cell แต่ละชนิดในหลอดแยกกัน',
+          'บ่มที่ 37°C ตามเวลาที่กำหนด (โดยทั่วไป 15–30 นาที) เพื่อให้แอนติบอดีจับกับแอนติเจนบนเม็ดเลือด',
+          'ล้างเซลล์ด้วย saline 3–4 ครั้งเพื่อกำจัดแอนติบอดีที่ไม่จับ',
+          'เติม antihuman globulin (AHG) reagent แล้วปั่นเหวี่ยงเบา ๆ อ่านผล agglutination',
+          'เติม check cell (IgG-coated RBC) ในหลอดที่ผลลบ เพื่อยืนยันว่าขั้นตอนล้างและ AHG ใช้งานได้ถูกต้อง',
+          'หากผลบวก ส่งต่อทำ antibody identification panel เพื่อระบุชนิดแอนติบอดี'
+        ]
+      },
+      { id:'xm', name:'Crossmatch', specimen:'ตัวอย่างผู้รับ + เลือดผู้ให้ (donor unit)',
+        params:[{name:'Compatible', range:'ไม่มี agglutination/hemolysis ใน major crossmatch'}],
+        method:'Immediate spin crossmatch (กรณี antibody screen ลบ) หรือ full AHG crossmatch (กรณี antibody screen บวก/มีประวัติ)',
+        procedure:[
+          'ตรวจสอบ ABO/Rh ของผู้ป่วยและถุงเลือดผู้ให้ให้ตรงกันก่อนเริ่ม (clerical check)',
+          'Major crossmatch: ผสมซีรั่มผู้ป่วยกับเม็ดเลือดผู้ให้ (donor RBC)',
+          'Immediate spin: ปั่นเหวี่ยงทันทีหลังผสม อ่านผล agglutination/hemolysis (คัดกรอง ABO incompatibility)',
+          'หาก antibody screen บวกหรือมีประวัติแอนติบอดี ให้ทำ full AHG crossmatch: บ่มที่ 37°C, ล้างเซลล์, เติม AHG reagent, อ่านผล พร้อม check cell ยืนยัน',
+          'บันทึกผลว่า compatible หรือ incompatible ก่อนจ่ายเลือดให้ผู้ป่วย'
+        ]
+      },
+      { id:'coombs', name:'Direct / Indirect Antiglobulin Test (Coombs)', specimen:'EDTA whole blood (DAT) / Serum (IAT)',
+        params:[{name:'DAT', range:'ตรวจ antibody ที่เกาะเม็ดเลือดแดงในร่างกาย (HDFN, hemolytic transfusion reaction, AIHA)'},{name:'IAT', range:'ตรวจ antibody อิสระในซีรั่ม'}],
+        method:'Antihuman globulin reagent',
+        procedure:[
+          'DAT: ล้างเม็ดเลือดแดงผู้ป่วยด้วย saline 3–4 ครั้งเพื่อกำจัดพลาสมาที่เหลือ',
+          'เติม AHG reagent ลงในเม็ดเลือดที่ล้างแล้ว ปั่นเหวี่ยงเบา ๆ แล้วอ่านผล agglutination ทันที',
+          'IAT: บ่มซีรั่มผู้ป่วยกับเม็ดเลือดที่ทราบแอนติเจนที่ 37°C แล้วล้างและเติม AHG reagent เช่นเดียวกับ antibody screen',
+          'เติม check cell ในหลอดผลลบเสมอเพื่อยืนยันความถูกต้องของขั้นตอน'
+        ]
+      },
+      { id:'reaction', name:'การสอบสวน Transfusion Reaction', specimen:'Post-reaction clotted + EDTA sample, urine',
+        procedure:[
+          'หยุดการให้เลือดทันทีเมื่อสงสัยปฏิกิริยา',
+          'ตรวจสอบ clerical error (ชื่อ/HN ผู้ป่วยตรงกับป้ายถุงเลือดหรือไม่)',
+          'ส่งถุงเลือดพร้อมสายให้กลับธนาคารเลือด',
+          'เก็บตัวอย่างหลังปฏิกิริยา สังเกตสีพลาสมา (สีชมพู/แดง = hemolysis)',
+          'ตรวจ ABO/Rh ซ้ำ, DAT, crossmatch ซ้ำ',
+          'แจ้งแพทย์ผู้ดูแล และส่งปัสสาวะตรวจ hemoglobinuria หากสงสัย hemolytic reaction'
+        ]
+      }
+    ]}
+  ]
+},
+{
+  id:'micro', name:'จุลชีววิทยา', sub:'Microbiology',
+  categories:[
+    { name:'การย้อมสีและอาหารเลี้ยงเชื้อ', tests:[
+      { id:'gram', name:'Gram Stain', specimen:'สิ่งส่งตรวจต่าง ๆ (สารคัดหลั่ง, colony, body fluid)',
+        params:[
+          {name:'Gram-positive', range:'ติดสีม่วง/น้ำเงิน (ผนังเซลล์หนา peptidoglycan)'},
+          {name:'Gram-negative', range:'ติดสีชมพู/แดง (ผนังบาง + outer membrane)'}
+        ],
+        method:'บันทึกรูปร่าง (cocci/bacilli) และการเรียงตัว (clusters/chains/pairs) ร่วมด้วยเสมอ',
+        procedure:['fix สไลด์ด้วยความร้อนหรือ methanol','ย้อม Crystal violet 1 นาที ล้างน้ำ','หยด Gram\'s iodine 1 นาที ล้างน้ำ','Decolorize ด้วย acetone-alcohol (ควบคุมเวลาให้แม่นยำ ~10 วินาที)','Counterstain ด้วย Safranin 30–60 วินาที ล้าง ผึ่งแห้ง','ตรวจด้วยกำลังขยาย 100x oil immersion'],
+        qc:['รัน known gram-positive/negative control ทุกครั้งที่เปลี่ยน lot น้ำยา','ข้อผิดพลาดที่พบบ่อยที่สุดคือ over-decolorization (ทำให้ผลเป็น gram-negative เทียม)']
+      },
+      { id:'media', name:'อาหารเลี้ยงเชื้อที่ใช้บ่อย', specimen:'-',
+        params:[
+          {name:'Blood Agar (BAP)', range:'ใช้ทั่วไป ดูรูปแบบ hemolysis (alpha/beta/gamma)'},
+          {name:'MacConkey Agar', range:'เลือก/แยกเชื้อ gram-negative rods, lactose fermenter = ชมพู, non-fermenter = ใส'},
+          {name:'Chocolate Agar', range:'สำหรับเชื้อที่ต้องการสารอาหารพิเศษ (Haemophilus, Neisseria) ต้องบ่มใน CO2'},
+          {name:'Mannitol Salt Agar', range:'เลือกเชื้อ Staphylococcus, ferment mannitol = เหลือง (บ่งชี้ S. aureus)'},
+          {name:'Thayer-Martin', range:'เลือกเชื้อ Neisseria gonorrhoeae'}
+        ]
+      },
+      { id:'ast', name:'Antibiotic Susceptibility Testing (Kirby-Bauer)', specimen:'Pure colony',
+        params:[{name:'การแปลผล', range:'S (Susceptible) / I (Intermediate) / R (Resistant) ตามตาราง CLSI breakpoint'}],
+        method:'Disk diffusion บนอาหาร Mueller-Hinton',
+        procedure:['เตรียม suspension เชื้อความเข้มข้น 0.5 McFarland','swab ให้เป็น lawn บนอาหาร Mueller-Hinton','วางแผ่นยาปฏิชีวนะ บ่ม 16–18 ชม. ที่ 35°C','วัดเส้นผ่านศูนย์กลาง zone of inhibition และแปลผลตาม CLSI'],
+        qc:['รัน reference strain ทุกวันที่ทดสอบ (เช่น E. coli ATCC 25922, S. aureus ATCC 25923)','ตรวจความหนาอาหาร (4 มม.) และความแรงของแผ่นยา']
+      },
+      { id:'bc', name:'Blood Culture', specimen:'เลือดจากหลอดเลือดดำ (aerobic + anaerobic bottle)',
+        procedure:[
+          'เก็บ 2 ชุดจากตำแหน่งต่างกัน ก่อนเริ่มยาปฏิชีวนะถ้าทำได้',
+          'ทำความสะอาดผิวหนังด้วยน้ำยาฆ่าเชื้ออย่างเคร่งครัดเพื่อลดการปนเปื้อน',
+          'บ่มในระบบอัตโนมัติแบบ continuous monitoring',
+          'เมื่อเครื่อง flag ผลบวก ให้ subculture และย้อม Gram ทันที',
+          'แจ้งผลบวกให้แพทย์ทราบทันทีในฐานะ critical value'
+        ]
+      }
+    ]},
+    { name:'Mycology (เชื้อรา)', tests:[
+      { id:'koh', name:'KOH Preparation (10–20% Potassium Hydroxide Wet Mount)', specimen:'สะเก็ดผิวหนัง, เศษเล็บ, เส้นผม, หรือสิ่งส่งตรวจอื่นที่สงสัยเชื้อรา',
+        params:[
+          {name:'ผลบวก (Positive)', range:'พบ hyphae (เส้นใยมีผนังกั้นหรือไม่มีก็ได้), spore, หรือ yeast with pseudohyphae'},
+          {name:'ผลลบ (Negative)', range:'ไม่พบโครงสร้างเชื้อรา — ไม่ตัดโรคเชื้อราออกทั้งหมด ควร correlate กับอาการทางคลินิก'},
+          {name:'ความเข้มข้น KOH ที่ใช้', range:'ผิวหนัง/สารคัดหลั่งทั่วไป 10%; เล็บ/เส้นผม (เนื้อเยื่อหนา) 20% และอาจต้องบ่มนานขึ้น'}
+        ],
+        method:'KOH ละลายเคราติน (keratin) และองค์ประกอบเซลล์ของมนุษย์ ทำให้เห็นผนังเซลล์เชื้อรา (chitin) ซึ่งทนต่อ KOH ได้ชัดเจนขึ้นภายใต้กล้องจุลทรรศน์',
+        procedure:[
+          'เก็บสิ่งส่งตรวจ (ขูดผิวหนังบริเวณขอบรอยโรค, ตัดเศษเล็บ, หรือถอนเส้นผมพร้อมรากผม) วางบนแผ่นสไลด์',
+          'หยด 10–20% KOH ลงบนสิ่งส่งตรวจ 1–2 หยด ปิดด้วย coverslip',
+          'ผ่านความร้อนอ่อน ๆ เหนือเปลวไฟหรือแผ่นให้ความร้อน (ไม่ให้เดือด) เพื่อเร่งการละลายเคราติน หรือทิ้งไว้ที่อุณหภูมิห้อง 10–20 นาทีสำหรับเนื้อเยื่อบาง',
+          'สำหรับเล็บ/เส้นผมที่หนา อาจต้องทิ้งไว้นานขึ้น (30–60 นาที) หรือใช้ความร้อนช่วยและกดเบา ๆ ที่ coverslip เพื่อให้เนื้อเยื่อแบนราบ',
+          'ตรวจด้วยกล้องจุลทรรศน์กำลังขยายต่ำ (10x) เพื่อสำรวจทั่วแผ่นก่อน แล้วปรับเป็นกำลังขยายสูง (40x) เพื่อยืนยันโครงสร้างเชื้อรา',
+          'ปิดไดอะแฟรม (condenser) ลงเล็กน้อยเพื่อเพิ่ม contrast ให้เห็นเส้นใยชัดเจนขึ้น',
+          'บันทึกและรายงานลักษณะที่พบ เช่น "พบ septate hyphae แตกแขนง" (เข้าได้กับ dermatophyte) หรือ "พบ yeast cell และ pseudohyphae" (เข้าได้กับ Candida)'
+        ],
+        qc:['ควรมี positive control หรือทบทวนกับผู้ชำนาญเป็นระยะเพื่อฝึกแยกเส้นใยเชื้อราจากเส้นใยผ้า/ฟองอากาศที่มักสร้างความสับสน (fiber/artifact มักมีขอบคมและหักเป็นมุมฉาก ต่างจาก hyphae ที่มีผนังขนานสม่ำเสมอ)','ผลลบไม่ได้ตัดการติดเชื้อราออกเสมอไป หากสงสัยทางคลินิกสูงควรส่งเพาะเชื้อรา (fungal culture) เพิ่มเติม']
+      }
+    ]}
+  ]
+},
+{
+  id:'ua', name:'ปัสสาวะและสารน้ำในร่างกาย', sub:'Urinalysis & Body Fluids',
+  categories:[
+    { name:'Urinalysis', tests:[
+      { id:'ua', name:'Routine Urinalysis', specimen:'Midstream clean-catch urine (ตรวจภายใน 1 ชม. หรือแช่เย็น)',
+        params:[
+          {name:'สี', range:'เหลืองอ่อนถึงอำพัน'},
+          {name:'ความใส', range:'ใส (clear)'},
+          {name:'Specific Gravity', range:'1.005–1.030'},
+          {name:'pH', range:'4.5–8.0'},
+          {name:'Protein', range:'Negative/Trace'},
+          {name:'Glucose', range:'Negative'},
+          {name:'Ketone', range:'Negative'},
+          {name:'Blood', range:'Negative'},
+          {name:'Leukocyte esterase', range:'Negative'},
+          {name:'Nitrite', range:'Negative'},
+          {name:'RBC (microscopic)', range:'0–2 /HPF'},
+          {name:'WBC (microscopic)', range:'0–5 /HPF'},
+          {name:'Cast', range:'ไม่พบ (hyaline บางครั้งพบได้เล็กน้อย)'}
+        ],
+        method:'Dipstick chemistry + microscopic sediment examination',
+        procedure:['ปั่นเหวี่ยงปัสสาวะ 10 มล. ที่ 400g นาน 5 นาที เพื่อตรวจ sediment','ตรวจภายใน 1 ชม. หลังเก็บตัวอย่างสด'],
+        qc:['สหสัมพันธ์ผล dipstick กับผล microscopic เสมอ (เช่น blood บวกแต่ไม่พบ RBC ให้นึกถึง hemoglobinuria/myoglobinuria)','รัน control strip ทุกวัน']
+      }
+    ]},
+    { name:'Body Fluids', tests:[
+      { id:'csf', name:'CSF Analysis', specimen:'Cerebrospinal fluid (STAT specimen — วิเคราะห์ทันที)',
+        params:[
+          {name:'ลักษณะ', range:'ใส ไม่มีสี'},
+          {name:'Opening pressure', range:'10–20 cmH2O'},
+          {name:'WBC', range:'0–5 /µL (ผู้ใหญ่ ส่วนใหญ่เป็น lymphocyte)'},
+          {name:'Protein', range:'15–45 mg/dL'},
+          {name:'Glucose', range:'~60–70% ของระดับน้ำตาลในเลือด'}
+        ],
+        procedure:['แบ่งเป็นหลายหลอด: หลอด 1 เคมี/serology, หลอด 2 microbiology (culture/Gram stain), หลอด 3 cell count','นับเซลล์ภายใน 1 ชม. เพื่อป้องกันเซลล์สลายตัว'],
+        qc:['พบเชื้อจาก Gram stain หรือ WBC สูงมากชนิด neutrophil เด่น = สงสัย bacterial meningitis ต้องรายงาน STAT ทันที']
+      },
+      { id:'pleural', name:'Pleural/Peritoneal Fluid (Light\'s Criteria)', specimen:'Body fluid + serum คู่กัน',
+        params:[
+          {name:'Exudate หากเข้าเกณฑ์ข้อใดข้อหนึ่ง', range:'Fluid/serum protein >0.5, Fluid/serum LDH >0.6, Fluid LDH >2/3 ของค่าสูงสุดปกติในเลือด'}
+        ]
+      },
+      { id:'synovial', name:'Synovial Fluid', specimen:'Joint fluid (heparinized tube สำหรับ cell count)',
+        params:[
+          {name:'ปกติ', range:'ใส เหลืองอ่อน หนืด WBC <200/µL'},
+          {name:'Non-inflammatory', range:'WBC <2,000/µL'},
+          {name:'Inflammatory', range:'WBC 2,000–50,000/µL'},
+          {name:'Septic', range:'WBC >50,000/µL, neutrophil >75%'}
+        ],
+        method:'ตรวจผลึกด้วยกล้อง polarized microscope: เข็มปลายแหลม negatively birefringent = เกาต์ (monosodium urate); รูปสี่เหลี่ยมข้าวหลามตัด positively birefringent = pseudogout (CPPD)'
+      }
+    ]}
+  ]
+},
+{
+  id:'sero', name:'ภูมิคุ้มกันวิทยา/เซรุ่มวิทยา', sub:'Immunology / Serology',
+  categories:[
+    { name:'การตรวจคัดกรองที่พบบ่อย', tests:[
+      { id:'hbsag', name:'HBsAg', specimen:'Serum', params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'บ่งชี้การติดเชื้อ HBV — ยืนยันตาม protocol ของห้องปฏิบัติการ'}], method:'CLIA/ECLIA หรือ rapid lateral flow immunochromatography',
+        procedure:[
+          'หยดซีรั่ม/พลาสมาลงในหลุมทดสอบ (rapid test) หรือใส่เข้าเครื่อง CLIA/ECLIA อัตโนมัติ',
+          'สำหรับ rapid test: รอสารไหลผ่านแผ่น membrane ตามเวลาที่กำหนด (โดยทั่วไป 15–20 นาที) แล้วอ่านแถบสี',
+          'สำหรับ CLIA/ECLIA: เครื่องทำปฏิกิริยา sandwich immunoassay กับ antibody จับ HBsAg แล้ววัดสัญญาณเคมีเรืองแสง',
+          'ผลบวกต้องรายงานตาม protocol ของห้องปฏิบัติการ (อาจต้องยืนยันด้วย neutralization test)'
+        ]
+      },
+      { id:'hiv', name:'Anti-HIV (Screening & Testing Algorithm)', specimen:'Serum/Plasma',
+        params:[
+          {name:'A1 (Screening test แรก)', range:'Non-reactive = รายงานผลลบ (ยกเว้นสงสัย window period ให้แนะนำตรวจซ้ำ)'},
+          {name:'A1 Reactive → A2 (ชุดทดสอบที่ 2 ต่างหลักการ/ต่าง antigen)', range:'A1+/A2+ = รายงานผลบวก (Positive)'},
+          {name:'A1+/A2− (ผลไม่ตรงกัน)', range:'ต้องส่งตรวจ A3 (tie-breaker assay) เพื่อยืนยัน'},
+          {name:'Window period', range:'ควรตรวจซ้ำหลังสัมผัสเชื้อประมาณ 4–6 สัปดาห์ หากใช้ 4th generation assay'}
+        ],
+        method:'ตามแนวทาง WHO/national algorithm ใช้ชุดทดสอบอย่างน้อย 2–3 ชุดที่มีหลักการ/แอนติเจนต่างกัน เพื่อลดผลบวกลวง (false positive) ก่อนรายงานผลยืนยัน',
+        procedure:[
+          'A1 — ตรวจคัดกรองด้วย 4th generation assay (ตรวจทั้ง HIV antibody และ p24 antigen) บนเครื่อง CLIA/ECLIA/ELISA อัตโนมัติ',
+          'หากผล A1 Non-reactive: รายงานผลลบ แต่หากมีประวัติเสี่ยงในช่วง window period ให้แนะนำตรวจซ้ำตามระยะเวลาที่เหมาะสม',
+          'หากผล A1 Reactive: เก็บตัวอย่างเดิม (ห้ามเจาะใหม่) ส่งตรวจต่อด้วย A2 ซึ่งเป็นชุดทดสอบที่ใช้หลักการหรือแอนติเจนต่างจาก A1',
+          'หาก A1 และ A2 ให้ผล Reactive ตรงกันทั้งคู่: รายงานผลเป็น "HIV Antibody Positive" ตาม algorithm พร้อมบันทึกผลทั้งสองชุดทดสอบ',
+          'หากผล A1 กับ A2 ไม่ตรงกัน (Discordant): ส่งตรวจด้วย A3 (tie-breaker assay ที่มีความไวและความจำเพาะสูง หรือ NAT/HIV RNA) เพื่อยืนยันผลสุดท้าย',
+          'หากยังสรุปผลไม่ได้ ให้รายงานเป็น "Inconclusive" และนัดตรวจซ้ำในอีก 2–4 สัปดาห์',
+          'จัดให้มี pre-test และ post-test counseling ทุกครั้งตามนโยบายของสถานพยาบาล และรายงานผลบวกแก่ผู้ป่วยโดยแพทย์/บุคลากรที่ได้รับมอบหมายเท่านั้น',
+          'รักษาความลับของผลตรวจอย่างเคร่งครัดตลอดกระบวนการ ตามหลักจริยธรรมและกฎหมายคุ้มครองข้อมูลผู้ป่วย'
+        ],
+        qc:['ห้ามรายงานผลบวกให้ผู้ป่วยจากผลชุดทดสอบเดียว (A1 อย่างเดียว) โดยเด็ดขาด ต้องผ่าน algorithm ให้ครบก่อนเสมอ','บันทึก lot number และผลของทุกชุดทดสอบที่ใช้ในกระบวนการยืนยันผล เพื่อการตรวจสอบย้อนกลับ']
+      },
+      { id:'vdrl', name:'VDRL / RPR (Syphilis Screening)', specimen:'Serum', params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'ต้องรายงาน titer และยืนยันด้วย treponemal test (TPHA/FTA-ABS)'}],
+        method:'Non-treponemal flocculation test ตรวจ antibody ต่อ cardiolipin antigen',
+        procedure:[
+          'หยดซีรั่มที่ไม่ได้เจือจางลงบนกระจกทดสอบ (สำหรับ VDRL) หรือการ์ดทดสอบ (สำหรับ RPR)',
+          'เติม antigen suspension (cardiolipin-lecithin-cholesterol) ลงในตัวอย่าง',
+          'หมุนกระจก/การ์ดด้วยเครื่องหมุนตามเวลาและความเร็วที่กำหนด',
+          'อ่านผลด้วยตาหรือกล้องจุลทรรศน์กำลังขยายต่ำ สังเกตการเกิด flocculation (จับตัวเป็นก้อนเล็ก ๆ)',
+          'หากผลบวก ให้ทำ titration โดยเจือจางซีรั่มเป็นลำดับ (1:2, 1:4, 1:8...) เพื่อหา titer สูงสุดที่ยังให้ผลบวก',
+          'ส่งยืนยันด้วย treponemal test (TPHA/FTA-ABS) เสมอเมื่อ screening ให้ผลบวก'
+        ],
+        qc:['ระวัง prozone phenomenon ในซีรั่มที่มี titer สูงมาก อาจให้ผลลบเทียม — เจือจางซ้ำหากสงสัยทางคลินิก']
+      },
+      { id:'aso', name:'ASO (Anti-Streptolysin O)', specimen:'Serum', params:[{name:'ผู้ใหญ่', range:'<200 IU/mL'}], method:'ค่าสูงบ่งชี้การติดเชื้อ Group A Streptococcus ล่าสุด (ใช้ประกอบวินิจฉัย rheumatic fever)',
+        procedure:[
+          'เจือจางซีรั่มผู้ป่วยตามที่ชุดทดสอบกำหนด (สำหรับวิธี latex agglutination) หรือใส่ตรงเข้าเครื่อง immunoturbidimetric',
+          'ผสมกับ latex particle ที่เคลือบ streptolysin O antigen',
+          'สังเกต/วัดการจับกลุ่ม (agglutination) หรือความขุ่นที่เปลี่ยนแปลง แล้วเทียบกับกราฟมาตรฐาน',
+          'รายงานผลเป็น IU/mL เทียบกับค่าอ้างอิง'
+        ]
+      },
+      { id:'crp', name:'CRP (C-Reactive Protein)', specimen:'Serum', params:[{name:'ปกติ', range:'<1.0 mg/dL (<10 mg/L)'}], method:'สูงขึ้นอย่างรวดเร็วเมื่อมีการอักเสบ/ติดเชื้อเฉียบพลัน เหมาะสำหรับติดตามแนวโน้ม',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่ม ใส่เข้าเครื่อง immunoturbidimetric หรือ immunonephelometric analyzer',
+          'ซีรั่มทำปฏิกิริยากับ latex particle ที่เคลือบ anti-CRP antibody',
+          'วัดความขุ่น/การกระเจิงแสงที่เพิ่มขึ้นจากการจับกลุ่ม แล้วคำนวณความเข้มข้นเทียบกับ calibration curve',
+          'รายงานผลและเปรียบเทียบกับค่าครั้งก่อนเพื่อดูแนวโน้มการอักเสบ'
+        ]
+      },
+      { id:'rf', name:'RF (Rheumatoid Factor)', specimen:'Serum', params:[{name:'ปกติ', range:'<20 IU/mL'}], method:'ใช้ประกอบการวินิจฉัยข้ออักเสบรูมาตอยด์ ไม่ใช้วินิจฉัยเดี่ยว',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่ม',
+          'ผสมกับ latex particle ที่เคลือบ human IgG (RF จะจับกับ Fc portion ของ IgG)',
+          'วัดการจับกลุ่ม/ความขุ่นด้วยวิธี latex agglutination หรือ immunoturbidimetric',
+          'รายงานผลเป็น IU/mL พร้อมระบุว่าต้องแปลผลร่วมกับอาการทางคลินิกและการตรวจอื่น (เช่น Anti-CCP)'
+        ]
+      },
+      { id:'hcg', name:'Urine/Serum hCG (Pregnancy Test)', specimen:'Urine หรือ Serum', params:[{name:'Qualitative', range:'Negative/Positive'},{name:'Quantitative β-hCG', range:'>25 mIU/mL = positive; ระยะแรกควรเพิ่มเป็น 2 เท่าใน 48–72 ชม.'}],
+        procedure:[
+          'Qualitative (urine): หยดปัสสาวะ (ควรเป็น first-morning urine เพื่อความเข้มข้นสูงสุด) ลงบน test strip/cassette',
+          'รอสารไหลผ่าน membrane ตามเวลาที่กำหนด อ่านผลจากแถบควบคุม (control line) และแถบทดสอบ (test line)',
+          'Quantitative (serum): ใส่ตัวอย่างเข้าเครื่อง immunoassay อัตโนมัติ วัดสัญญาณเทียบกับ calibration curve',
+          'รายงานผลเชิงปริมาณเป็น mIU/mL และเปรียบเทียบแนวโน้มการเพิ่มขึ้นหากมีการตรวจซ้ำ'
+        ]
+      },
+      { id:'widal', name:'Widal Test', specimen:'Serum', params:[{name:'Titer ที่มีนัยสำคัญ', range:'≥1:160 (ขึ้นกับพื้นที่ระบาด) — titer เดี่ยวความน่าเชื่อถือต่ำกว่า paired titer ที่เพิ่มขึ้น'}],
+        method:'Slide/tube agglutination ตรวจ antibody ต่อ O และ H antigen ของ Salmonella',
+        procedure:[
+          'เจือจางซีรั่มผู้ป่วยเป็นลำดับ (serial dilution) ในหลอดหรือบนแผ่นสไลด์',
+          'เติม Salmonella O และ H antigen suspension ลงในแต่ละความเข้มข้น',
+          'บ่ม/หมุนตามเวลาที่กำหนด แล้วอ่านผล agglutination ในแต่ละหลอด',
+          'รายงาน titer สูงสุดที่ยังเห็น agglutination ชัดเจน และแนะนำเจาะซ้ำห่างกัน 7–14 วันเพื่อดู rising titer หากสงสัยทางคลินิก'
+        ]
+      }
+    ]}
+  ]
+},
+{
+  id:'para', name:'ปรสิตวิทยา', sub:'Parasitology',
+  categories:[
+    { name:'Stool Examination', tests:[
+      { id:'ova', name:'Stool for Ova & Parasite (O&P)', specimen:'อุจจาระสด (หรือใส่สารกันเสีย formalin/SAF)',
+        method:'Direct wet mount (saline + iodine) เพื่อดูการเคลื่อนไหว/สัณฐาน ร่วมกับ concentration technique (formalin-ethyl acetate) เพื่อเพิ่มความไว',
+        procedure:['ตรวจ 3 ตัวอย่างจากคนละวันหากสงสัยทางคลินิกสูงและผลแรกลบ','หากต้องการดู trophozoite ที่เคลื่อนไหว ต้องตรวจภายใน 30 นาทีหลังถ่าย หรือใส่สารกันเสียทันที'],
+        params:[
+          {name:'Ascaris lumbricoides (ไข่)', range:'รูปไข่ ผนังหนา mammilated coat'},
+          {name:'Trichuris trichiura (ไข่)', range:'รูปถังเบียร์/มะนาว มี polar plug ทั้งสองข้าง'},
+          {name:'Hookworm (ไข่)', range:'ผนังบาง รูปไข่ มักเห็น segmented ovum'},
+          {name:'Entamoeba histolytica', range:'Cyst กลม มีนิวเคลียสไม่เกิน 4 อัน; Trophozoite อาจพบ RBC ที่ถูกกิน (บ่งชี้ก่อโรค)'},
+          {name:'Giardia lamblia', range:'Cyst รูปไข่ 2–4 นิวเคลียส; Trophozoite รูปลูกแพร์ เคลื่อนไหวแบบ "falling leaf"'}
+        ],
+        qc:['สหสัมพันธ์กับประวัติทางคลินิกและประวัติการเดินทางเสมอ']
+      }
+    ]}
+  ]
+}
+];
+
+/* =====================================================================
+   SECTION_ART — ภาพประกอบ (SVG วาดขึ้นเอง ไม่ใช้ภาพถ่ายลิขสิทธิ์)
+   แสดงลักษณะเซลล์/สิ่งมีชีวิต/ปรากฏการณ์ที่มีนัยสำคัญทางคลินิกของแต่ละ section
+   ===================================================================== */
+const SECTION_ART = {
+
+/* ---------- HEMATOLOGY: WBC types + blast cell ---------- */
+heme: { title:'เซลล์เม็ดเลือดขาวชนิดต่าง ๆ และเซลล์ที่มีนัยสำคัญทางคลินิก', desc:'ลักษณะสัณฐานบน Wright-Giemsa stained smear (แผนภาพประกอบ ไม่ใช่ภาพถ่ายจริง)',
+svg:`<svg viewBox="0 0 800 190" xmlns="http://www.w3.org/2000/svg">
+  <!-- Neutrophil -->
+  <g>
+    <circle cx="65" cy="70" r="38" fill="#F7DFE3" stroke="#E3B9C1" stroke-width="1.5"/>
+    <path d="M45 55 a10 10 0 1 1 1 20 a9 9 0 1 1 10 8 a10 10 0 1 1 8 -10" fill="none" stroke="#6A4C93" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="52" cy="62" r="1.6" fill="#C77B93"/><circle cx="70" cy="58" r="1.6" fill="#C77B93"/><circle cx="78" cy="75" r="1.6" fill="#C77B93"/><circle cx="58" cy="82" r="1.6" fill="#C77B93"/>
+  </g>
+  <text x="65" y="126" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Neutrophil</text>
+  <text x="65" y="141" text-anchor="middle" font-size="10.5" fill="#6B7C78">นิวเคลียส 3–5 พู</text>
+
+  <!-- Lymphocyte -->
+  <g>
+    <circle cx="200" cy="70" r="34" fill="#DCE9F4" stroke="#B9D3E6" stroke-width="1.5"/>
+    <circle cx="200" cy="70" r="26" fill="#3F2E6B"/>
+  </g>
+  <text x="200" y="126" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Lymphocyte</text>
+  <text x="200" y="141" text-anchor="middle" font-size="10.5" fill="#6B7C78">นิวเคลียสกลมใหญ่ทึบ</text>
+
+  <!-- Monocyte -->
+  <g>
+    <circle cx="335" cy="70" r="40" fill="#DDE6E9" stroke="#BFD0D4" stroke-width="1.5"/>
+    <path d="M320 50 a20 20 0 1 0 1 42 a13 13 0 1 1 -1 -20" fill="#5B4A8A"/>
+  </g>
+  <text x="335" y="126" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Monocyte</text>
+  <text x="335" y="141" text-anchor="middle" font-size="10.5" fill="#6B7C78">นิวเคลียสรูปเกือกม้า/ไต</text>
+
+  <!-- Eosinophil -->
+  <g>
+    <circle cx="470" cy="70" r="36" fill="#FBF1E3" stroke="#EFD9B8" stroke-width="1.5"/>
+    <circle cx="460" cy="63" r="10" fill="#6A4C93"/><circle cx="480" cy="77" r="10" fill="#6A4C93"/>
+    <g fill="#D9722C">
+      <circle cx="448" cy="55" r="2"/><circle cx="456" cy="47" r="2"/><circle cx="466" cy="42" r="2"/><circle cx="480" cy="45" r="2"/>
+      <circle cx="490" cy="55" r="2"/><circle cx="493" cy="68" r="2"/><circle cx="490" cy="82" r="2"/><circle cx="480" cy="93" r="2"/>
+      <circle cx="465" cy="96" r="2"/><circle cx="452" cy="90" r="2"/><circle cx="445" cy="78" r="2"/><circle cx="444" cy="66" r="2"/>
+    </g>
+  </g>
+  <text x="470" y="126" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Eosinophil</text>
+  <text x="470" y="141" text-anchor="middle" font-size="10.5" fill="#6B7C78">แกรนูลสีส้มแดงหยาบ</text>
+
+  <!-- Basophil -->
+  <g>
+    <circle cx="605" cy="70" r="36" fill="#EDE6EE" stroke="#D8C9DB" stroke-width="1.5"/>
+    <g fill="#2B1B3D">
+      <circle cx="590" cy="55" r="4.5"/><circle cx="605" cy="48" r="4.5"/><circle cx="620" cy="55" r="4.5"/>
+      <circle cx="583" cy="68" r="4.5"/><circle cx="597" cy="65" r="4.5"/><circle cx="612" cy="66" r="4.5"/><circle cx="626" cy="70" r="4.5"/>
+      <circle cx="590" cy="82" r="4.5"/><circle cx="605" cy="88" r="4.5"/><circle cx="619" cy="83" r="4.5"/>
+    </g>
+  </g>
+  <text x="605" y="126" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Basophil</text>
+  <text x="605" y="141" text-anchor="middle" font-size="10.5" fill="#6B7C78">แกรนูลสีม่วงเข้มบดบังนิวเคลียส</text>
+
+  <!-- Blast cell (critical) -->
+  <g>
+    <circle cx="735" cy="70" r="42" fill="#CFE3ED" stroke="#A9C5D3" stroke-width="1.5"/>
+    <circle cx="735" cy="70" r="33" fill="#7A1F3D"/>
+    <circle cx="726" cy="62" r="3" fill="#F3D9DE"/><circle cx="744" cy="66" r="3" fill="#F3D9DE"/><circle cx="734" cy="80" r="3" fill="#F3D9DE"/>
+  </g>
+  <text x="735" y="126" text-anchor="middle" font-size="12" font-weight="700" fill="#A73B2E">Blast cell ⚠</text>
+  <text x="735" y="141" text-anchor="middle" font-size="10.5" fill="#A73B2E">N:C ratio สูง, เห็น nucleoli — พบใน Acute Leukemia</text>
+</svg>`,
+legend:'สังเกต N:C ratio (สัดส่วนนิวเคลียสต่อไซโทพลาซึม) และการมี nucleoli เป็นตัวช่วยแยก blast cell จากเซลล์ปกติ',
+links:[{label:'ASH Image Bank — ภาพเซลล์เลือดจริงจากผู้ป่วย (ใช้อ้างอิง ไม่ใช่เพื่อเผยแพร่ซ้ำ)', url:'https://imagebank.hematology.org'}]
+},
+
+/* ---------- COAGULATION: primary hemostasis stages ---------- */
+coag: { title:'กลไก Primary Hemostasis (การอุดกั้นเลือดเบื้องต้น)', desc:'ลำดับเหตุการณ์เมื่อหลอดเลือดฉีกขาด จนเกิด platelet plug',
+svg:`<svg viewBox="0 0 800 170" xmlns="http://www.w3.org/2000/svg">
+  <!-- Panel 1: injury -->
+  <g>
+    <rect x="30" y="40" width="150" height="60" rx="10" fill="#F7DFE3" stroke="#E3B9C1"/>
+    <path d="M95 40 L110 100" stroke="#A73B2E" stroke-width="4"/>
+    <path d="M85 40 L100 70" stroke="#A73B2E" stroke-width="2"/>
+  </g>
+  <text x="105" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">1. หลอดเลือดฉีกขาด</text>
+  <text x="105" y="137" text-anchor="middle" font-size="10.5" fill="#6B7C78">เผยให้เห็น collagen</text>
+
+  <text x="220" y="78" text-anchor="middle" font-size="20" fill="#B8863A">→</text>
+
+  <!-- Panel 2: adhesion -->
+  <g>
+    <rect x="260" y="40" width="150" height="60" rx="10" fill="#F7DFE3" stroke="#E3B9C1"/>
+    <path d="M325 40 L340 100" stroke="#A73B2E" stroke-width="4"/>
+    <ellipse cx="330" cy="70" rx="9" ry="6" fill="#F1D77E" stroke="#C79A2E"/>
+    <ellipse cx="345" cy="60" rx="9" ry="6" fill="#F1D77E" stroke="#C79A2E"/>
+  </g>
+  <text x="335" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">2. Platelet Adhesion</text>
+  <text x="335" y="137" text-anchor="middle" font-size="10.5" fill="#6B7C78">เกล็ดเลือดเกาะที่บาดแผล</text>
+
+  <text x="450" y="78" text-anchor="middle" font-size="20" fill="#B8863A">→</text>
+
+  <!-- Panel 3: aggregation / plug -->
+  <g>
+    <rect x="490" y="40" width="150" height="60" rx="10" fill="#F7DFE3" stroke="#E3B9C1"/>
+    <path d="M555 40 L570 100" stroke="#A73B2E" stroke-width="4" opacity="0"/>
+    <g fill="#F1D77E" stroke="#C79A2E">
+      <ellipse cx="548" cy="55" rx="8" ry="6"/><ellipse cx="562" cy="52" rx="8" ry="6"/><ellipse cx="576" cy="58" rx="8" ry="6"/>
+      <ellipse cx="552" cy="68" rx="8" ry="6"/><ellipse cx="568" cy="70" rx="8" ry="6"/><ellipse cx="580" cy="72" rx="8" ry="6"/>
+      <ellipse cx="560" cy="82" rx="8" ry="6"/><ellipse cx="574" cy="84" rx="8" ry="6"/>
+    </g>
+    <path d="M540 45 Q560 65 545 90" stroke="#8A9E98" stroke-width="1.4" fill="none"/>
+    <path d="M585 48 Q565 68 585 92" stroke="#8A9E98" stroke-width="1.4" fill="none"/>
+  </g>
+  <text x="565" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">3. Aggregation / Plug</text>
+  <text x="565" y="137" text-anchor="middle" font-size="10.5" fill="#6B7C78">เกล็ดเลือดจับกัน + fibrin เสริม</text>
+</svg>`,
+legend:'หากขั้นตอนนี้บกพร่อง (เช่น เกล็ดเลือดต่ำ หรือทำงานผิดปกติ) จะทำให้เลือดออกง่าย — ตรวจติดตามด้วย Platelet count และ Bleeding time/PFA'
+},
+
+/* ---------- CHEMISTRY: serum appearance / interference ---------- */
+chem: { title:'ลักษณะซีรั่มที่รบกวนผลตรวจ (Hemolysis / Icterus / Lipemia)', desc:'สังเกตด้วยตาหลังปั่นเหวี่ยง ก่อนนำไปวิเคราะห์',
+svg:`<svg viewBox="0 0 800 170" xmlns="http://www.w3.org/2000/svg">
+  <!-- helper: tube template repeated at x offsets 60,270,480,690 -->
+  <g>
+    <rect x="35" y="20" width="50" height="110" rx="18" fill="#FBFDFC" stroke="#DCE6E2" stroke-width="2"/>
+    <rect x="38" y="70" width="44" height="57" rx="14" fill="#EFD9A0"/>
+    <rect x="38" y="105" width="44" height="24" rx="10" fill="#A73B2E" opacity="0.55"/>
+  </g>
+  <text x="60" y="146" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Normal</text>
+  <text x="60" y="160" text-anchor="middle" font-size="10" fill="#6B7C78">สีเหลืองฟาง ใส</text>
+
+  <g>
+    <rect x="245" y="20" width="50" height="110" rx="18" fill="#FBFDFC" stroke="#DCE6E2" stroke-width="2"/>
+    <rect x="248" y="70" width="44" height="57" rx="14" fill="#E4746B"/>
+    <rect x="248" y="105" width="44" height="24" rx="10" fill="#A73B2E" opacity="0.55"/>
+  </g>
+  <text x="270" y="146" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Hemolyzed</text>
+  <text x="270" y="160" text-anchor="middle" font-size="10" fill="#6B7C78">รบกวนผล K⁺, LDH, AST</text>
+
+  <g>
+    <rect x="455" y="20" width="50" height="110" rx="18" fill="#FBFDFC" stroke="#DCE6E2" stroke-width="2"/>
+    <rect x="458" y="70" width="44" height="57" rx="14" fill="#B8863A"/>
+    <rect x="458" y="105" width="44" height="24" rx="10" fill="#A73B2E" opacity="0.55"/>
+  </g>
+  <text x="480" y="146" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Icteric</text>
+  <text x="480" y="160" text-anchor="middle" font-size="10" fill="#6B7C78">รบกวนวิธีวัดสี (colorimetric)</text>
+
+  <g>
+    <rect x="665" y="20" width="50" height="110" rx="18" fill="#FBFDFC" stroke="#DCE6E2" stroke-width="2"/>
+    <rect x="668" y="70" width="44" height="57" rx="14" fill="#F1EDE3"/>
+    <rect x="668" y="105" width="44" height="24" rx="10" fill="#A73B2E" opacity="0.55"/>
+  </g>
+  <text x="690" y="146" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Lipemic</text>
+  <text x="690" y="160" text-anchor="middle" font-size="10" fill="#6B7C78">รบกวนวิธี turbidimetric</text>
+</svg>`,
+legend:'ตัวอย่างที่ผิดปกติเหล่านี้ต้องบันทึกและพิจารณาผลกระทบต่อค่าที่รายงานเสมอ (HIL index)'
+},
+
+/* ---------- BLOOD BANK: agglutination reaction ---------- */
+bb: { title:'ปฏิกิริยา Agglutination ในการตรวจหมู่เลือด', desc:'ใช้แปลผล ABO/Rh typing, Antibody screen และ Crossmatch',
+svg:`<svg viewBox="0 0 800 170" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="200" cy="80" r="70" fill="#FBFDFC" stroke="#DCE6E2" stroke-width="2"/>
+  <g fill="#C4453B">
+    ${Array.from({length:26}).map((_,i)=>{const a=(i/26)*2*Math.PI;const r=45+ (i%3)*4;const x=200+Math.cos(a)*r;const y=80+Math.sin(a)*r;return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2"/>`;}).join('')}
+  </g>
+  <text x="200" y="166" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Negative — เม็ดเลือดกระจายสม่ำเสมอ</text>
+
+  <text x="400" y="90" text-anchor="middle" font-size="20" fill="#B8863A">vs</text>
+
+  <circle cx="600" cy="80" r="70" fill="#FBFDFC" stroke="#DCE6E2" stroke-width="2"/>
+  <g fill="#A73B2E">
+    <g>${[[575,60],[590,55],[605,62],[618,58]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4"/>`).join('')}</g>
+    <g>${[[570,80],[583,78],[596,84],[610,80],[622,85]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4"/>`).join('')}</g>
+    <g>${[[580,100],[594,104],[608,99],[618,105]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4"/>`).join('')}</g>
+  </g>
+  <text x="600" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#A73B2E">Positive — เกาะกลุ่มเป็นก้อน (1+ ถึง 4+)</text>
+</svg>`,
+legend:'ระดับความแรงของ agglutination (1+ ถึง 4+) มีผลต่อการแปลผลและการเลือกวิธีตรวจยืนยันต่อ'
+},
+
+/* ---------- MICROBIOLOGY: gram morphology + hemolysis patterns ---------- */
+micro: { title:'สัณฐานวิทยาบน Gram Stain และรูปแบบ Hemolysis บน Blood Agar', desc:'ใช้แยกกลุ่มเชื้อเบื้องต้นก่อนเพาะเลี้ยงและทดสอบยืนยัน',
+svg:`<svg viewBox="0 0 800 190" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gram positive cocci clusters -->
+  <g fill="#6A4C93">
+    ${[[70,55],[85,50],[98,60],[65,72],[80,78],[95,75],[75,90],[90,95]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7"/>`).join('')}
+  </g>
+  <text x="82" y="130" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Gram-positive cocci</text>
+  <text x="82" y="145" text-anchor="middle" font-size="10" fill="#6B7C78">เป็นกลุ่ม เช่น Staphylococcus</text>
+
+  <!-- Gram negative rods -->
+  <g fill="#D96E7A">
+    <rect x="215" y="52" width="9" height="26" rx="4"/><rect x="228" y="60" width="9" height="26" rx="4" transform="rotate(20 232 73)"/>
+    <rect x="245" y="55" width="9" height="26" rx="4" transform="rotate(-15 249 68)"/><rect x="258" y="65" width="9" height="26" rx="4"/>
+  </g>
+  <text x="238" y="130" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Gram-negative bacilli</text>
+  <text x="238" y="145" text-anchor="middle" font-size="10" fill="#6B7C78">แท่งเดี่ยว เช่น E. coli</text>
+
+  <!-- Alpha hemolysis -->
+  <circle cx="410" cy="70" r="45" fill="#DDEAE0" stroke="#BFD6C6" stroke-width="2"/>
+  <circle cx="400" cy="65" r="9" fill="#8FA88A"/><circle cx="415" cy="75" r="8" fill="#8FA88A"/><circle cx="420" cy="55" r="7" fill="#8FA88A"/>
+  <circle cx="400" cy="65" r="14" fill="none" stroke="#6E8B67" stroke-width="1.5"/>
+  <text x="410" y="130" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Alpha hemolysis</text>
+  <text x="410" y="145" text-anchor="middle" font-size="10" fill="#6B7C78">วงสีเขียวรอบโคโลนี</text>
+
+  <!-- Beta hemolysis -->
+  <circle cx="565" cy="70" r="45" fill="#F4D9DA" stroke="#E3B7B9" stroke-width="2"/>
+  <circle cx="555" cy="65" r="9" fill="#C4453B"/><circle cx="570" cy="75" r="8" fill="#C4453B"/><circle cx="575" cy="55" r="7" fill="#C4453B"/>
+  <circle cx="555" cy="65" r="16" fill="#FBFDFC" fill-opacity="0.55" stroke="none"/>
+  <text x="565" y="130" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Beta hemolysis</text>
+  <text x="565" y="145" text-anchor="middle" font-size="10" fill="#6B7C78">วงใสรอบโคโลนี (สลาย RBC หมด)</text>
+
+  <!-- Gamma -->
+  <circle cx="715" cy="70" r="45" fill="#F4D9DA" stroke="#E3B7B9" stroke-width="2"/>
+  <circle cx="705" cy="65" r="9" fill="#C4453B"/><circle cx="720" cy="75" r="8" fill="#C4453B"/><circle cx="725" cy="55" r="7" fill="#C4453B"/>
+  <text x="715" y="130" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Gamma (none)</text>
+  <text x="715" y="145" text-anchor="middle" font-size="10" fill="#6B7C78">ไม่มีการสลาย RBC</text>
+</svg>`,
+legend:'ผลการย้อม Gram และรูปแบบ hemolysis เป็นข้อมูลเบื้องต้นก่อนทำ biochemical test/antigen test เพื่อระบุเชื้อ',
+links:[{label:'CDC Public Health Image Library (PHIL) — ภาพจุลชีววิทยาจริง (สาธารณสมบัติ)', url:'https://phil.cdc.gov'}]
+},
+
+/* ---------- URINALYSIS & BODY FLUID: sediment elements ---------- */
+ua: { title:'องค์ประกอบที่พบใน Urine Sediment', desc:'สิ่งที่พบได้จากการตรวจด้วยกล้องจุลทรรศน์ (microscopic examination)',
+svg:`<svg viewBox="0 0 800 170" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="70" cy="70" r="20" fill="#EFC9C9" stroke="#D9A3A3"/>
+  <circle cx="70" cy="70" r="8" fill="#FBFDFC" opacity="0.6"/>
+  <text x="70" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">RBC</text>
+  <text x="70" y="136" text-anchor="middle" font-size="10" fill="#6B7C78">รูปโดนัทเรียบ</text>
+
+  <circle cx="230" cy="70" r="24" fill="#F1EFE0" stroke="#DCD8B8"/>
+  <path d="M218 58 a8 8 0 1 1 8 16 a7 7 0 1 1 8 8" fill="none" stroke="#6A4C93" stroke-width="5"/>
+  <text x="230" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">WBC</text>
+  <text x="230" y="136" text-anchor="middle" font-size="10" fill="#6B7C78">มีแกรนูล/นิวเคลียสเป็นพู</text>
+
+  <path d="M380 40 L420 45 L435 75 L410 100 L370 92 L358 65 Z" fill="#FCE9C7" stroke="#E6C98A" stroke-width="1.5"/>
+  <circle cx="398" cy="70" r="7" fill="#8A7A45"/>
+  <text x="397" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Squamous epithelial cell</text>
+  <text x="397" y="136" text-anchor="middle" font-size="10" fill="#6B7C78">แบนใหญ่ ไม่สม่ำเสมอ</text>
+
+  <rect x="545" y="55" width="80" height="24" rx="10" fill="#E7F0EC" stroke="#BCD6CB" stroke-width="1.5"/>
+  <text x="585" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Hyaline cast</text>
+  <text x="585" y="136" text-anchor="middle" font-size="10" fill="#6B7C78">รูปทรงกระบอกใส</text>
+
+  <path d="M710 50 L730 65 L710 90 L690 65 Z" fill="#DCE9F4" stroke="#AFC9DE"/>
+  <path d="M690 65 L730 65 M710 50 L710 90" stroke="#AFC9DE" stroke-width="1"/>
+  <text x="710" y="122" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Ca-oxalate crystal</text>
+  <text x="710" y="136" text-anchor="middle" font-size="10" fill="#6B7C78">รูปซองจดหมาย</text>
+</svg>`,
+legend:'ควรรายงานปริมาณต่อ HPF/LPF และสหสัมพันธ์กับผล chemical dipstick เสมอ'
+},
+
+/* ---------- SEROLOGY / IMMUNOLOGY: antigen-antibody reaction ---------- */
+sero: { title:'หลักการปฏิกิริยา Antigen–Antibody', desc:'พื้นฐานของชุดตรวจคัดกรองแบบ agglutination และ immunoassay',
+svg:`<svg viewBox="0 0 800 170" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="150" cy="85" r="55" fill="#F4D9DA" stroke="#E3B7B9" stroke-width="2"/>
+  <g fill="#A73B2E">
+    <circle cx="135" cy="70" r="4"/><circle cx="160" cy="65" r="4"/><circle cx="120" cy="95" r="4"/><circle cx="150" cy="105" r="4"/><circle cx="175" cy="90" r="4"/>
+  </g>
+  <text x="150" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Antigen บนผิวเซลล์/อนุภาค</text>
+
+  <text x="290" y="95" text-anchor="middle" font-size="20" fill="#B8863A">+</text>
+
+  <g stroke="#2F6F63" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M380 60 L400 90 L420 60"/>
+    <path d="M400 90 L400 115"/>
+    <path d="M390 105 L400 115 L410 105"/>
+  </g>
+  <text x="400" y="150" text-anchor="middle" font-size="12" font-weight="600" fill="#122E29">Antibody (Y-shape)</text>
+
+  <text x="470" y="95" text-anchor="middle" font-size="20" fill="#B8863A">→</text>
+
+  <circle cx="640" cy="85" r="60" fill="#F4D9DA" stroke="#E3B7B9" stroke-width="2"/>
+  <g fill="#A73B2E">
+    ${[[610,65],[625,75],[600,85],[640,60],[655,72],[620,100],[650,95],[665,85]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4"/>`).join('')}
+  </g>
+  <g stroke="#2F6F63" stroke-width="1.6">
+    <line x1="610" y1="65" x2="625" y2="75"/><line x1="625" y1="75" x2="600" y2="85"/><line x1="640" y1="60" x2="655" y2="72"/>
+    <line x1="620" y1="100" x2="650" y2="95"/><line x1="650" y1="95" x2="665" y2="85"/>
+  </g>
+  <text x="640" y="160" text-anchor="middle" font-size="12" font-weight="700" fill="#A73B2E">เกิด Agglutination/Cross-linking</text>
+</svg>`,
+legend:'หลักการนี้เป็นพื้นฐานของชุดตรวจ HBsAg, VDRL, ABO typing และ rapid test ส่วนใหญ่'
+},
+
+/* ---------- PARASITOLOGY: ova/parasite forms + malaria ---------- */
+para: { title:'รูปแบบไข่พยาธิ ซีสต์ และปรสิตที่มีนัยสำคัญทางคลินิก', desc:'ลักษณะที่ใช้แยกชนิดภายใต้กล้องจุลทรรศน์',
+svg:`<svg viewBox="0 0 800 190" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="70" cy="75" rx="26" ry="20" fill="#F1EAD6" stroke="#C79A2E" stroke-width="3"/>
+  <text x="70" y="128" text-anchor="middle" font-size="11.5" font-weight="600" fill="#122E29">Ascaris</text>
+  <text x="70" y="141" text-anchor="middle" font-size="9.5" fill="#6B7C78">ผนังหนา mammilated</text>
+
+  <rect x="195" y="55" width="60" height="30" rx="15" fill="#F1EAD6" stroke="#C79A2E" stroke-width="3"/>
+  <rect x="185" y="66" width="10" height="8" fill="#C79A2E"/><rect x="255" y="66" width="10" height="8" fill="#C79A2E"/>
+  <text x="225" y="128" text-anchor="middle" font-size="11.5" font-weight="600" fill="#122E29">Trichuris</text>
+  <text x="225" y="141" text-anchor="middle" font-size="9.5" fill="#6B7C78">รูปถัง มี polar plug 2 ข้าง</text>
+
+  <ellipse cx="360" cy="72" rx="24" ry="15" fill="#FBFDFC" stroke="#C79A2E" stroke-width="2.5"/>
+  <line x1="342" y1="72" x2="378" y2="72" stroke="#C79A2E" stroke-width="1.2"/>
+  <text x="360" y="128" text-anchor="middle" font-size="11.5" font-weight="600" fill="#122E29">Hookworm</text>
+  <text x="360" y="141" text-anchor="middle" font-size="9.5" fill="#6B7C78">ผนังบาง ovum แบ่งปล้อง</text>
+
+  <circle cx="480" cy="72" r="22" fill="#DDE6E2" stroke="#8A9E98" stroke-width="2.5"/>
+  <circle cx="472" cy="65" r="2.4" fill="#3F5651"/><circle cx="489" cy="63" r="2.4" fill="#3F5651"/><circle cx="470" cy="80" r="2.4" fill="#3F5651"/><circle cx="488" cy="80" r="2.4" fill="#3F5651"/>
+  <text x="480" y="128" text-anchor="middle" font-size="11.5" font-weight="600" fill="#122E29">E. histolytica</text>
+  <text x="480" y="141" text-anchor="middle" font-size="9.5" fill="#6B7C78">Cyst มีนิวเคลียสไม่เกิน 4</text>
+
+  <path d="M600 55 Q615 55 618 75 Q620 95 600 100 Q580 95 582 75 Q585 55 600 55 Z" fill="#DDE6E2" stroke="#8A9E98" stroke-width="2.5"/>
+  <circle cx="594" cy="72" r="2.4" fill="#3F5651"/><circle cx="606" cy="72" r="2.4" fill="#3F5651"/>
+  <line x1="600" y1="98" x2="600" y2="112" stroke="#8A9E98" stroke-width="1.2"/>
+  <text x="600" y="128" text-anchor="middle" font-size="11.5" font-weight="600" fill="#122E29">Giardia</text>
+  <text x="600" y="141" text-anchor="middle" font-size="9.5" fill="#6B7C78">รูปลูกแพร์ "falling leaf"</text>
+
+  <circle cx="725" cy="72" r="24" fill="#F0C6CC" stroke="#D9A3AC" stroke-width="2"/>
+  <circle cx="718" cy="66" r="5" fill="none" stroke="#A73B2E" stroke-width="2.5"/>
+  <circle cx="716" cy="64" r="1.6" fill="#A73B2E"/>
+  <text x="725" y="128" text-anchor="middle" font-size="11.5" font-weight="700" fill="#A73B2E">Plasmodium ⚠</text>
+  <text x="725" y="141" text-anchor="middle" font-size="9.5" fill="#A73B2E">Ring form ใน RBC — มาลาเรีย</text>
+</svg>`,
+legend:'การพบ Plasmodium ใน thick/thin blood film ต้องรายงานเป็น critical value และระบุชนิด/ระดับ parasitemia',
+links:[{label:'CDC DPDx — ภาพปรสิตจริงจากกล้องจุลทรรศน์ (สาธารณสมบัติ)', url:'https://www.cdc.gov/dpdx/index.html'}]
+}
+};
+
+/* ===================== STATE & STORAGE ===================== */
+let state = { sectionId: SECTIONS[0].id, query:'', openTest:null };
+const noteCache = {};
+
+async function loadNote(testId){
+  if(noteCache[testId] !== undefined) return noteCache[testId];
+  try{
+    const res = await window.storage.get('note:'+testId, false);
+    noteCache[testId] = res ? res.value : '';
+  }catch(e){ noteCache[testId] = ''; }
+  return noteCache[testId];
+}
+async function saveNote(testId, value, statusEl){
+  try{
+    await window.storage.set('note:'+testId, value, false);
+    noteCache[testId] = value;
+    if(statusEl) statusEl.textContent = 'บันทึกแล้ว';
+  }catch(e){
+    if(statusEl) statusEl.textContent = 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง';
+  }
+}
+
+/* ===================== HELPERS ===================== */
+function esc(s){
+  if(s===undefined||s===null) return '';
+  return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+function findAllTests(){
+  const out = [];
+  SECTIONS.forEach(sec => sec.categories.forEach(cat => cat.tests.forEach(t => out.push({sec, cat, test:t}))));
+  return out;
+}
+
+/* ===================== RENDER ===================== */
+function renderNav(){
+  return `<nav class="sections">${SECTIONS.map((s,i)=>`
+    <button class="sec-btn ${s.id===state.sectionId && !state.query ? 'active':''}" onclick="selectSection('${s.id}')">
+      <span class="n">${String(i+1).padStart(2,'0')}</span> ${esc(s.name)}
+    </button>`).join('')}</nav>`;
+}
+
+function renderTestCard(test, pathLabel){
+  const isOpen = state.openTest === test.id;
+  const paramsHtml = (test.params||[]).map(p => `
+    <tr><td>${esc(p.name)}</td><td class="rng">${esc(p.range)}${p.critical? `<br><span class="crit-tag">Critical: ${esc(p.critical)}</span>`:''}</td></tr>
+  `).join('');
+  return `
+  <div class="test-card ${isOpen?'open':''}" id="card-${test.id}">
+    <div class="test-head" onclick="toggleTest('${test.id}')">
+      <div>
+        ${pathLabel? `<div class="badge-path">${esc(pathLabel)}</div>`:''}
+        <div class="name">${esc(test.name)}</div>
+        ${test.specimen? `<div class="specimen">สิ่งส่งตรวจ: ${esc(test.specimen)}</div>`:''}
+      </div>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="test-body">
+      ${test.params? `<table class="params"><thead><tr><th>รายการ</th><th>ค่าอ้างอิง</th></tr></thead><tbody>${paramsHtml}</tbody></table>`:''}
+      ${test.method? `<div class="block"><h4>วิธี / หลักการ</h4><p>${esc(test.method)}</p></div>`:''}
+      ${test.procedure? `<div class="block"><h4>ขั้นตอนปฏิบัติ</h4><ul>${test.procedure.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`:''}
+      ${test.qc? `<div class="block qc-block"><h4>QC / Troubleshooting</h4><ul>${test.qc.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`:''}
+      <div class="note-area">
+        <h4>บันทึกส่วนตัว (เฉพาะอุปกรณ์นี้ของคุณ)</h4>
+        <textarea id="note-${test.id}" placeholder="เช่น ค่าปกติเฉพาะของเครื่อง/ห้องแล็บของคุณ, ข้อควรระวังเพิ่มเติม..." onblur="handleNoteBlur('${test.id}')"></textarea>
+        <div class="note-status" id="status-${test.id}"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderArtPanel(sectionId){
+  const art = SECTION_ART[sectionId];
+  if(!art) return '';
+  return `
+    <div class="art-panel">
+      <h3>${esc(art.title)}</h3>
+      <p class="art-desc">${esc(art.desc)}</p>
+      ${art.svg}
+      ${art.legend? `<div class="art-legend">${esc(art.legend)}</div>`:''}
+      ${art.links? `<div class="art-links">${art.links.map(l=>`<a href="${esc(l.url)}" target="_blank" rel="noopener">🔗 ${esc(l.label)}</a>`).join('')}</div>`:''}
+    </div>
+  `;
+}
+
+function renderSectionView(){
+  const sec = SECTIONS.find(s=>s.id===state.sectionId);
+  return `
+    <div class="section-head">
+      <h2>${esc(sec.name)}</h2>
+      <p>${esc(sec.sub)}</p>
+    </div>
+    ${renderArtPanel(sec.id)}
+    ${sec.categories.map(cat => `
+      <div class="category">
+        <h3>${esc(cat.name)}</h3>
+        ${cat.tests.map(t=>renderTestCard(t)).join('')}
+      </div>
+    `).join('')}
+    <div class="disclaimer">ค่าอ้างอิงในแอปนี้เป็นค่ามาตรฐานทั่วไปสำหรับผู้ใหญ่ เพื่อใช้ทบทวนความจำเท่านั้น ค่าจริงอาจแตกต่างกันตามน้ำยา เครื่องมือ และ SOP ของแต่ละห้องปฏิบัติการ — ให้ยึดค่าที่ห้องปฏิบัติการของท่านกำหนดเป็นหลักเสมอ</div>
+  `;
+}
+
+function renderSearchView(){
+  const q = state.query.trim().toLowerCase();
+  const all = findAllTests();
+  const matches = all.filter(({sec,cat,test}) => {
+    const hay = [sec.name, cat.name, test.name, test.specimen, test.method, ...(test.params||[]).map(p=>p.name)].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  return `
+    <div class="section-head"><h2>ผลการค้นหา</h2></div>
+    <div class="search-results-head">พบ ${matches.length} รายการสำหรับ "${esc(state.query)}"</div>
+    ${matches.map(({sec,cat,test}) => renderTestCard(test, sec.name + ' › ' + cat.name)).join('') || '<p style="color:var(--muted)">ไม่พบรายการที่ตรงกัน ลองใช้คำค้นอื่น</p>'}
+  `;
+}
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand">
+        <div class="title">MedTech Quick Reference</div>
+        <div class="sub">คู่มืออ้างอิงงานเทคนิคการแพทย์ · ทุกเซคชั่นห้องปฏิบัติการ</div>
+      </div>
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="ค้นหาการตรวจ, ค่าอ้างอิง..." value="${esc(state.query)}" oninput="handleSearch(this.value)">
+      </div>
+    </div>
+    <div class="layout">
+      ${renderNav()}
+      <main>${state.query.trim() ? renderSearchView() : renderSectionView()}</main>
+    </div>
+  `;
+  // restore focus to search input if it was focused
+  // load any notes for currently open test
+  if(state.openTest){
+    loadNote(state.openTest).then(v=>{
+      const ta = document.getElementById('note-'+state.openTest);
+      if(ta) ta.value = v;
+    });
+  }
+}
+
+/* ===================== EVENT HANDLERS ===================== */
+function selectSection(id){
+  state.sectionId = id;
+  state.query = '';
+  state.openTest = null;
+  render();
+  document.querySelector('main').scrollTo(0,0);
+}
+function toggleTest(id){
+  state.openTest = (state.openTest === id) ? null : id;
+  render();
+}
+let searchDebounce;
+function handleSearch(val){
+  state.query = val;
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(()=>{ render(); const inp=document.getElementById('searchInput'); if(inp){inp.focus(); inp.selectionStart=inp.selectionEnd=inp.value.length;} }, 180);
+}
+function handleNoteBlur(testId){
+  const ta = document.getElementById('note-'+testId);
+  const status = document.getElementById('status-'+testId);
+  if(!ta) return;
+  status.textContent = 'กำลังบันทึก...';
+  saveNote(testId, ta.value, status);
+}
+
+render();
+</script>
+</body>
+</html>
