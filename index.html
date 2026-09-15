@@ -110,6 +110,18 @@
   .art-panel .art-links a{display:inline-block;font-size:12px;color:var(--teal);text-decoration:none;}
   .art-panel .art-links a:hover{text-decoration:underline;}
 
+  .photo-block .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:6px;}
+  .photo-slot{
+    aspect-ratio:4/3;border:1.5px dashed var(--line);border-radius:8px;background:#FAFCFB;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    color:var(--muted);font-size:11px;text-align:center;padding:6px;
+  }
+  .photo-slot .cam{font-size:20px;opacity:.55;}
+  .photo-img-wrap{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000;}
+  .photo-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .photo-img-wrap .cap{font-size:11px;color:var(--muted);padding:5px 7px;background:var(--surface);}
+  .photo-hint{font-size:12px;color:var(--muted);margin:6px 0 0;}
+
   .note-area{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px;}
   .note-area h4{font-size:12px;color:var(--muted);margin:0 0 6px;font-weight:600;}
   .note-area textarea{
@@ -151,7 +163,7 @@
    ===================================================================== */
 const SECTIONS = [
 {
-  id:'heme', name:'โลหิตวิทยา', sub:'Hematology',
+  id:'heme', name:'Hematology', sub:'โลหิตวิทยา',
   categories:[
     { name:'Complete Blood Count & Indices', tests:[
       { id:'cbc', name:'CBC (Complete Blood Count)', specimen:'EDTA (จุกม่วง) whole blood',
@@ -301,11 +313,88 @@ const SECTIONS = [
         ],
         qc:['ต้องแก้ไขค่า WBC ทุกครั้งที่พบ NRBC ≥5 ตัวต่อ WBC 100 เซลล์ เพื่อไม่ให้ WBC สูงเกินจริงและนำไปสู่การแปลผลที่ผิดพลาด']
       }
+    ]},
+    { name:'การตรวจเพิ่มเติมเฉพาะทาง (Special Hematology)', tests:[
+      { id:'manualhct', name:'Hematocrit ด้วยวิธี Manual (Microhematocrit/Spun Hct)', specimen:'EDTA whole blood หรือ capillary blood (heel/finger stick)',
+        params:[
+          {name:'ชาย', range:'40–54%'},
+          {name:'หญิง', range:'36–46%'},
+          {name:'ทารกแรกเกิด', range:'44–64%'}
+        ],
+        method:'Microhematocrit centrifugation method — ปั่นเหวี่ยงเลือดในหลอดฝอย (capillary tube) ความเร็วสูงเพื่อแยกชั้นเม็ดเลือดแดงอัดแน่นจากพลาสมา แล้ววัดสัดส่วนความสูงของชั้น RBC เทียบกับความสูงรวม',
+        procedure:[
+          'ดูดเลือด EDTA หรือเลือดจากปลายนิ้ว/ส้นเท้าใส่หลอด capillary tube (plain หรือ heparinized ตามชนิดตัวอย่าง) ให้ได้ประมาณ 2/3–3/4 ของหลอด',
+          'อุดปลายหลอดด้านหนึ่งด้วย sealant clay ให้แน่นสนิท ไม่ให้มีฟองอากาศ',
+          'วางหลอดในเครื่องปั่นเหวี่ยง microhematocrit centrifuge โดยให้ปลายที่อุดชี้ออกด้านนอก (ป้องกันเลือดหลุดขณะปั่น)',
+          'ปั่นเหวี่ยงที่ความเร็วและเวลาตามคู่มือเครื่อง (โดยทั่วไป ~10,000–12,000 rpm นาน 5 นาที)',
+          'อ่านผลด้วย microhematocrit reader card หรือไม้บรรทัดวัดเปอร์เซ็นต์: วัดความสูงของชั้น packed RBC หารด้วยความสูงรวมของเลือดทั้งหมดในหลอด (ไม่รวมชั้น buffy coat สีขาวซึ่งเป็น WBC/platelet)',
+          'รายงานผลเป็นเปอร์เซ็นต์ (%) และเปรียบเทียบกับผลจากเครื่องอัตโนมัติหากมีความแตกต่างกันมาก'
+        ],
+        qc:['ต้องปั่นเป็นคู่ (duplicate) เสมอ ค่าที่ยอมรับได้ต่างกันไม่เกิน 1–2%','ตรวจสอบว่าไม่มีฟองอากาศและ sealant ไม่รั่ว มิฉะนั้นค่าที่ได้จะคลาดเคลื่อน','Hct สูงเทียมหากมี seal ไม่แน่น (เลือดรั่วออกระหว่างปั่น) หรือปั่นเวลา/ความเร็วไม่พอ']
+      },
+      { id:'bmstain', name:'การย้อม Bone Marrow (Bone Marrow Aspirate Smear Staining)', specimen:'Bone marrow aspirate smear (ทำ smear ทันทีหลังเจาะดูดจากกระดูกสันหลังส่วน iliac crest หรือ sternum)',
+        params:[
+          {name:'สีที่ใช้ย้อมหลัก', range:'Wright-Giemsa stain (เช่นเดียวกับ peripheral smear แต่ใช้เวลาย้อมนานกว่าเนื่องจากเซลล์มีความเข้มข้นสูง)'},
+          {name:'M:E Ratio (Myeloid:Erythroid)', range:'ปกติประมาณ 2:1 ถึง 4:1'},
+          {name:'Cellularity ตามอายุ (โดยประมาณ)', range:'สูตร: 100 − อายุ (ปี) = % cellularity ที่คาดหวังโดยประมาณ'}
+        ],
+        method:'ย้อม Romanowsky-type stain (Wright-Giemsa) บน smear ที่ทำจาก marrow particle เพื่อประเมิน cellularity, สัดส่วนเซลล์แต่ละสาย (myeloid, erythroid, megakaryocyte) และเซลล์ผิดปกติ',
+        procedure:[
+          'เลือก marrow particle (spicule) ที่มองเห็นด้วยตาบนแผ่นสไลด์มาทำ smear แบบ crush/pull preparation ทันทีหลังเจาะดูด เพื่อป้องกันการแข็งตัว',
+          'ผึ่งสไลด์ให้แห้งเร็วที่สุด (ใช้พัดลมเป่าช่วยได้) เพื่อป้องกัน cell shrinkage/artifact',
+          'ย้อมด้วย Wright-Giemsa เช่นเดียวกับ peripheral blood smear แต่เพิ่มเวลาย้อมและปริมาณ stain/buffer เนื่องจากเซลล์มีความหนาแน่นสูงกว่ามาก',
+          'ตรวจกำลังขยายต่ำ (10x) ก่อนเพื่อประเมิน cellularity โดยรวมและหา particle ที่มีเซลล์กระจายดี',
+          'ตรวจกำลังขยายสูง (50x–100x oil) เพื่อนับ differential ของเซลล์ทุกสาย (myeloid series, erythroid series, megakaryocyte, lymphocyte) อย่างน้อย 500 เซลล์ (นับโดยแพทย์/นักเทคนิคที่ผ่านการฝึกอบรมเฉพาะทาง)',
+          'คำนวณ M:E ratio และประเมินลักษณะ maturation ของแต่ละสายเซลล์ รวมถึงมองหาเซลล์ผิดปกติ เช่น blast cell, dysplastic change, infiltrating malignant cell',
+          'รายงานผลร่วมกับ core biopsy (หากมี) และข้อมูลทางคลินิกเสมอ'
+        ],
+        qc:['การย้อมและอ่านผล bone marrow ต้องทำโดยผู้ที่ผ่านการฝึกอบรมเฉพาะทางโลหิตวิทยา/พยาธิวิทยาเท่านั้น','เก็บภาพประกอบและบันทึกลักษณะเซลล์ผิดปกติทุกครั้งเพื่อการทบทวนและปรึกษาแพทย์']
+      },
+      { id:'g6pd', name:'G6PD Enzyme Activity (Glucose-6-Phosphate Dehydrogenase)', specimen:'EDTA หรือ Heparinized whole blood',
+        params:[{name:'ค่าอ้างอิง', range:'7.9–16.3 IU/gHb (ขึ้นกับวิธีและห้องปฏิบัติการ)'},{name:'Deficient', range:'ต่ำกว่าค่าอ้างอิงต่ำสุดของห้องปฏิบัติการอย่างมีนัยสำคัญ'}],
+        method:'วัดอัตราการเกิด NADPH จากปฏิกิริยาที่ G6PD เป็นตัวเร่ง (G6P + NADP⁺ → 6-phosphogluconate + NADPH) ด้วยวิธี spectrophotometric kinetic assay หรือ fluorescent spot test สำหรับคัดกรองเบื้องต้น',
+        procedure:[
+          'เก็บตัวอย่างเลือดในหลอด EDTA หรือ heparin ส่งตรวจโดยเร็ว (เอนไซม์เสื่อมสภาพได้หากเก็บนาน)',
+          'Quantitative assay: ผสมเลือดกับรีเอเจนต์ที่มี G6P และ NADP⁺ วัดอัตราการเพิ่มขึ้นของ NADPH ด้วยเครื่อง spectrophotometer ที่ 340 nm แบบ kinetic',
+          'คำนวณกิจกรรมเอนไซม์เทียบกับปริมาณ hemoglobin ของตัวอย่าง รายงานเป็น IU/gHb',
+          'Fluorescent spot test (คัดกรอง): หยดเลือดผสมรีเอเจนต์ลงบนกระดาษกรอง ผึ่งแห้ง แล้วดูการเรืองแสงใต้ UV — ไม่เรืองแสง/เรืองแสงอ่อนมาก = สงสัย deficient ต้องยืนยันด้วย quantitative assay',
+          'หากผู้ป่วยมีภาวะโลหิตจางเฉียบพลันร่วมด้วย (hemolytic episode) ผล G6PD อาจสูงเทียมได้เนื่องจาก reticulocyte ที่มี enzyme สูงเพิ่มขึ้นชดเชย — ควรตรวจซ้ำหลังภาวะเฉียบพลันสงบแล้ว 2–3 เดือน'
+        ],
+        qc:['รัน known normal และ known deficient control คู่กับตัวอย่างทุกครั้ง','ระวังผลบวกลวง (falsely normal) ในช่วงที่มี hemolysis เฉียบพลัน/reticulocytosis สูง']
+      },
+      { id:'microbiliheme', name:'Microbilirubin (Neonatal Capillary Bilirubin)', specimen:'Capillary blood (heel-stick) ในหลอด microhematocrit/microcuvette ป้องกันแสง',
+        params:[{name:'ค่าอ้างอิงทั่วไป', range:'<12 mg/dL (ขึ้นกับอายุเป็นชั่วโมง/วัน และปัจจัยเสี่ยง — ใช้ nomogram ของทารกแรกเกิดในการแปลผล)'}],
+        method:'Direct spectrophotometric bilirubinometry จากตัวอย่างเลือดฝอยปริมาณน้อย ใช้คัดกรองภาวะตัวเหลืองในทารกแรกเกิดที่หน่วยงานเจาะเลือดปริมาณมากไม่สะดวก',
+        procedure:[
+          'เจาะเลือดฝอยจากส้นเท้าทารก (heel-stick) ใส่หลอด capillary/microcuvette เฉพาะสำหรับ bilirubin โดยเร็ว ป้องกันแสงตลอดเวลา (ห่อด้วยฟอยล์/ใช้หลอดสีชา)',
+          'ปั่นเหวี่ยงแยกพลาสมาด้วยเครื่อง microhematocrit centrifuge หากใช้วิธี manual spectrophotometry',
+          'วัดค่าการดูดกลืนแสงของพลาสมาที่ความยาวคลื่นจำเพาะด้วยเครื่อง bilirubinometer เฉพาะทาง หรือส่งตรวจ total/direct bilirubin ด้วยวิธี diazo ปริมาณน้อยตามความสามารถของเครื่องวิเคราะห์',
+          'รายงานผลพร้อมอายุของทารกเป็นชั่วโมง เทียบกับ bilirubin nomogram (เช่น Bhutani nomogram) เพื่อประเมินความเสี่ยง',
+          'แจ้งแพทย์ทันทีหากค่าสูงเข้าเกณฑ์ต้องส่องไฟ (phototherapy) หรือเปลี่ยนถ่ายเลือด (exchange transfusion) ตามเกณฑ์ของโรงพยาบาล'
+        ],
+        qc:['ป้องกันตัวอย่างจากแสงตลอดเวลาตั้งแต่เจาะจนถึงวิเคราะห์ (bilirubin สลายตัวเร็วเมื่อโดนแสง ทำให้ได้ค่าต่ำเทียม)','ระวัง hemolysis ในตัวอย่างเลือดฝอยซึ่งรบกวนผลได้มาก']
+      },
+      { id:'tzanck', name:"Tzanck Smear (Tzanck Test)", specimen:'สิ่งขูดจากพื้นตุ่มน้ำ (vesicle/bulla) บริเวณผิวหนังที่สงสัยการติดเชื้อ Herpes group',
+        params:[
+          {name:'ผลบวก', range:'พบ multinucleated giant cell และ/หรือ acantholytic cell'},
+          {name:'ความไว', range:'ตรวจพบ multinucleated giant cell ได้ทั้งใน Herpes simplex และ Varicella-zoster (แยกชนิดไม่ได้ด้วยวิธีนี้ ต้องยืนยันด้วย PCR/culture หากต้องการแยกชนิด)'}
+        ],
+        method:'Cytologic smear ย้อมด้วย Wright-Giemsa หรือ Diff-Quik เพื่อดูลักษณะเซลล์ผิวหนังที่ติดเชื้อไวรัสกลุ่ม Herpes (HSV-1, HSV-2, VZV) หรือ acantholytic cell ใน pemphigus',
+        procedure:[
+          'เปิดตุ่มน้ำที่ยังใหม่ (ไม่แตกหรือติดเชื้อแบคทีเรียซ้อน) ด้วยใบมีดปลอดเชื้อ',
+          'ขูดพื้นตุ่มน้ำ (base of vesicle) เบา ๆ เก็บเซลล์ป้ายลงบนแผ่นสไลด์ให้เป็นชั้นบาง',
+          'ผึ่งให้แห้งแล้วย้อมด้วย Wright-Giemsa หรือ Diff-Quik ตามขั้นตอนมาตรฐาน',
+          'ตรวจด้วยกำลังขยาย 100x oil immersion มองหา multinucleated giant keratinocyte (นิวเคลียสหลายอันซ้อนทับ ground-glass chromatin) ซึ่งบ่งชี้ herpes infection',
+          'หากสงสัย pemphigus ให้มองหา acantholytic cell (keratinocyte ที่แยกตัวออกจากกัน กลมมน ไซโทพลาซึมติดสีเข้ม)',
+          'รายงานผลเป็นเชิงบวก/ลบ พร้อมระบุลักษณะเซลล์ที่พบ — ไม่สามารถแยกชนิดไวรัสได้จากวิธีนี้ หากต้องแยกชนิดต้องส่ง viral culture หรือ PCR เพิ่มเติม'
+        ],
+        qc:['ผลลบไม่ตัดการติดเชื้อออก โดยเฉพาะหากขูดจากตุ่มที่แห้ง/เก่าเกินไป ควรเลือกตุ่มน้ำใหม่ที่สุดเสมอ','แจ้งผลบวกให้แพทย์ทราบเร็วเพื่อพิจารณาการรักษาด้วยยาต้านไวรัสทันเวลา']
+      }
     ]}
   ]
 },
 {
-  id:'coag', name:'โคแอกกูเลชั่น', sub:'Coagulation',
+  id:'coag', name:'Coagulation', sub:'โคแอกกูเลชั่น',
   categories:[
     { name:'การตรวจคัดกรองการแข็งตัวของเลือด', tests:[
       { id:'pt', name:'PT / INR', specimen:'Sodium citrate (จุกฟ้า) อัตราส่วนเลือด:น้ำยา 9:1',
@@ -359,12 +448,28 @@ const SECTIONS = [
           'เทียบกับกราฟมาตรฐานเพื่อคำนวณความเข้มข้น และรายงานหน่วยตามชุดทดสอบ (µg/mL FEU หรือ ng/mL DDU)'
         ],
         qc:['ผล D-dimer ปกติมีค่าในการ "คัดออก" ภาวะ VTE เมื่อ pre-test probability ต่ำ แต่ผลบวกไม่จำเพาะเจาะจง ต้องแปลผลร่วมกับคลินิกเสมอ']
+      },
+      { id:'wbct', name:'20-Minute Whole Blood Clotting Time (20WBCT)', specimen:'Whole blood ที่เจาะใหม่ (venous blood) ใส่หลอดแก้วสะอาดที่ไม่เคลือบสาร (plain glass tube ไม่ใช่หลอด siliconized/plastic)',
+        params:[
+          {name:'ปกติ', range:'เลือดแข็งตัวเป็นก้อนแน่นภายใน 4–11 นาที'},
+          {name:'ผิดปกติ (บ่งชี้ coagulopathy)', range:'เลือดไม่แข็งตัว หรือแข็งตัวเป็นก้อนหลวม/แตกง่ายเมื่อครบ 20 นาที'}
+        ],
+        method:'Bedside clotting test แบบดั้งเดิม (Lee-White clotting time ดัดแปลง) ใช้คัดกรอง coagulopathy อย่างง่ายในสถานที่ที่ไม่มีเครื่องตรวจ coagulation โดยเฉพาะกรณีสงสัยพิษงูกัดที่มีผลต่อการแข็งตัวของเลือด (venom-induced consumption coagulopathy)',
+        procedure:[
+          'เจาะเลือดดำใส่หลอดแก้วสะอาด แห้ง ไม่เคลือบสารกันเลือดแข็งตัวใด ๆ (ห้ามใช้หลอด EDTA/citrate)',
+          'ตั้งเวลาทันทีที่เลือดไหลเข้าหลอด วางหลอดตั้งตรงนิ่ง ๆ ในอุณหภูมิห้อง หลีกเลี่ยงการเขย่า',
+          'เอียงหลอดเบา ๆ ทุก ๆ 30 วินาที–1 นาที เพื่อสังเกตการแข็งตัว โดยรบกวนหลอดให้น้อยที่สุด',
+          'อ่านผลที่ 20 นาทีพอดี: หากเลือดยังไม่แข็งตัวเป็นก้อน หรือก้อนที่เกิดขึ้นหลวม/แตกง่ายเมื่อเอียงหลอด ถือว่าผล "ผิดปกติ" (ผลบวก)',
+          'ในบริบทพิษงูกัด: ผลบวก (เลือดไม่แข็งตัวใน 20 นาที) บ่งชี้ venom-induced consumption coagulopathy สนับสนุนการให้ antivenom และควรแจ้งแพทย์ทันที',
+          'บันทึกเวลาที่เริ่มทดสอบและเวลาที่อ่านผลอย่างชัดเจนในใบรายงาน'
+        ],
+        qc:['ต้องใช้หลอดแก้วธรรมดาที่ไม่เคลือบสารใด ๆ เท่านั้น การใช้หลอดพลาสติกหรือหลอดที่มีสารกันเลือดแข็งตัวจะทำให้ผลผิดพลาด','เป็นการทดสอบคัดกรองเบื้องต้นเท่านั้น ไม่ทดแทนการตรวจ PT/aPTT/Fibrinogen ในห้องปฏิบัติการเมื่อสามารถทำได้']
       }
     ]}
   ]
 },
 {
-  id:'chem', name:'เคมีคลินิก', sub:'Clinical Chemistry',
+  id:'chem', name:'Clinical Chemistry', sub:'เคมีคลินิก',
   categories:[
     { name:'น้ำตาลและเมตาบอลิก', tests:[
       { id:'glu', name:'Fasting Blood Glucose (FBS)', specimen:'Serum/Plasma (Sodium fluoride tube) หรือ fingerstick',
@@ -510,13 +615,119 @@ const SECTIONS = [
           'หากผลสูงกว่า cutoff แจ้งแพทย์ทันทีในฐานะ critical value พร้อมแนะนำเจาะซ้ำตาม serial troponin protocol'
         ],
         qc:['ผล Troponin บวกต้องแจ้ง critical value ให้แพทย์ทราบทันที ตามนโยบายห้องปฏิบัติการ']
+      },
+      { id:'probnp', name:'Pro-BNP (NT-proBNP)', specimen:'Serum หรือ EDTA Plasma',
+        params:[
+          {name:'อายุ <50 ปี', range:'<450 pg/mL'},
+          {name:'อายุ 50–75 ปี', range:'<900 pg/mL'},
+          {name:'อายุ >75 ปี', range:'<1,800 pg/mL'},
+          {name:'ตัดภาวะหัวใจล้มเหลวออก (Rule-out)', range:'<300 pg/mL (ทุกอายุ)'}
+        ],
+        method:'Chemiluminescent/Electrochemiluminescent immunoassay (CLIA/ECLIA) วัดชิ้นส่วน N-terminal ที่หลั่งออกมาพร้อมกับ BNP เมื่อผนังหัวใจถูกยืดขยาย (ventricular wall stress)',
+        procedure:[
+          'ปั่นเหวี่ยงแยกซีรั่ม/พลาสมาโดยเร็วหลังเจาะ',
+          'ใส่ตัวอย่างเข้าเครื่อง immunoassay analyzer ใช้หลักการ sandwich immunoassay กับ antibody จำเพาะต่อ NT-proBNP',
+          'วัดสัญญาณเรืองแสงเคมี (chemiluminescence) แปลงเป็นความเข้มข้นเทียบกับ calibration curve',
+          'รายงานผลพร้อมช่วงอ้างอิงตามอายุ เนื่องจากค่าปกติเพิ่มขึ้นตามอายุอย่างมีนัยสำคัญ',
+          'แปลผลร่วมกับอาการทางคลินิก (หายใจลำบาก, บวม) — ค่าสูงมากสนับสนุนภาวะหัวใจล้มเหลวเฉียบพลัน'
+        ],
+        qc:['ค่าอาจสูงขึ้นได้จากภาวะไตวายและอายุที่มากขึ้นโดยไม่มีหัวใจล้มเหลว ต้องแปลผลร่วมกับข้อมูลทางคลินิกเสมอ']
+      },
+      { id:'abg', name:'Arterial Blood Gas (ABG) / Blood Gas Analysis', specimen:'Arterial blood (heparinized syringe, ไม่มีฟองอากาศ, วิเคราะห์ทันทีหรือแช่เย็นหากต้องรอ)',
+        params:[
+          {name:'pH', range:'7.35–7.45'},
+          {name:'pCO2', range:'35–45 mmHg'},
+          {name:'pO2', range:'83–108 mmHg', critical:'<40 mmHg'},
+          {name:'HCO3⁻', range:'22–29 mmol/L'},
+          {name:'Base Excess', range:'−2 ถึง +2 mmol/L'},
+          {name:'O2 Saturation', range:'≥95%', critical:'<75%'}
+        ],
+        method:'Ion-selective electrode + optical/amperometric sensor วัด pH, pCO2, pO2 โดยตรง แล้วคำนวณ HCO3⁻/Base Excess ด้วยสมการ Henderson-Hasselbalch',
+        procedure:[
+          'เก็บตัวอย่างเลือดแดงด้วย heparinized syringe แบบ pre-heparinized เพื่อป้องกันเลือดแข็งตัวโดยไม่เจือจางตัวอย่างมากเกินไป',
+          'ไล่ฟองอากาศออกจาก syringe ทันทีหลังเจาะ (ฟองอากาศรบกวนค่า pO2/pCO2 อย่างมาก) และปิดปลายเข็มให้สนิท',
+          'ผสมเลือดกับ heparin เบา ๆ โดยการหมุน/กลิ้ง syringe ระหว่างมือ ห้ามเขย่าแรง (ทำให้เม็ดเลือดแตก)',
+          'วิเคราะห์ภายใน 10–15 นาทีที่อุณหภูมิห้อง หรือแช่ในน้ำแข็งทันทีหากต้องรอนานกว่านั้น (ชะลอ metabolism ของเซลล์เม็ดเลือด)',
+          'ใส่ตัวอย่างเข้าเครื่อง blood gas analyzer ซึ่งวัด pH, pCO2, pO2 ด้วย electrode เฉพาะ แล้วคำนวณค่า HCO3⁻, Base Excess, O2 saturation อัตโนมัติ',
+          'ระบุอุณหภูมิร่างกายผู้ป่วยหากมีไข้สูง/ภาวะอุณหภูมิต่ำ เพื่อให้เครื่องปรับค่า (temperature correction) ให้แม่นยำ',
+          'รายงานผลพร้อมแปลความหมายเบื้องต้น (acidosis/alkalosis, respiratory/metabolic, compensated/uncompensated) และแจ้ง critical value ทันทีหากพบ'
+        ],
+        qc:['ฟองอากาศและความล่าช้าในการวิเคราะห์เป็นสาเหตุความคลาดเคลื่อนที่พบบ่อยที่สุด','รัน quality control ตามระดับที่เครื่องกำหนดทุกกะการทำงาน']
+      },
+      { id:'ketone_blood', name:'Serum/Blood Ketone (Beta-hydroxybutyrate)', specimen:'Serum, Plasma หรือ Capillary whole blood (point-of-care meter)',
+        params:[
+          {name:'ปกติ', range:'<0.6 mmol/L'},
+          {name:'เริ่มมี ketosis', range:'0.6–1.5 mmol/L'},
+          {name:'เสี่ยง DKA (Diabetic Ketoacidosis)', range:'≥3.0 mmol/L', critical:'≥3.0 mmol/L ร่วมกับ hyperglycemia และ metabolic acidosis'}
+        ],
+        method:'Enzymatic method วัด beta-hydroxybutyrate (สารคีโตนหลักในเลือด) โดยตรง ต่างจาก urine ketone dipstick ที่ตรวจ acetoacetate เป็นหลัก จึงไวและจำเพาะกว่าในการติดตาม DKA',
+        procedure:[
+          'เก็บตัวอย่างเลือด (serum/plasma ปั่นเหวี่ยงโดยเร็ว) หรือหยดเลือดปลายนิ้วลงบน point-of-care ketone meter/strip โดยตรง',
+          'สำหรับเครื่องวิเคราะห์กลาง: ทำปฏิกิริยากับเอนไซม์ 3-hydroxybutyrate dehydrogenase วัดการเปลี่ยนแปลง NAD/NADH',
+          'สำหรับ point-of-care meter: อ่านผลอัตโนมัติภายในไม่กี่วินาทีจากปฏิกิริยาไฟฟ้าเคมี (electrochemical biosensor)',
+          'รายงานผลเป็น mmol/L และแจ้งแพทย์ทันทีหากค่าสูงเข้าเกณฑ์ DKA ร่วมกับผลน้ำตาลและ blood gas'
+        ],
+        qc:['ในผู้ป่วย DKA ค่า beta-hydroxybutyrate ควรลดลงเมื่อรักษาได้ผล — ใช้ติดตามการตอบสนองต่อการรักษาได้ดีกว่า urine ketone']
+      },
+      { id:'rpr_chem', name:'RPR (Rapid Plasma Reagin) — การตรวจคัดกรองที่ห้องเคมี/POCT', specimen:'Serum หรือ Plasma',
+        params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'ต้องรายงาน titer และส่งยืนยันด้วย treponemal test'}],
+        method:'หลักการเดียวกับ VDRL/RPR — ดูรายละเอียดวิธีตรวจแบบเต็มในหมวด Immunology / Serology (การ์ดทดสอบ RPR มักใช้เป็น point-of-care/rapid screening ที่ห้องเคมีหรือ ANC เนื่องจากอ่านผลง่ายและรวดเร็วกว่า VDRL)',
+        procedure:[
+          'ดูขั้นตอนแบบละเอียดในรายการ "VDRL / RPR (Syphilis Screening)" หมวด Immunology / Serology',
+          'บันทึกผลและ titer ลงในระบบเดียวกับผลตรวจทางเคมีหากห้องปฏิบัติการจัดให้ RPR อยู่ในสายงานตรวจคัดกรองก่อนคลอด (ANC) หรือ pre-operative screening'
+        ]
+      }
+    ]},
+    { name:'Renal Function (เพิ่มเติม)', tests:[
+      { id:'crcl', name:'Creatinine Clearance (CrCl)', specimen:'Serum (พร้อมเวลาที่เจาะ) + Urine เก็บสะสม 24 ชั่วโมง (24-hour urine collection)',
+        params:[
+          {name:'ชาย', range:'97–137 mL/min'},
+          {name:'หญิง', range:'88–128 mL/min'},
+          {name:'สูตรคำนวณ', range:'CrCl (mL/min) = (Urine creatinine × Urine volume) ÷ (Plasma creatinine × เวลาเก็บปัสสาวะเป็นนาที)'},
+          {name:'Cockcroft-Gault (ประมาณค่าเมื่อไม่มี 24-hr urine)', range:'CrCl = [(140−อายุ) × น้ำหนัก(kg)] ÷ (72 × Scr) — คูณ ×0.85 ในเพศหญิง'}
+        ],
+        method:'ใช้ประเมิน glomerular filtration rate (GFR) โดยตรงจากอัตราการขับ creatinine ออกทางไต ซึ่งใกล้เคียงกับ GFR จริง (creatinine ถูกกรองที่ไตเกือบทั้งหมดและหลั่งเพิ่มเล็กน้อยที่ tubule)',
+        procedure:[
+          'อธิบายผู้ป่วยให้เก็บปัสสาวะทุกครั้งตลอด 24 ชั่วโมงลงในภาชนะเดียวกัน (เริ่มทิ้งปัสสาวะแรกของวัน แล้วเริ่มเก็บตั้งแต่ปัสสาวะครั้งถัดไปจนครบ 24 ชม. รวมปัสสาวะสุดท้ายของวันถัดไปด้วย)',
+          'เก็บภาชนะปัสสาวะในที่เย็น/แช่เย็นตลอดระยะเวลาเก็บ เพื่อป้องกันการเสื่อมสภาพของ creatinine',
+          'เจาะเลือดหาค่า serum creatinine 1 ครั้งระหว่างช่วงเวลาที่เก็บปัสสาวะ (นิยมเจาะช่วงกลางของการเก็บ)',
+          'วัดปริมาตรปัสสาวะรวมทั้งหมด (mL) และความเข้มข้น creatinine ในปัสสาวะ (mg/dL)',
+          'คำนวณ CrCl ด้วยสูตร: CrCl = (Urine Cr × Urine volume) ÷ (Plasma Cr × เวลาที่เก็บเป็นนาที เช่น 1,440 นาทีสำหรับ 24 ชม.)',
+          'หากไม่สามารถเก็บปัสสาวะ 24 ชม. ได้ อาจใช้สูตรประมาณค่า Cockcroft-Gault จากอายุ น้ำหนัก เพศ และ serum creatinine แทน (ใช้เพื่อประมาณ ไม่แม่นยำเท่าการเก็บปัสสาวะจริง)',
+          'รายงานผลเป็น mL/min พร้อมระบุวิธีที่ใช้คำนวณ (measured 24-hr urine หรือ estimated formula)'
+        ],
+        qc:['เก็บปัสสาวะไม่ครบ 24 ชม. เป็นสาเหตุความคลาดเคลื่อนที่พบบ่อยที่สุด — ต้องซักถามผู้ป่วยและบันทึกเวลาเริ่ม/สิ้นสุดที่แน่นอน','ค่าที่ได้จากสูตรประมาณ (Cockcroft-Gault) ไม่ควรใช้แทนการเก็บปัสสาวะจริงในกรณีที่ต้องการความแม่นยำสูง เช่น ก่อนให้ยาที่ขับออกทางไตในขนาดสูง']
       }
     ]}
   ]
 },
 {
-  id:'bb', name:'ธนาคารเลือด', sub:'Blood Bank / Immunohematology',
+  id:'bb', name:'Blood Bank / Immunohematology', sub:'ธนาคารเลือด',
   categories:[
+    { name:'การรับบริจาคโลหิต (Blood Donation)', tests:[
+      { id:'donation', name:'เกณฑ์และขั้นตอนการรับบริจาคโลหิต (Blood Donation Criteria & Procedure)', specimen:'-',
+        params:[
+          {name:'อายุ', range:'17–70 ปี (ผู้บริจาคครั้งแรกไม่เกิน 60 ปี ตามระเบียบสภากาชาดไทย)'},
+          {name:'น้ำหนัก', range:'≥45 กิโลกรัม'},
+          {name:'Hemoglobin', range:'ชาย ≥13.0 g/dL / หญิง ≥12.5 g/dL'},
+          {name:'Blood pressure', range:'Systolic 90–180 mmHg, Diastolic 60–100 mmHg'},
+          {name:'ชีพจร', range:'50–100 ครั้ง/นาที สม่ำเสมอ'},
+          {name:'ระยะห่างระหว่างการบริจาค (Whole blood)', range:'อย่างน้อย 8 สัปดาห์ (56 วัน)'},
+          {name:'ปริมาณที่รับต่อครั้ง', range:'350–450 mL (ไม่เกิน 10.5 mL/kg น้ำหนักตัว)'}
+        ],
+        method:'คัดกรองผู้บริจาคด้วยแบบสอบถามประวัติสุขภาพและพฤติกรรมเสี่ยง ร่วมกับการตรวจร่างกายเบื้องต้น เพื่อความปลอดภัยทั้งผู้บริจาคและผู้รับเลือด',
+        procedure:[
+          'ลงทะเบียนและให้ผู้บริจาคกรอกแบบสอบถามประวัติสุขภาพ/พฤติกรรมเสี่ยงต่อโรคติดต่อทางเลือดด้วยตนเองอย่างครบถ้วนตรงไปตรงมา',
+          'สัมภาษณ์ประวัติเพิ่มเติมเป็นความลับ (confidential unit exclusion) และซักถามประวัติการเจ็บป่วย ยาที่ใช้ การเดินทางไปพื้นที่เสี่ยงโรค การสัก/เจาะร่างกาย และพฤติกรรมเสี่ยงทางเพศ',
+          'ตรวจร่างกายเบื้องต้น: ชั่งน้ำหนัก วัดความดันโลหิต ชีพจร อุณหภูมิร่างกาย และเจาะเลือดปลายนิ้วตรวจ Hemoglobin/Hematocrit คัดกรองภาวะซีด',
+          'ประเมินคุณสมบัติตามเกณฑ์ผ่าน/ไม่ผ่าน (defer) — หากไม่ผ่านเกณฑ์ชั่วคราว (temporary deferral เช่น หลังฉีดวัคซีน หลังผ่าตัดเล็ก) หรือถาวร (permanent deferral เช่น มีประวัติโรคติดต่อทางเลือดบางชนิด) ให้แจ้งเหตุผลและกำหนดวันที่สามารถกลับมาบริจาคได้',
+          'เจาะเก็บโลหิตด้วยระบบปลอดเชื้อแบบ closed system ปริมาณตามเกณฑ์น้ำหนักตัว พร้อมเก็บตัวอย่างเลือดคู่ (pilot tube) ส่งตรวจ ABO/Rh, antibody screen และ transfusion-transmissible infection (HBV, HCV, HIV, Syphilis) ทุกถุง',
+          'สังเกตอาการผู้บริจาคหลังบริจาคอย่างน้อย 10–15 นาที ให้ดื่มน้ำ/รับประทานอาหารว่าง ก่อนอนุญาตให้กลับ',
+          'กักถุงเลือด (quarantine) จนกว่าผลตรวจคัดกรองโรคติดต่อทุกรายการจะผ่านเกณฑ์ปลอดภัย จึงนำไปแยกส่วนประกอบและจ่ายใช้ได้'
+        ],
+        qc:['ปฏิเสธผู้บริจาคที่ไม่ผ่านเกณฑ์ด้านสุขภาพหรือมีความเสี่ยงทันที ไม่ยืดหยุ่นเกณฑ์เพื่อความปลอดภัยของผู้รับเลือด','ถุงเลือดทุกถุงต้องผ่านผลตรวจคัดกรองโรคติดต่อทางเลือดครบถ้วนก่อนนำไปใช้ทางคลินิกเสมอ']
+      }
+    ]},
     { name:'การตรวจหมู่เลือดและความเข้ากันได้', tests:[
       { id:'abo', name:'ABO & Rh(D) Typing', specimen:'EDTA whole blood + clotted serum',
         params:[{name:'Forward vs Reverse typing', range:'ต้องสอดคล้องกันก่อนรายงานผล'},{name:'Rh(D)', range:'Positive / Negative (ตรวจ weak D หาก D negative เบื้องต้น)'}],
@@ -536,6 +747,24 @@ const SECTIONS = [
           'หากผลบวก ส่งต่อทำ antibody identification panel เพื่อระบุชนิดแอนติบอดี'
         ]
       },
+      { id:'antibodyid', name:'Antibody Identification Panel (การระบุชนิดแอนติบอดี)', specimen:'Clotted serum/plasma ที่ผล Antibody Screen เป็นบวก',
+        params:[
+          {name:'Panel cell', range:'ใช้เม็ดเลือดแดง reagent panel 10–11 ชนิดที่ทราบ antigen profile ครบถ้วน (commercial identification panel)'},
+          {name:'การแปลผล Rule-out/Rule-in', range:'ตัดแอนติบอดีออก (rule out) เมื่อ panel cell ที่ไม่มีแอนติเจนนั้นให้ผลลบ; ยืนยัน (rule in) เมื่อรูปแบบ reactivity ตรงกับ antigen ที่คาดว่ามีแอนติบอดีอย่างสม่ำเสมอในทุกเซลล์'}
+        ],
+        method:'Indirect Antiglobulin Test (IAT) ด้วย reagent red cell panel ที่ทราบ phenotype ของแอนติเจนหมู่เลือดครบทุกตัว เปรียบเทียบรูปแบบผลบวก/ลบกับ antigram เพื่อระบุชนิดแอนติบอดีจำเพาะ',
+        procedure:[
+          'ผสมซีรั่มผู้ป่วยกับ panel cell แต่ละหลอด (โดยทั่วไป 10–11 หลอด) พร้อม autocontrol (เม็ดเลือดแดงของผู้ป่วยเอง) 1 หลอดเสมอ',
+          'บ่มที่ 37°C ตามเวลาที่ชุดทดสอบกำหนด แล้วล้างด้วย saline และเติม AHG reagent เช่นเดียวกับ antibody screen',
+          'อ่านผล agglutination ของทุกหลอด บันทึกลงในตาราง antigram ที่มากับชุดทดสอบ',
+          'เปรียบเทียบรูปแบบ (pattern) ผลบวก/ลบกับตาราง antigen ของแต่ละ panel cell เพื่อ rule-out แอนติเจนที่ไม่ตรงรูปแบบ และ rule-in แอนติเจนที่ตรงรูปแบบทุกเซลล์ที่ทดสอบ',
+          'ยืนยันด้วยการทำ enzyme-treated panel หรือ selected cell เพิ่มเติมหากสงสัยแอนติบอดีหลายชนิดปนกัน (multiple antibodies)',
+          'ยืนยันความจำเพาะขั้นสุดท้ายด้วยการทดสอบกับเม็ดเลือดแดงที่มี/ไม่มีแอนติเจนนั้น (positive/negative confirmation cell) อย่างน้อย 3 เซลล์ที่มีแอนติเจนบวกและ 3 เซลล์ที่มีแอนติเจนลบ',
+          'ตรวจ phenotype ผู้ป่วยสำหรับแอนติเจนที่สงสัย (ผู้ป่วยควรจะขาดแอนติเจนนั้น จึงสร้างแอนติบอดีต่อมันได้ — antigen negative predicts antibody)',
+          'จัดหาเลือดที่ตรวจแล้วว่าไม่มีแอนติเจนที่ตรงกับแอนติบอดีที่พบ (antigen-negative unit) มาทำ crossmatch ก่อนจ่ายเลือดให้ผู้ป่วย'
+        ],
+        qc:['ต้องมี autocontrol ทุกครั้งเพื่อแยกแอนติบอดีจำเพาะ (alloantibody) ออกจากแอนติบอดีต่อเซลล์ตนเอง (autoantibody)','บันทึกผลการระบุแอนติบอดีในเวชระเบียนถาวรของผู้ป่วยเพื่อใช้อ้างอิงการรับเลือดในอนาคต']
+      },
       { id:'xm', name:'Crossmatch', specimen:'ตัวอย่างผู้รับ + เลือดผู้ให้ (donor unit)',
         params:[{name:'Compatible', range:'ไม่มี agglutination/hemolysis ใน major crossmatch'}],
         method:'Immediate spin crossmatch (กรณี antibody screen ลบ) หรือ full AHG crossmatch (กรณี antibody screen บวก/มีประวัติ)',
@@ -547,15 +776,26 @@ const SECTIONS = [
           'บันทึกผลว่า compatible หรือ incompatible ก่อนจ่ายเลือดให้ผู้ป่วย'
         ]
       },
-      { id:'coombs', name:'Direct / Indirect Antiglobulin Test (Coombs)', specimen:'EDTA whole blood (DAT) / Serum (IAT)',
-        params:[{name:'DAT', range:'ตรวจ antibody ที่เกาะเม็ดเลือดแดงในร่างกาย (HDFN, hemolytic transfusion reaction, AIHA)'},{name:'IAT', range:'ตรวจ antibody อิสระในซีรั่ม'}],
-        method:'Antihuman globulin reagent',
+      { id:'coombs', name:'Direct / Indirect Antiglobulin Test (Coombs) — รวมการเตรียม Screening Cell O1/O2', specimen:'EDTA whole blood (DAT) / Serum (IAT)',
+        params:[
+          {name:'DAT', range:'ตรวจ antibody ที่เกาะเม็ดเลือดแดงในร่างกาย (HDFN, hemolytic transfusion reaction, AIHA)'},
+          {name:'IAT', range:'ตรวจ antibody อิสระในซีรั่ม'},
+          {name:'Screening Cell O1/O2', range:'เม็ดเลือดกรุ๊ป O ที่ทราบ phenotype ครบถ้วน 2 ชนิด (O1, O2) ใช้แทน A/B antigen เพื่อตรวจหา unexpected antibody นอกระบบ ABO โดยไม่รบกวนจาก anti-A/anti-B ของผู้ป่วยเอง'}
+        ],
+        method:'Antihuman globulin (AHG) reagent ตรวจจับแอนติบอดี IgG/complement ที่เกาะบนผิวเม็ดเลือดแดง',
         procedure:[
           'DAT: ล้างเม็ดเลือดแดงผู้ป่วยด้วย saline 3–4 ครั้งเพื่อกำจัดพลาสมาที่เหลือ',
           'เติม AHG reagent ลงในเม็ดเลือดที่ล้างแล้ว ปั่นเหวี่ยงเบา ๆ แล้วอ่านผล agglutination ทันที',
           'IAT: บ่มซีรั่มผู้ป่วยกับเม็ดเลือดที่ทราบแอนติเจนที่ 37°C แล้วล้างและเติม AHG reagent เช่นเดียวกับ antibody screen',
-          'เติม check cell ในหลอดผลลบเสมอเพื่อยืนยันความถูกต้องของขั้นตอน'
-        ]
+          'เติม check cell ในหลอดผลลบเสมอเพื่อยืนยันความถูกต้องของขั้นตอน',
+          '— การเตรียม Screening Cell O1/O2 สำหรับ IAT/Antibody Screen —',
+          'ใช้เม็ดเลือดแดงกรุ๊ป O สำเร็จรูปจากผู้ผลิต (commercial reagent red cell) ที่มีใบรับรอง phenotype ครบทุก antigen สำคัญ (Rh, Kell, Duffy, Kidd, MNSs, Lewis, P1 เป็นต้น) โดย O1 และ O2 ต้องมี phenotype ต่างกันเพื่อให้ครอบคลุมแอนติเจนสำคัญทั้งหมดร่วมกัน',
+          'เก็บ reagent cell suspension ในตู้เย็น 2–8°C ตามอายุการใช้งานที่ระบุบนฉลาก และปล่อยให้อุณหภูมิใกล้เคียงห้องก่อนใช้งาน',
+          'เจือจาง reagent red cell เป็นความเข้มข้น 2–5% suspension ด้วย saline หรือใช้ suspension สำเร็จรูปจากผู้ผลิตตามคำแนะนำของชุดทดสอบ',
+          'หยด O1 cell suspension และ O2 cell suspension ลงในหลอดแยกกัน แล้วผสมกับซีรั่ม/พลาสมาผู้ป่วยในสัดส่วนที่กำหนด ดำเนินการต่อตามขั้นตอน IAT ข้างต้น (บ่ม 37°C → ล้าง → AHG → อ่านผล → check cell)',
+          'หากทั้ง O1 และ O2 ให้ผลลบ และ check cell ให้ผลบวกตามคาด ให้รายงานผล Antibody Screen เป็นลบ; หากอย่างน้อยหนึ่งชนิดให้ผลบวก ให้ส่งต่อทำ Antibody Identification Panel'
+        ],
+        qc:['ตรวจสอบวันหมดอายุและใบรับรอง phenotype ของ reagent cell O1/O2 ทุกล็อตก่อนนำมาใช้','เก็บรักษา reagent cell ตามอุณหภูมิที่กำหนดเคร่งครัด — การเก็บผิดวิธีทำให้เม็ดเลือดแดงแตกหรือ antigen เสื่อมสภาพ ส่งผลให้ผลตรวจคลาดเคลื่อน']
       },
       { id:'reaction', name:'การสอบสวน Transfusion Reaction', specimen:'Post-reaction clotted + EDTA sample, urine',
         procedure:[
@@ -571,7 +811,7 @@ const SECTIONS = [
   ]
 },
 {
-  id:'micro', name:'จุลชีววิทยา', sub:'Microbiology',
+  id:'micro', name:'Microbiology', sub:'จุลชีววิทยา',
   categories:[
     { name:'การย้อมสีและอาหารเลี้ยงเชื้อ', tests:[
       { id:'gram', name:'Gram Stain', specimen:'สิ่งส่งตรวจต่าง ๆ (สารคัดหลั่ง, colony, body fluid)',
@@ -608,7 +848,7 @@ const SECTIONS = [
         ]
       }
     ]},
-    { name:'Mycology (เชื้อรา)', tests:[
+    { name:'Mycology & AFB Staining (เชื้อรา / เชื้อวัณโรค)', tests:[
       { id:'koh', name:'KOH Preparation (10–20% Potassium Hydroxide Wet Mount)', specimen:'สะเก็ดผิวหนัง, เศษเล็บ, เส้นผม, หรือสิ่งส่งตรวจอื่นที่สงสัยเชื้อรา',
         params:[
           {name:'ผลบวก (Positive)', range:'พบ hyphae (เส้นใยมีผนังกั้นหรือไม่มีก็ได้), spore, หรือ yeast with pseudohyphae'},
@@ -625,13 +865,82 @@ const SECTIONS = [
           'ปิดไดอะแฟรม (condenser) ลงเล็กน้อยเพื่อเพิ่ม contrast ให้เห็นเส้นใยชัดเจนขึ้น',
           'บันทึกและรายงานลักษณะที่พบ เช่น "พบ septate hyphae แตกแขนง" (เข้าได้กับ dermatophyte) หรือ "พบ yeast cell และ pseudohyphae" (เข้าได้กับ Candida)'
         ],
-        qc:['ควรมี positive control หรือทบทวนกับผู้ชำนาญเป็นระยะเพื่อฝึกแยกเส้นใยเชื้อราจากเส้นใยผ้า/ฟองอากาศที่มักสร้างความสับสน (fiber/artifact มักมีขอบคมและหักเป็นมุมฉาก ต่างจาก hyphae ที่มีผนังขนานสม่ำเสมอ)','ผลลบไม่ได้ตัดการติดเชื้อราออกเสมอไป หากสงสัยทางคลินิกสูงควรส่งเพาะเชื้อรา (fungal culture) เพิ่มเติม']
+        qc:['ควรมี positive control หรือทบทวนกับผู้ชำนาญเป็นระยะเพื่อฝึกแยกเส้นใยเชื้อราจากเส้นใยผ้า/ฟองอากาศที่มักสร้างความสับสน (fiber/artifact มักมีขอบคมและหักเป็นมุมฉาก ต่างจาก hyphae ที่มีผนังขนานสม่ำเสมอ)','ผลลบไม่ได้ตัดการติดเชื้อราออกเสมอไป หากสงสัยทางคลินิกสูงควรส่งเพาะเชื้อรา (fungal culture) เพิ่มเติม'],
+        photos:{ note:'แนบภาพถ่ายจากกล้องจุลทรรศน์จริงของทุกผลบวก KOH ที่พบในห้องปฏิบัติการ (เช่น septate hyphae, pseudohyphae, spore) เพื่อใช้เป็นคลังภาพอ้างอิงประกอบการรายงานผล', placeholderCount:6 }
+      },
+      { id:'afb', name:'AFB Smear (Acid-Fast Bacilli Staining)', specimen:'เสมหะ (sputum), body fluid, หรือสิ่งส่งตรวจอื่นที่สงสัยวัณโรค/ non-tuberculous mycobacteria',
+        params:[
+          {name:'การรายงานผล (WHO/IUATLD grading)', range:'Negative (ไม่พบ AFB ใน 100 ฟิลด์) / Scanty 1–9 AFB ต่อ 100 ฟิลด์ / 1+ 10–99 ต่อ 100 ฟิลด์ / 2+ 1–10 ต่อฟิลด์ (ตรวจ ≥50 ฟิลด์) / 3+ >10 ต่อฟิลด์ (ตรวจ ≥20 ฟิลด์)'}
+        ],
+        method:'Ziehl-Neelsen (hot) stain หรือ Kinyoun (cold) stain — อาศัยคุณสมบัติผนังเซลล์ mycobacteria ที่มี mycolic acid สูง ทำให้ทนต่อการล้างด้วยกรด-แอลกอฮอล์ (acid-fast) หลังติดสี carbol fuchsin แล้ว; อาจใช้ Auramine-rhodamine fluorochrome stain ร่วมกับ fluorescence microscope เพื่อคัดกรองเร็วขึ้นในห้องปฏิบัติการที่มีเครื่องมือ',
+        procedure:[
+          'ทำ smear จากส่วนที่เป็นหนอง/purulent ของเสมหะ ผึ่งให้แห้งแล้ว fix ด้วยความร้อน',
+          'Ziehl-Neelsen: ท่วมสไลด์ด้วย carbol fuchsin แล้วให้ความร้อนจนเกิดไอ (steam) โดยไม่ให้เดือด ทิ้งไว้ 5 นาที',
+          'ล้างน้ำ แล้ว decolorize ด้วย acid-alcohol (3% HCl in ethanol) จนสีจางเกือบหมด',
+          'Counterstain ด้วย Methylene blue 30–60 วินาที ล้างน้ำ ผึ่งให้แห้ง',
+          'ตรวจด้วยกำลังขยาย 100x oil immersion อย่างน้อย 100 ฟิลด์ก่อนรายงานผลลบ',
+          'AFB ติดสีแดง/ชมพูสดเป็นแท่งเรียว (rod) เห็นเด่นชัดบนพื้นหลังสีน้ำเงินของ methylene blue',
+          'รายงานผลตามเกณฑ์ WHO/IUATLD grading scale และแจ้งผลบวกให้แพทย์และหน่วยควบคุมวัณโรคทราบทันที'
+        ],
+        qc:['รัน known positive/negative control slide ทุกครั้งที่ย้อมชุดใหม่','AFB smear positive ทุกรายถือเป็น critical/reportable value ต้องแจ้งผลทันทีตามระบบเฝ้าระวังวัณโรคของโรงพยาบาล','ผลลบไม่ตัดวัณโรคออก (sensitivity ต่ำกว่า culture/molecular test) ควรส่ง culture หรือ molecular test (เช่น GeneXpert MTB/RIF) ร่วมด้วยเสมอเมื่อสงสัยทางคลินิก']
+      }
+    ]},
+    { name:'Workflow: การเพาะเชื้อ ระบุชนิด และทดสอบความไวต่อยา', tests:[
+      { id:'workflow', name:'ขั้นตอนตั้งแต่การเพาะเชื้อ → Identification → Antibiotic Susceptibility (แบคทีเรียและเชื้อรา)', specimen:'สิ่งส่งตรวจทางจุลชีววิทยาทุกชนิด (เลือด, เสมหะ, หนอง, ปัสสาวะ, body fluid ฯลฯ)',
+        params:[
+          {name:'ระยะเวลาโดยประมาณ (แบคทีเรียทั่วไป)', range:'เพาะเชื้อ 18–24 ชม. → Iden 4–24 ชม. → AST 16–18 ชม. (รวม ~2–3 วัน)'},
+          {name:'ระยะเวลาโดยประมาณ (เชื้อรา — yeast)', range:'เพาะเชื้อ 24–72 ชม. → Iden (germ tube/chromogenic agar/biochemical) 1–3 วัน → AST (หากจำเป็น) เพิ่มอีก 1–2 วัน'},
+          {name:'ระยะเวลาโดยประมาณ (เชื้อรา — mold)', range:'เพาะเชื้อและรอโคโลนีเจริญเต็มที่ 3–14 วัน (ขึ้นกับชนิดเชื้อ) → Iden จากลักษณะโคโลนีและ microscopic morphology (slide culture/lactophenol cotton blue)'}
+        ],
+        method:'กระบวนการมาตรฐาน 3 ขั้นตอนหลักของงานจุลชีววิทยาคลินิก: (1) การเพาะแยกเชื้อให้ได้ pure colony (2) การระบุชนิดเชื้อ (identification) ด้วยวิธี biochemical/automated system/MALDI-TOF (3) การทดสอบความไวต่อยาต้านจุลชีพเพื่อเลือกการรักษาที่เหมาะสม',
+        procedure:[
+          '1) Specimen processing: ตรวจสอบคุณภาพสิ่งส่งตรวจ (rejection criteria เช่น เสมหะที่มี squamous epithelial cell มากเกินไป), ทำ Gram stain โดยตรงเพื่อดูข้อมูลเบื้องต้นก่อนผลเพาะเชื้อออก',
+          '2) Culture: streak สิ่งส่งตรวจลงอาหารเลี้ยงเชื้อที่เหมาะสม (Blood agar, MacConkey, Chocolate agar สำหรับแบคทีเรีย; Sabouraud Dextrose Agar ± antibiotic สำหรับเชื้อรา) บ่มในอุณหภูมิ/บรรยากาศที่เหมาะสม (35–37°C, บาง species ต้องการ CO2 5–10%; เชื้อราบ่มที่ 25–30°C ร่วมกับ 35°C)',
+          '3) แยก pure colony: เลือกโคโลนีเด่น (predominant/pathogenic-looking colony) มา subculture แยกให้บริสุทธิ์ก่อนทำ identification ทุกครั้ง',
+          '4) Identification — แบคทีเรีย: ใช้ biochemical test panel (เช่น catalase, coagulase, oxidase, indole, TSI) หรือระบบอัตโนมัติ (VITEK, MALDI-TOF mass spectrometry) เพื่อระบุ genus/species',
+          '5) Identification — เชื้อรา (yeast): germ tube test (คัดกรอง C. albicans), chromogenic agar (CHROMagar Candida แยกสีตามชนิด), biochemical/automated system (API 20C AUX, VITEK-YST)',
+          '6) Identification — เชื้อรา (mold): ดูลักษณะโคโลนี (สี, texture, growth rate) ร่วมกับ microscopic morphology จาก slide culture หรือ lactophenol cotton blue (LPCB) mount เพื่อดูรูปร่าง conidia/hyphae',
+          '7) Antibiotic Susceptibility Testing (AST): ทำ Kirby-Bauer disk diffusion หรือ automated MIC system (VITEK, broth microdilution) กับเชื้อแบคทีเรียที่มีนัยสำคัญทางคลินิก แปลผลตามตาราง CLSI/EUCAST ปีล่าสุด',
+          '8) Antifungal Susceptibility Testing: ทำเมื่อมีข้อบ่งชี้ทางคลินิก (เช่น invasive candidiasis, treatment failure) ด้วยวิธี broth microdilution (CLSI M27/M38) หรือ E-test',
+          '9) รายงานผลเป็นลำดับขั้น: รายงาน Gram stain/preliminary ทันที → รายงานชื่อเชื้อเมื่อ identification เสร็จ → รายงานผล AST ฉบับสมบูรณ์เมื่อครบขั้นตอน พร้อมแจ้ง critical value ทันทีหากพบเชื้อก่อโรครุนแรงหรือดื้อยา'
+        ],
+        qc:['ควบคุมคุณภาพอาหารเลี้ยงเชื้อทุก lot ด้วย reference strain ก่อนนำมาใช้งาน','บันทึกเวลาในแต่ละขั้นตอน (turnaround time) เพื่อติดตามประสิทธิภาพงานบริการ','ทวนสอบผล identification กับผลย้อม Gram/ลักษณะโคโลนีเสมอ หากไม่สอดคล้องกันต้องตรวจสอบซ้ำ']
+      },
+      { id:'resistreport', name:'แนวทางการรายงานเชื้อดื้อยา (MDR / XDR / PDR & Alert Organism)', specimen:'-',
+        params:[
+          {name:'MDR (Multidrug-Resistant)', range:'ดื้อยาอย่างน้อย 1 ชนิดใน ≥3 กลุ่มยาต้านจุลชีพขึ้นไป'},
+          {name:'XDR (Extensively Drug-Resistant)', range:'ดื้อยาเกือบทุกกลุ่ม เหลือยาที่ยังได้ผลเพียง 1–2 กลุ่ม'},
+          {name:'PDR (Pandrug-Resistant)', range:'ดื้อยาต้านจุลชีพที่มีใช้ทางคลินิกทุกกลุ่ม'},
+          {name:'Alert Organism ตัวอย่าง', range:'MRSA, VRE, CRE (Carbapenem-resistant Enterobacterales), ESBL-producing organism, CRAB (Carbapenem-resistant A. baumannii)'}
+        ],
+        method:'ใช้ผล AST ประกอบกับนิยามมาตรฐาน (CDC/ECDC consensus definition) เพื่อจัดกลุ่มเชื้อดื้อยาและแจ้งเตือนทีมควบคุมการติดเชื้อ (Infection Control Team)',
+        procedure:[
+          'เมื่อผล AST ออก ให้ตรวจสอบรูปแบบการดื้อยาเทียบกับนิยาม MDR/XDR/PDR และรายชื่อ alert organism ของโรงพยาบาล',
+          'หากเข้าเกณฑ์ alert organism (เช่น พบ CRE, MRSA, VRE) ให้แจ้งแพทย์เจ้าของไข้และทีมควบคุมการติดเชื้อ (IC) ทันทีนอกเหนือจากการรายงานผลปกติ',
+          'ยืนยันกลไกการดื้อยาเพิ่มเติมตามนโยบายห้องปฏิบัติการ (เช่น ESBL confirmatory test ด้วย double-disk synergy, mCIM/eCIM สำหรับ carbapenemase)',
+          'บันทึกข้อมูลเชื้อดื้อยาลงระบบเฝ้าระวังของโรงพยาบาลและรายงานแนวโน้มเชิงสถิติ (antibiogram) เป็นระยะ',
+          'ระบุข้อความเตือนในใบรายงานผล เช่น "Alert organism — แจ้งทีมควบคุมการติดเชื้อแล้ว" เพื่อให้บุคลากรทางคลินิกทราบและปฏิบัติตามมาตรการ isolation precaution'
+        ],
+        qc:['ทบทวนนิยาม MDR/XDR/PDR ให้เป็นปัจจุบันตามแนวทาง CDC/ECDC หรือแนวทางกระทรวงสาธารณสุขที่ใช้ในประเทศ','เชื้อดื้อยากลุ่ม alert organism ทุกตัวถือเป็น critical value ต้องรายงานทันทีเสมอ ไม่รอรวมกับผลตรวจอื่น']
+      },
+      { id:'flora', name:'Normal Flora ของร่างกายแต่ละตำแหน่ง', specimen:'-',
+        params:[
+          {name:'ผิวหนัง (Skin)', range:'Coagulase-negative Staphylococcus, Corynebacterium spp., Cutibacterium (Propionibacterium) acnes, Malassezia spp.'},
+          {name:'ช่องปาก/คอ (Oral/Oropharynx)', range:'Viridans streptococci, Neisseria spp. (non-pathogenic), Corynebacterium spp., anaerobes (Fusobacterium, Prevotella)'},
+          {name:'ทางเดินหายใจส่วนบน (Nasopharynx)', range:'Staphylococcus epidermidis, Corynebacterium spp., บางรายพบ S. aureus/S. pneumoniae/H. influenzae โดยไม่มีอาการ (carrier)'},
+          {name:'ทางเดินอาหาร (Colon)', range:'Bacteroides spp., Escherichia coli, Enterococcus spp., Clostridium spp., Bifidobacterium spp. (ปริมาณมากที่สุดในร่างกาย)'},
+          {name:'ช่องคลอด (Vagina — วัยเจริญพันธุ์)', range:'Lactobacillus spp. เป็นหลัก (รักษาสภาพ pH เป็นกรด)'},
+          {name:'ท่อปัสสาวะส่วนปลาย (Distal urethra)', range:'Coagulase-negative Staphylococcus, Corynebacterium spp., viridans streptococci ปริมาณเล็กน้อย'},
+          {name:'ตำแหน่งที่ควรปราศจากเชื้อ (Normally sterile)', range:'เลือด, CSF, ปัสสาวะในกระเพาะปัสสาวะ, ข้อ (synovial fluid), เยื่อหุ้มปอด/ช่องท้อง — พบเชื้อใด ๆ ถือว่าผิดปกติและมีนัยสำคัญทางคลินิก'}
+        ],
+        method:'ใช้ประกอบการแปลผลเพาะเชื้อว่าเชื้อที่พบเป็น normal flora (อาจเป็น contamination) หรือเป็นเชื้อก่อโรคจริงตามตำแหน่งที่เก็บสิ่งส่งตรวจ',
+        qc:['การพบ normal flora ในตำแหน่งที่ควรปราศจากเชื้อ (เช่น coagulase-negative Staph ใน blood culture) ต้องพิจารณาความเป็นไปได้ของ contamination ระหว่างเก็บตัวอย่างเสมอ ก่อนแปลผลว่าเป็นการติดเชื้อจริง']
       }
     ]}
   ]
 },
 {
-  id:'ua', name:'ปัสสาวะและสารน้ำในร่างกาย', sub:'Urinalysis & Body Fluids',
+  id:'ua', name:'Urinalysis & Body Fluids', sub:'ปัสสาวะและสารน้ำในร่างกาย',
   categories:[
     { name:'Urinalysis', tests:[
       { id:'ua', name:'Routine Urinalysis', specimen:'Midstream clean-catch urine (ตรวจภายใน 1 ชม. หรือแช่เย็น)',
@@ -680,12 +989,58 @@ const SECTIONS = [
           {name:'Septic', range:'WBC >50,000/µL, neutrophil >75%'}
         ],
         method:'ตรวจผลึกด้วยกล้อง polarized microscope: เข็มปลายแหลม negatively birefringent = เกาต์ (monosodium urate); รูปสี่เหลี่ยมข้าวหลามตัด positively birefringent = pseudogout (CPPD)'
+      },
+      { id:'bfcell', name:'Body Fluid Cell Differential & Reporting (การนับแยกชนิดเซลล์ใน Body Fluid)', specimen:'CSF, Pleural/Peritoneal/Pericardial fluid, Synovial fluid (cytospin preparation แนะนำสำหรับ fluid ที่มีเซลล์น้อย)',
+        params:[
+          {name:'Neutrophil', range:'บ่งชี้การอักเสบเฉียบพลัน/ติดเชื้อแบคทีเรีย'},
+          {name:'Lymphocyte', range:'บ่งชี้การติดเชื้อไวรัส/วัณโรค/เรื้อรัง'},
+          {name:'Mesothelial cell', range:'เซลล์บุผิวปกติของเยื่อหุ้มช่องต่าง ๆ พบได้ใน pleural/peritoneal fluid ปกติ'},
+          {name:'Macrophage/Histiocyte', range:'พบได้ทั่วไป เพิ่มขึ้นในภาวะอักเสบเรื้อรังหรือหลังมีเลือดออกเก่า (hemosiderin-laden macrophage)'},
+          {name:'Malignant/Atypical cell', range:'เซลล์ที่มีนิวเคลียสผิดปกติ ขนาดใหญ่ N:C ratio สูง เรียงกลุ่มผิดปกติ — ต้องส่งต่อ cytology/พยาธิแพทย์ยืนยัน'}
+        ],
+        method:'ทำ cytospin หรือ smear โดยตรงจากตัวอย่างที่ปั่นเหวี่ยงแล้ว ย้อมด้วย Wright-Giemsa หรือ Papanicolaou แล้วนับแยกชนิดเซลล์ภายใต้กล้องจุลทรรศน์กำลังขยาย 100x oil immersion',
+        procedure:[
+          'ปั่นเหวี่ยง body fluid ที่ 1,500–2,000 rpm นาน 5–10 นาที เพื่อแยกเซลล์ตะกอน (สำหรับตัวอย่างที่มีเซลล์น้อยแนะนำใช้ cytocentrifuge/cytospin เพื่อเก็บเซลล์ให้ครบและกระจายสม่ำเสมอ)',
+          'ทำ smear จากตะกอนเซลล์บนแผ่นสไลด์ ผึ่งให้แห้ง แล้วย้อมด้วย Wright-Giemsa (หรือส่งย้อม Papanicolaou หากสงสัย malignancy)',
+          'นับแยกชนิดเซลล์ 100 เซลล์ในบริเวณที่เซลล์กระจายสม่ำเสมอ บันทึกสัดส่วนเป็นเปอร์เซ็นต์ของแต่ละชนิด',
+          'บันทึกและถ่ายภาพเซลล์ทุกชนิดที่พบจากกล้องจุลทรรศน์จริงของห้องปฏิบัติการ เพื่อเก็บเป็นคลังภาพอ้างอิงประกอบรายงานผลและใช้สอนทบทวน',
+          'หากพบเซลล์ที่มีลักษณะผิดปกติ/สงสัย malignant cell ให้ส่งต่อยืนยันกับพยาธิแพทย์ (cytopathologist) เสมอ ห้ามรายงาน "พบเซลล์มะเร็ง" โดยนักเทคนิคการแพทย์เพียงลำพัง'
+        ],
+        qc:['เปรียบเทียบผลนับแยกชนิดเซลล์กับผลนับเซลล์รวม (total cell count) และลักษณะทางคลินิกเสมอ','เซลล์ผิดปกติ/สงสัย malignant cell ถือเป็นผลที่ต้องรายงานด่วนและปรึกษาแพทย์/พยาธิแพทย์ทันที'],
+        photos:{ note:'เพิ่มภาพถ่ายเซลล์ทุกชนิดที่พบจากกล้องจุลทรรศน์จริงของห้องปฏิบัติการ (neutrophil, lymphocyte, mesothelial cell, macrophage, malignant cell ฯลฯ) เพื่อใช้เป็นคลังภาพอ้างอิงประกอบการรายงานผล', placeholderCount:8 }
+      },
+      { id:'sperm', name:'Semen Analysis (การตรวจอสุจิ)', specimen:'น้ำอสุจิที่เก็บโดยการช่วยตัวเอง หลังงดหลั่งอสุจิ 2–7 วัน ส่งตรวจภายใน 1 ชม. และเก็บที่อุณหภูมิร่างกาย/ห้องระหว่างขนส่ง',
+        params:[
+          {name:'Volume', range:'≥1.5 mL'},
+          {name:'Liquefaction time', range:'ภายใน 15–60 นาทีที่อุณหภูมิห้อง'},
+          {name:'pH', range:'≥7.2'},
+          {name:'Sperm concentration', range:'≥15 ล้านตัว/mL'},
+          {name:'Total sperm number', range:'≥39 ล้านตัว/การหลั่งทั้งหมด'},
+          {name:'Total motility (PR+NP)', range:'≥40%'},
+          {name:'Progressive motility (PR)', range:'≥32%'},
+          {name:'Normal morphology', range:'≥4% (Strict/Kruger criteria)'},
+          {name:'Vitality', range:'≥58% ตัวที่มีชีวิต'},
+          {name:'WBC', range:'<1 ล้านตัว/mL (ค่าสูงบ่งชี้ genital tract infection/leukocytospermia)'}
+        ],
+        method:'WHO Laboratory Manual for the Examination and Processing of Human Semen (ฉบับล่าสุด) — ประเมิน macroscopic + microscopic parameters',
+        procedure:[
+          'บันทึกเวลาที่เก็บตัวอย่างและเวลาที่รับตรวจ ปล่อยให้ liquefy ที่อุณหภูมิห้อง/37°C จนเป็นของเหลวเนื้อเดียวกัน (ปกติภายใน 15–60 นาที)',
+          'ประเมิน macroscopic: ปริมาตร (วัดด้วยกระบอกตวง/ปิเปตวัดปริมาตร), สี, ความหนืด (viscosity), pH ด้วยกระดาษวัด pH',
+          'เตรียม wet mount ปริมาณ 10 µL ปิดด้วย coverslip ขนาดมาตรฐาน ตรวจด้วยกำลังขยาย 400x เพื่อประเมิน motility ภายใน 1 ชม. หลังหลั่ง',
+          'จำแนก motility เป็น Progressive (PR), Non-progressive (NP), Immotile (IM) นับอย่างน้อย 200 ตัวใน ≥5 ฟิลด์',
+          'นับ sperm concentration ด้วย hemocytometer (Neubauer/Makler chamber) หลังเจือจางตามสัดส่วนมาตรฐาน',
+          'ประเมิน morphology จาก smear ที่ย้อมด้วย Papanicolaou หรือ Diff-Quik ตามเกณฑ์ strict (Kruger) criteria นับ 200 ตัว',
+          'ประเมิน vitality ด้วย eosin-nigrosin stain (ตัวที่มีชีวิตจะไม่ติดสี ตัวที่ตายจะติดสีแดง) ในกรณีที่ total motility ต่ำมาก',
+          'นับจำนวน round cell/WBC และย้อมแยก peroxidase หากสงสัย leukocytospermia',
+          'รายงานผลตามค่าอ้างอิงของ WHO ฉบับล่าสุด พร้อมระบุระยะเวลาการงดหลั่งและระยะเวลาตรวจหลังเก็บตัวอย่าง'
+        ],
+        qc:['ตรวจซ้ำอย่างน้อย 2 ครั้งห่างกัน ≥7 วัน (สูงสุด 3 เดือน) ก่อนสรุปผลผิดปกติ เนื่องจากคุณภาพอสุจิแปรปรวนได้ตามช่วงเวลา','ควบคุมอุณหภูมิและเวลาตรวจอย่างเคร่งครัด — ตัวอย่างที่เย็นเกินไปหรือตรวจช้าเกิน 1 ชม. ทำให้ motility ต่ำเทียม']
       }
     ]}
   ]
 },
 {
-  id:'sero', name:'ภูมิคุ้มกันวิทยา/เซรุ่มวิทยา', sub:'Immunology / Serology',
+  id:'sero', name:'Immunology / Serology', sub:'ภูมิคุ้มกันวิทยา/เซรุ่มวิทยา',
   categories:[
     { name:'การตรวจคัดกรองที่พบบ่อย', tests:[
       { id:'hbsag', name:'HBsAg', specimen:'Serum', params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'บ่งชี้การติดเชื้อ HBV — ยืนยันตาม protocol ของห้องปฏิบัติการ'}], method:'CLIA/ECLIA หรือ rapid lateral flow immunochromatography',
@@ -773,7 +1128,7 @@ const SECTIONS = [
   ]
 },
 {
-  id:'para', name:'ปรสิตวิทยา', sub:'Parasitology',
+  id:'para', name:'Parasitology', sub:'ปรสิตวิทยา',
   categories:[
     { name:'Stool Examination', tests:[
       { id:'ova', name:'Stool for Ova & Parasite (O&P)', specimen:'อุจจาระสด (หรือใส่สารกันเสีย formalin/SAF)',
@@ -1175,12 +1530,41 @@ function renderTestCard(test, pathLabel){
       ${test.method? `<div class="block"><h4>วิธี / หลักการ</h4><p>${esc(test.method)}</p></div>`:''}
       ${test.procedure? `<div class="block"><h4>ขั้นตอนปฏิบัติ</h4><ul>${test.procedure.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`:''}
       ${test.qc? `<div class="block qc-block"><h4>QC / Troubleshooting</h4><ul>${test.qc.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`:''}
+      ${renderPhotoBlock(test)}
       <div class="note-area">
         <h4>บันทึกส่วนตัว (เฉพาะอุปกรณ์นี้ของคุณ)</h4>
         <textarea id="note-${test.id}" placeholder="เช่น ค่าปกติเฉพาะของเครื่อง/ห้องแล็บของคุณ, ข้อควรระวังเพิ่มเติม..." onblur="handleNoteBlur('${test.id}')"></textarea>
         <div class="note-status" id="status-${test.id}"></div>
       </div>
     </div>
+  </div>`;
+}
+
+function renderPhotoBlock(test){
+  if(!test.photos) return '';
+  const ph = test.photos;
+  const items = ph.items || [];
+  if(items.length){
+    return `<div class="block photo-block">
+      <h4>ภาพถ่ายจากกล้องจุลทรรศน์จริงของห้องปฏิบัติการ</h4>
+      ${ph.note? `<p style="color:var(--muted);font-size:12.5px;margin:0 0 8px;">${esc(ph.note)}</p>`:''}
+      <div class="photo-grid">
+        ${items.map(it=>`
+          <div class="photo-img-wrap">
+            <img src="${esc(it.src)}" alt="${esc(it.caption||test.name)}" loading="lazy">
+            ${it.caption? `<div class="cap">${esc(it.caption)}</div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  const n = ph.placeholderCount || 4;
+  return `<div class="block photo-block">
+    <h4>ภาพถ่ายจากกล้องจุลทรรศน์จริงของห้องปฏิบัติการ</h4>
+    ${ph.note? `<p style="color:var(--muted);font-size:12.5px;margin:0 0 8px;">${esc(ph.note)}</p>`:''}
+    <div class="photo-grid">
+      ${Array.from({length:n}).map((_,i)=>`<div class="photo-slot"><span class="cam">📷</span>ยังไม่มีภาพ<br>ตำแหน่งที่ ${i+1}</div>`).join('')}
+    </div>
+    <p class="photo-hint">ห้องปฏิบัติการสามารถแนบภาพถ่ายจริงได้ โดยเพิ่มไฟล์ในโฟลเดอร์ images/ แล้วเติมลงใน <code>test.photos.items</code> ของรายการนี้ในโค้ด เช่น <code>{src:'images/koh-1.jpg', caption:'Septate hyphae, 40x'}</code></p>
   </div>`;
 }
 
