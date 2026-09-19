@@ -77,6 +77,7 @@
   .test-head:hover{background:#FAFCFB;}
   .test-head .name{font-weight:600;font-size:15px;color:var(--ink);}
   .test-head .specimen{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .test-head .tat{font-size:12px;color:var(--teal-deep);font-weight:600;margin-top:3px;display:inline-block;background:var(--teal-tint);padding:2px 8px;border-radius:20px;}
   .chev{color:var(--muted);transition:transform .15s ease;flex:0 0 auto;}
   .test-card.open .chev{transform:rotate(180deg);}
 
@@ -111,16 +112,19 @@
   .art-panel .art-links a:hover{text-decoration:underline;}
 
   .photo-block .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:6px;}
-  .photo-slot{
-    aspect-ratio:4/3;border:1.5px dashed var(--line);border-radius:8px;background:#FAFCFB;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-    color:var(--muted);font-size:11px;text-align:center;padding:6px;
-  }
-  .photo-slot .cam{font-size:20px;opacity:.55;}
-  .photo-img-wrap{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000;}
+  .photo-img-wrap{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000;aspect-ratio:4/3;}
   .photo-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
-  .photo-img-wrap .cap{font-size:11px;color:var(--muted);padding:5px 7px;background:var(--surface);}
-  .photo-hint{font-size:12px;color:var(--muted);margin:6px 0 0;}
+  .photo-img-wrap .cap{position:absolute;left:0;right:0;bottom:0;font-size:11px;color:#fff;padding:5px 7px;background:rgba(0,0,0,0.55);}
+  .photo-img-wrap .photo-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,0.55);color:#fff;font-size:12px;line-height:1;cursor:pointer;}
+  .photo-img-wrap .photo-del:hover{background:rgba(167,59,46,0.9);}
+  .photo-hint{font-size:12px;color:var(--muted);margin:6px 0 4px;}
+  .upload-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center;}
+  .upload-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--teal-deep);background:var(--teal-tint);border:1px solid var(--teal);border-radius:20px;padding:7px 14px;cursor:pointer;white-space:nowrap;}
+  .upload-btn:hover{filter:brightness(0.97);}
+  .upload-btn input[type="file"]{display:none;}
+  .caption-input{flex:1;min-width:160px;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);}
+  .upload-status{font-size:12px;color:var(--muted);margin-top:6px;min-height:14px;}
+  .user-photos{margin-top:4px;}
 
   .note-area{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px;}
   .note-area h4{font-size:12px;color:var(--muted);margin:0 0 6px;font-weight:600;}
@@ -166,7 +170,7 @@ const SECTIONS = [
   id:'heme', name:'Hematology', sub:'โลหิตวิทยา',
   categories:[
     { name:'Complete Blood Count & Indices', tests:[
-      { id:'cbc', name:'CBC (Complete Blood Count)', specimen:'EDTA (จุกม่วง) whole blood',
+      { id:'cbc', name:'CBC (Complete Blood Count)', specimen:'EDTA (จุกม่วง) whole blood', tat:'30–60 นาที (STAT ~30 นาที)',
         params:[
           {name:'WBC', range:'4.5–11.0 ×10³/µL', critical:'<2.0 หรือ >30.0'},
           {name:'RBC', range:'ชาย 4.5–5.9 / หญิง 4.0–5.2 ×10⁶/µL'},
@@ -194,7 +198,7 @@ const SECTIONS = [
       }
     ]},
     { name:'Differential & Morphology', tests:[
-      { id:'diff', name:'WBC Differential (Manual/Automated)', specimen:'EDTA whole blood / blood smear',
+      { id:'diff', name:'WBC Differential (Manual/Automated)', specimen:'EDTA whole blood / blood smear', tat:'1–2 ชั่วโมง (นานขึ้นหากต้องนับด้วยมือ)',
         params:[
           {name:'Neutrophil (Segmented)', range:'40–70%'},
           {name:'Band form', range:'0–5%'},
@@ -216,7 +220,7 @@ const SECTIONS = [
           'ให้หัวหน้างาน/ผู้ชำนาญทบทวนเซลล์ผิดปกติ (atypical cells)'
         ]
       },
-      { id:'retic', name:'Reticulocyte Count', specimen:'EDTA whole blood',
+      { id:'retic', name:'Reticulocyte Count', specimen:'EDTA whole blood', tat:'1–2 ชั่วโมง',
         params:[{name:'Reticulocyte %', range:'ผู้ใหญ่ 0.5–2.5%'},{name:'Absolute retic', range:'25–75 ×10³/µL'}],
         method:'Supravital stain (New Methylene Blue) หรือ automated flow cytometry',
         procedure:['ผสมเลือดกับสีย้อมอัตราส่วน 1:1','บ่ม 10–15 นาที','ทำ smear และนับ reticulocyte ต่อ RBC 1,000 เซลล์'],
@@ -224,7 +228,7 @@ const SECTIONS = [
       }
     ]},
     { name:'ESR', tests:[
-      { id:'esr', name:'Erythrocyte Sedimentation Rate (ESR)', specimen:'Sodium citrate หรือ EDTA (ตามวิธี)',
+      { id:'esr', name:'Erythrocyte Sedimentation Rate (ESR)', specimen:'Sodium citrate หรือ EDTA (ตามวิธี)', tat:'~70 นาที (ต้องอ่านผลที่ 60 นาทีพอดีหลังตั้งหลอด)',
         params:[
           {name:'ชาย <50 ปี', range:'0–15 mm/hr'},
           {name:'ชาย >50 ปี', range:'0–20 mm/hr'},
@@ -237,7 +241,7 @@ const SECTIONS = [
       }
     ]},
     { name:'RBC & Platelet Morphology และการรายงานผล', tests:[
-      { id:'rbcmorph', name:'RBC Morphology & Reporting', specimen:'Peripheral blood smear (Wright-Giemsa stain)',
+      { id:'rbcmorph', name:'RBC Morphology & Reporting', specimen:'Peripheral blood smear (Wright-Giemsa stain)', tat:'1–2 ชั่วโมง (รายงานร่วมกับผล CBC)',
         params:[
           {name:'Anisocytosis (ขนาดไม่เท่ากัน)', range:'รายงานเป็น 1+ ถึง 4+ (สัมพันธ์กับ RDW)'},
           {name:'Poikilocytosis (รูปร่างผิดปกติ)', range:'รายงานเป็น 1+ ถึง 4+ พร้อมระบุชนิด'},
@@ -256,7 +260,7 @@ const SECTIONS = [
         ],
         qc:['ต้องรายงานสัณฐานวิทยาให้สอดคล้องกับ indices เช่น MCV ต่ำ + hypochromia เข้าได้กับ iron deficiency หรือ thalassemia','ให้ผู้ตรวจสอบระดับสูงทบทวนเมื่อพบเซลล์ผิดปกติชนิดที่มีนัยสำคัญ (เช่น schistocyte จำนวนมาก สงสัย MAHA/TTP ต้องรายงาน critical value)']
       },
-      { id:'pltmorph', name:'Platelet Estimate & Reporting', specimen:'Peripheral blood smear (Wright-Giemsa stain)',
+      { id:'pltmorph', name:'Platelet Estimate & Reporting', specimen:'Peripheral blood smear (Wright-Giemsa stain)', tat:'1–2 ชั่วโมง (รายงานร่วมกับผล CBC)',
         params:[
           {name:'ค่าประมาณจากการนับด้วยตา (Estimate)', range:'เฉลี่ยจำนวนเกล็ดเลือดต่อ oil-immersion field (100x) × 15,000–20,000 = ค่าประมาณต่อ µL'},
           {name:'Adequate', range:'สอดคล้องกับค่าที่เครื่องนับอัตโนมัติรายงาน'},
@@ -277,7 +281,7 @@ const SECTIONS = [
       }
     ]},
     { name:'เทคนิคการย้อมสีและการคำนวณแก้ไขผล', tests:[
-      { id:'giemsa', name:'การย้อมสี Wright-Giemsa (Peripheral Blood Smear Staining)', specimen:'Blood smear ที่ทำแห้งสนิทแล้ว (air-dried)',
+      { id:'giemsa', name:'การย้อมสี Wright-Giemsa (Peripheral Blood Smear Staining)', specimen:'Blood smear ที่ทำแห้งสนิทแล้ว (air-dried)', tat:'15–20 นาที (ขั้นตอนย้อมสีก่อนนำไปอ่านผล)',
         params:[
           {name:'Wright stain (undiluted)', range:'ย้อมนาน 1–3 นาที (ตามคู่มือน้ำยาแต่ละ lot)'},
           {name:'Buffer (phosphate buffered water)', range:'pH 6.4–6.8 เติมปริมาณเท่ากับ stain แล้วผสม 3–5 นาที'},
@@ -296,7 +300,7 @@ const SECTIONS = [
         ],
         qc:['ย้อม control slide (ที่ทราบผลปกติ) คู่กับตัวอย่างเมื่อเปลี่ยน lot น้ำยาใหม่ทุกครั้ง','pH ของ buffer มีผลต่อสีที่ได้มาก — pH สูงเกินทำให้ติดสีน้ำเงินเกิน (too basophilic) pH ต่ำเกินทำให้ติดสีชมพูเกิน (too eosinophilic)','เปลี่ยนน้ำยา stain และ buffer ตามรอบที่ห้องปฏิบัติการกำหนด และกรองตะกอนสีที่ตกค้างเป็นระยะ']
       },
-      { id:'corrwbc', name:'Corrected WBC Count (แก้ไขค่า WBC เมื่อมี NRBC)', specimen:'EDTA whole blood + Blood smear',
+      { id:'corrwbc', name:'Corrected WBC Count (แก้ไขค่า WBC เมื่อมี NRBC)', specimen:'EDTA whole blood + Blood smear', tat:'เพิ่มจากเวลา CBC/Diff ปกติ ~30 นาที เมื่อพบ NRBC',
         params:[
           {name:'สูตรคำนวณ', range:'Corrected WBC = (Uncorrected WBC × 100) ÷ (100 + จำนวน NRBC ต่อ WBC 100 เซลล์)'},
           {name:'เกณฑ์ที่ต้องแก้ไขค่า', range:'พบ NRBC (nucleated RBC) ≥ 5 ตัวต่อ WBC 100 เซลล์บน differential'}
@@ -315,7 +319,7 @@ const SECTIONS = [
       }
     ]},
     { name:'การตรวจเพิ่มเติมเฉพาะทาง (Special Hematology)', tests:[
-      { id:'manualhct', name:'Hematocrit ด้วยวิธี Manual (Microhematocrit/Spun Hct)', specimen:'EDTA whole blood หรือ capillary blood (heel/finger stick)',
+      { id:'manualhct', name:'Hematocrit ด้วยวิธี Manual (Microhematocrit/Spun Hct)', specimen:'EDTA whole blood หรือ capillary blood (heel/finger stick)', tat:'15–30 นาที',
         params:[
           {name:'ชาย', range:'40–54%'},
           {name:'หญิง', range:'36–46%'},
@@ -332,7 +336,7 @@ const SECTIONS = [
         ],
         qc:['ต้องปั่นเป็นคู่ (duplicate) เสมอ ค่าที่ยอมรับได้ต่างกันไม่เกิน 1–2%','ตรวจสอบว่าไม่มีฟองอากาศและ sealant ไม่รั่ว มิฉะนั้นค่าที่ได้จะคลาดเคลื่อน','Hct สูงเทียมหากมี seal ไม่แน่น (เลือดรั่วออกระหว่างปั่น) หรือปั่นเวลา/ความเร็วไม่พอ']
       },
-      { id:'bmstain', name:'การย้อม Bone Marrow (Bone Marrow Aspirate Smear Staining)', specimen:'Bone marrow aspirate smear (ทำ smear ทันทีหลังเจาะดูดจากกระดูกสันหลังส่วน iliac crest หรือ sternum)',
+      { id:'bmstain', name:'การย้อม Bone Marrow (Bone Marrow Aspirate Smear Staining)', specimen:'Bone marrow aspirate smear (ทำ smear ทันทีหลังเจาะดูดจากกระดูกสันหลังส่วน iliac crest หรือ sternum)', tat:'1–3 วัน (ย้อม+อ่าน+ออกรายงานฉบับสมบูรณ์)',
         params:[
           {name:'สีที่ใช้ย้อมหลัก', range:'Wright-Giemsa stain (เช่นเดียวกับ peripheral smear แต่ใช้เวลาย้อมนานกว่าเนื่องจากเซลล์มีความเข้มข้นสูง)'},
           {name:'M:E Ratio (Myeloid:Erythroid)', range:'ปกติประมาณ 2:1 ถึง 4:1'},
@@ -350,7 +354,7 @@ const SECTIONS = [
         ],
         qc:['การย้อมและอ่านผล bone marrow ต้องทำโดยผู้ที่ผ่านการฝึกอบรมเฉพาะทางโลหิตวิทยา/พยาธิวิทยาเท่านั้น','เก็บภาพประกอบและบันทึกลักษณะเซลล์ผิดปกติทุกครั้งเพื่อการทบทวนและปรึกษาแพทย์']
       },
-      { id:'g6pd', name:'G6PD Enzyme Activity (Glucose-6-Phosphate Dehydrogenase)', specimen:'EDTA หรือ Heparinized whole blood',
+      { id:'g6pd', name:'G6PD Enzyme Activity (Glucose-6-Phosphate Dehydrogenase)', specimen:'EDTA หรือ Heparinized whole blood', tat:'2–4 ชั่วโมง (batch) หรือ 1–2 วันหากส่งต่อห้องแล็บกลาง',
         params:[{name:'ค่าอ้างอิง', range:'7.9–16.3 IU/gHb (ขึ้นกับวิธีและห้องปฏิบัติการ)'},{name:'Deficient', range:'ต่ำกว่าค่าอ้างอิงต่ำสุดของห้องปฏิบัติการอย่างมีนัยสำคัญ'}],
         method:'วัดอัตราการเกิด NADPH จากปฏิกิริยาที่ G6PD เป็นตัวเร่ง (G6P + NADP⁺ → 6-phosphogluconate + NADPH) ด้วยวิธี spectrophotometric kinetic assay หรือ fluorescent spot test สำหรับคัดกรองเบื้องต้น',
         procedure:[
@@ -362,7 +366,7 @@ const SECTIONS = [
         ],
         qc:['รัน known normal และ known deficient control คู่กับตัวอย่างทุกครั้ง','ระวังผลบวกลวง (falsely normal) ในช่วงที่มี hemolysis เฉียบพลัน/reticulocytosis สูง']
       },
-      { id:'microbiliheme', name:'Microbilirubin (Neonatal Capillary Bilirubin)', specimen:'Capillary blood (heel-stick) ในหลอด microhematocrit/microcuvette ป้องกันแสง',
+      { id:'microbiliheme', name:'Microbilirubin (Neonatal Capillary Bilirubin)', specimen:'Capillary blood (heel-stick) ในหลอด microhematocrit/microcuvette ป้องกันแสง', tat:'30–60 นาที (STAT สำหรับทารกแรกเกิด)',
         params:[{name:'ค่าอ้างอิงทั่วไป', range:'<12 mg/dL (ขึ้นกับอายุเป็นชั่วโมง/วัน และปัจจัยเสี่ยง — ใช้ nomogram ของทารกแรกเกิดในการแปลผล)'}],
         method:'Direct spectrophotometric bilirubinometry จากตัวอย่างเลือดฝอยปริมาณน้อย ใช้คัดกรองภาวะตัวเหลืองในทารกแรกเกิดที่หน่วยงานเจาะเลือดปริมาณมากไม่สะดวก',
         procedure:[
@@ -374,7 +378,7 @@ const SECTIONS = [
         ],
         qc:['ป้องกันตัวอย่างจากแสงตลอดเวลาตั้งแต่เจาะจนถึงวิเคราะห์ (bilirubin สลายตัวเร็วเมื่อโดนแสง ทำให้ได้ค่าต่ำเทียม)','ระวัง hemolysis ในตัวอย่างเลือดฝอยซึ่งรบกวนผลได้มาก']
       },
-      { id:'tzanck', name:"Tzanck Smear (Tzanck Test)", specimen:'สิ่งขูดจากพื้นตุ่มน้ำ (vesicle/bulla) บริเวณผิวหนังที่สงสัยการติดเชื้อ Herpes group',
+      { id:'tzanck', name:"Tzanck Smear (Tzanck Test)", specimen:'สิ่งขูดจากพื้นตุ่มน้ำ (vesicle/bulla) บริเวณผิวหนังที่สงสัยการติดเชื้อ Herpes group', tat:'30–60 นาที',
         params:[
           {name:'ผลบวก', range:'พบ multinucleated giant cell และ/หรือ acantholytic cell'},
           {name:'ความไว', range:'ตรวจพบ multinucleated giant cell ได้ทั้งใน Herpes simplex และ Varicella-zoster (แยกชนิดไม่ได้ด้วยวิธีนี้ ต้องยืนยันด้วย PCR/culture หากต้องการแยกชนิด)'}
@@ -397,7 +401,7 @@ const SECTIONS = [
   id:'coag', name:'Coagulation', sub:'โคแอกกูเลชั่น',
   categories:[
     { name:'การตรวจคัดกรองการแข็งตัวของเลือด', tests:[
-      { id:'pt', name:'PT / INR', specimen:'Sodium citrate (จุกฟ้า) อัตราส่วนเลือด:น้ำยา 9:1',
+      { id:'pt', name:'PT / INR', specimen:'Sodium citrate (จุกฟ้า) อัตราส่วนเลือด:น้ำยา 9:1', tat:'30–60 นาที (STAT ~30 นาที)',
         params:[
           {name:'PT', range:'11–13.5 วินาที (ขึ้นกับรีเอเจนต์)'},
           {name:'INR (รักษาด้วย warfarin ทั่วไป)', range:'2.0–3.0', critical:'INR >5.0 หรือ PT >3 เท่าของ control'}
@@ -415,7 +419,7 @@ const SECTIONS = [
         ],
         qc:['รัน normal และ abnormal control ทุกครั้งที่ทดสอบ','ตรวจปริมาณเลือดในหลอดให้ตรงขีด (เติมน้อยเกินไปทำให้ค่าค้างสูงเกินจริง)','ปฏิเสธตัวอย่างที่แข็งตัวหรือ hemolyzed']
       },
-      { id:'aptt', name:'aPTT', specimen:'Sodium citrate',
+      { id:'aptt', name:'aPTT', specimen:'Sodium citrate', tat:'30–60 นาที (STAT ~30 นาที)',
         params:[{name:'aPTT', range:'25–35 วินาที (ขึ้นกับรีเอเจนต์)'},{name:'Heparin monitoring', range:'1.5–2.5 เท่าของ control'}],
         method:'Activated partial thromboplastin reagent + calcium วัดเวลาแข็งตัว',
         procedure:[
@@ -427,7 +431,7 @@ const SECTIONS = [
         ],
         qc:['รัน level 1/2 control','สงสัย lupus anticoagulant หากค่ายาวผิดปกติโดยไม่ทราบสาเหตุ — พิจารณาทำ mixing study']
       },
-      { id:'fib', name:'Fibrinogen', specimen:'Sodium citrate',
+      { id:'fib', name:'Fibrinogen', specimen:'Sodium citrate', tat:'1–2 ชั่วโมง',
         params:[{name:'Fibrinogen', range:'200–400 mg/dL', critical:'<100 mg/dL (เสี่ยงเลือดออก)'}],
         method:'Clauss method — plasma เจือจาง + thrombin reagent วัดเวลาแข็งตัว',
         procedure:[
@@ -438,7 +442,7 @@ const SECTIONS = [
         ],
         qc:['รัน control ทุกวันที่ทดสอบและตรวจสอบ standard curve ยังใช้ได้','ค่าต่ำมากร่วมกับเลือดออกผิดปกติต้องรายงานทันที']
       },
-      { id:'ddimer', name:'D-dimer', specimen:'Sodium citrate',
+      { id:'ddimer', name:'D-dimer', specimen:'Sodium citrate', tat:'1–2 ชั่วโมง',
         params:[{name:'D-dimer', range:'<0.5 µg/mL FEU (ขึ้นกับชุดทดสอบ)'}],
         method:'Immunoturbidimetric หรือ ELISA-based latex agglutination — ใช้ร่วมกับ clinical probability เพื่อคัดกรอง VTE',
         procedure:[
@@ -449,7 +453,7 @@ const SECTIONS = [
         ],
         qc:['ผล D-dimer ปกติมีค่าในการ "คัดออก" ภาวะ VTE เมื่อ pre-test probability ต่ำ แต่ผลบวกไม่จำเพาะเจาะจง ต้องแปลผลร่วมกับคลินิกเสมอ']
       },
-      { id:'wbct', name:'20-Minute Whole Blood Clotting Time (20WBCT)', specimen:'Whole blood ที่เจาะใหม่ (venous blood) ใส่หลอดแก้วสะอาดที่ไม่เคลือบสาร (plain glass tube ไม่ใช่หลอด siliconized/plastic)',
+      { id:'wbct', name:'20-Minute Whole Blood Clotting Time (20WBCT)', specimen:'Whole blood ที่เจาะใหม่ (venous blood) ใส่หลอดแก้วสะอาดที่ไม่เคลือบสาร (plain glass tube ไม่ใช่หลอด siliconized/plastic)', tat:'20 นาที (ตามระยะเวลาทดสอบ) รวมเวลาเตรียม/อ่านผล ~30 นาที',
         params:[
           {name:'ปกติ', range:'เลือดแข็งตัวเป็นก้อนแน่นภายใน 4–11 นาที'},
           {name:'ผิดปกติ (บ่งชี้ coagulopathy)', range:'เลือดไม่แข็งตัว หรือแข็งตัวเป็นก้อนหลวม/แตกง่ายเมื่อครบ 20 นาที'}
@@ -472,7 +476,7 @@ const SECTIONS = [
   id:'chem', name:'Clinical Chemistry', sub:'เคมีคลินิก',
   categories:[
     { name:'น้ำตาลและเมตาบอลิก', tests:[
-      { id:'glu', name:'Fasting Blood Glucose (FBS)', specimen:'Serum/Plasma (Sodium fluoride tube) หรือ fingerstick',
+      { id:'glu', name:'Fasting Blood Glucose (FBS)', specimen:'Serum/Plasma (Sodium fluoride tube) หรือ fingerstick', tat:'30–60 นาที (STAT ~20–30 นาที)',
         params:[
           {name:'ปกติ (fasting)', range:'70–99 mg/dL'},
           {name:'Prediabetes', range:'100–125 mg/dL'},
@@ -489,7 +493,30 @@ const SECTIONS = [
         ],
         qc:['สังเกต critical value <40 หรือ >500 mg/dL ต้องรายงานแพทย์ทันที','ตัวอย่างที่ไม่ได้ปั่นแยกทันทีจะได้ค่ากลูโคสต่ำเทียมจาก glycolysis ของเม็ดเลือด']
       },
-      { id:'hba1c', name:'HbA1c', specimen:'EDTA whole blood',
+      { id:'ogtt', name:'OGTT (Oral Glucose Tolerance Test)', specimen:'Serum/Plasma (Sodium fluoride tube) — เจาะหลายจุดตามเวลาที่กำหนด', tat:'2–3 ชั่วโมง (ตามระยะเวลาทดสอบ) + เวลาวิเคราะห์แต่ละจุด ~30–60 นาทีหลังเจาะจุดสุดท้าย',
+        params:[
+          {name:'75g OGTT (ผู้ใหญ่ทั่วไป) — Fasting', range:'70–99 mg/dL'},
+          {name:'75g OGTT — 2 ชั่วโมง', range:'<140 mg/dL ปกติ / 140–199 mg/dL Impaired Glucose Tolerance (IGT) / ≥200 mg/dL Diabetes'},
+          {name:'100g OGTT สำหรับ GDM (Carpenter-Coustan criteria) — Fasting', range:'<95 mg/dL'},
+          {name:'100g OGTT สำหรับ GDM — 1 ชั่วโมง', range:'<180 mg/dL'},
+          {name:'100g OGTT สำหรับ GDM — 2 ชั่วโมง', range:'<155 mg/dL'},
+          {name:'100g OGTT สำหรับ GDM — 3 ชั่วโมง', range:'<140 mg/dL'},
+          {name:'การแปลผล GDM', range:'ผิดปกติตั้งแต่ 2 ค่าขึ้นไปจาก 4 ค่า = วินิจฉัย Gestational Diabetes Mellitus'}
+        ],
+        method:'Hexokinase หรือ Glucose oxidase enzymatic method วัดระดับน้ำตาลในเลือดหลายจุดเวลาหลังให้ผู้รับการตรวจดื่มสารละลายกลูโคสมาตรฐาน เพื่อประเมินความสามารถในการควบคุมระดับน้ำตาลของร่างกาย',
+        procedure:[
+          'เตรียมผู้รับการตรวจ: งดอาหารและเครื่องดื่ม (ยกเว้นน้ำเปล่า) อย่างน้อย 8–14 ชั่วโมงก่อนตรวจ และรับประทานอาหารคาร์โบไฮเดรตตามปกติ (≥150 g/วัน) ในช่วง 3 วันก่อนตรวจ',
+          'เจาะเลือด Fasting (เวลา 0 นาที) ก่อนให้ดื่มกลูโคส บันทึกเวลาที่เจาะอย่างชัดเจน',
+          'ให้ผู้รับการตรวจดื่มสารละลายกลูโคสมาตรฐานให้หมดภายใน 5 นาที: 75 กรัม สำหรับการคัดกรองเบาหวานทั่วไป หรือ 100 กรัม สำหรับการวินิจฉัย GDM (ตาม Carpenter-Coustan/NDDG criteria)',
+          'เริ่มจับเวลาทันทีที่ดื่มหมด และเจาะเลือดตามจุดเวลาที่กำหนด: 75g OGTT เจาะที่ 2 ชั่วโมง; 100g OGTT (GDM) เจาะที่ 1, 2 และ 3 ชั่วโมง',
+          'เก็บตัวอย่างทุกจุดในหลอด sodium fluoride/potassium oxalate เพื่อยับยั้ง glycolysis และปั่นแยกพลาสมาโดยเร็วหลังเจาะแต่ละจุด',
+          'ระหว่างรอครบเวลา ผู้รับการตรวจควรนั่งพักเฉย ๆ งดสูบบุหรี่ งดออกกำลังกาย และงดรับประทานอาหาร/เครื่องดื่มอื่นนอกจากน้ำเปล่า',
+          'วิเคราะห์ตัวอย่างทุกจุดด้วยวิธีเดียวกับ FBS (hexokinase/glucose oxidase) และรายงานผลแต่ละช่วงเวลาแยกกันให้ครบถ้วน',
+          'แจ้งแพทย์ทันทีหากพบค่าเข้าเกณฑ์ critical value ระหว่างการทดสอบ (เช่น hypoglycemia รุนแรงที่มีอาการ)'
+        ],
+        qc:['หากผู้รับการตรวจอาเจียนหรือไม่สามารถดื่มกลูโคสให้หมดภายในเวลาที่กำหนด ต้องยกเลิกการทดสอบและนัดทำใหม่','บันทึกเวลาที่ดื่มกลูโคสและเวลาที่เจาะเลือดแต่ละจุดให้แม่นยำ ความคลาดเคลื่อนของเวลาแม้เพียงไม่กี่นาทีมีผลต่อการแปลผล','ตัวอย่างที่ไม่ได้ปั่นแยกทันทีหรือไม่ได้ใช้หลอด sodium fluoride จะได้ค่ากลูโคสต่ำเทียม']
+      },
+      { id:'hba1c', name:'HbA1c', specimen:'EDTA whole blood', tat:'1–2 ชั่วโมง (batch analysis)',
         params:[{name:'ปกติ', range:'<5.7%'},{name:'Prediabetes', range:'5.7–6.4%'},{name:'Diabetes', range:'≥6.5%'}],
         method:'HPLC หรือ Immunoassay สะท้อนค่าน้ำตาลเฉลี่ยประมาณ 3 เดือน',
         procedure:[
@@ -500,7 +527,7 @@ const SECTIONS = [
         ],
         qc:['ภาวะที่มีอายุ RBC ผิดปกติ (hemolytic anemia, hemoglobinopathy) อาจทำให้ค่า HbA1c คลาดเคลื่อนจากค่าน้ำตาลจริง ควรระบุในรายงานหากทราบประวัติ']
       },
-      { id:'renal', name:'BUN / Creatinine', specimen:'Serum',
+      { id:'renal', name:'BUN / Creatinine', specimen:'Serum', tat:'30–60 นาที',
         params:[
           {name:'BUN', range:'7–20 mg/dL'},
           {name:'Creatinine ชาย', range:'0.7–1.3 mg/dL'},
@@ -516,7 +543,7 @@ const SECTIONS = [
         ],
         qc:['ค่า creatinine ที่เพิ่มขึ้นเฉียบพลันหรือสูงมากต้องรายงานแพทย์ทันที (บ่งชี้ acute kidney injury)']
       },
-      { id:'lyte', name:'Electrolytes (Na, K, Cl, CO2)', specimen:'Serum/Plasma (heparin) — ห้ามใช้หลอด EDTA',
+      { id:'lyte', name:'Electrolytes (Na, K, Cl, CO2)', specimen:'Serum/Plasma (heparin) — ห้ามใช้หลอด EDTA', tat:'30–60 นาที (STAT ~20–30 นาที)',
         params:[
           {name:'Na⁺', range:'135–145 mmol/L', critical:'<120 หรือ >160'},
           {name:'K⁺', range:'3.5–5.0 mmol/L', critical:'<2.5 หรือ >6.5'},
@@ -535,7 +562,7 @@ const SECTIONS = [
       }
     ]},
     { name:'เทคนิคการเจือจางตัวอย่าง (Dilution Technique)', tests:[
-      { id:'dilution', name:'การเจือจางตัวอย่าง (Manual Dilution) เมื่อผลเกินช่วง Linearity', specimen:'Serum/Plasma ที่ผลตรวจครั้งแรกสูง/ต่ำเกินช่วงที่เครื่องวัดได้แม่นยำ',
+      { id:'dilution', name:'การเจือจางตัวอย่าง (Manual Dilution) เมื่อผลเกินช่วง Linearity', specimen:'Serum/Plasma ที่ผลตรวจครั้งแรกสูง/ต่ำเกินช่วงที่เครื่องวัดได้แม่นยำ', tat:'เพิ่มจากเวลาปกติของการตรวจนั้น ๆ ประมาณ 15–30 นาที',
         params:[
           {name:'สูตรคำนวณค่าจริง', range:'ค่าจริง = ค่าที่วัดได้จากตัวอย่างเจือจาง × Dilution Factor (DF)'},
           {name:'Dilution Factor (DF)', range:'DF = ปริมาตรรวมหลังเจือจาง ÷ ปริมาตรตัวอย่างเดิม (เช่น เจือจาง 1:4 → DF = 4)'},
@@ -556,7 +583,7 @@ const SECTIONS = [
       }
     ]},
     { name:'ตับ ไขมัน และเอนไซม์', tests:[
-      { id:'liver', name:'Liver Panel (AST, ALT, ALP, Bilirubin)', specimen:'Serum',
+      { id:'liver', name:'Liver Panel (AST, ALT, ALP, Bilirubin)', specimen:'Serum', tat:'1–2 ชั่วโมง',
         params:[
           {name:'AST', range:'10–40 U/L'},
           {name:'ALT', range:'7–56 U/L'},
@@ -574,7 +601,7 @@ const SECTIONS = [
         ],
         qc:['ตัวอย่างที่ hemolyzed ทำให้ AST สูงเทียมชัดเจน — ควรปฏิเสธและเก็บใหม่']
       },
-      { id:'lipid', name:'Lipid Profile', specimen:'Serum (งดอาหาร 9–12 ชม. เพื่อความแม่นยำของ TG)',
+      { id:'lipid', name:'Lipid Profile', specimen:'Serum (งดอาหาร 9–12 ชม. เพื่อความแม่นยำของ TG)', tat:'1–2 ชั่วโมง',
         params:[
           {name:'Total Cholesterol', range:'<200 mg/dL (desirable)'},
           {name:'LDL-C', range:'<100 mg/dL (optimal)'},
@@ -591,7 +618,7 @@ const SECTIONS = [
         ],
         qc:['หากตัวอย่าง lipemic มาก อาจต้องใช้วิธี ultracentrifugation หรือ direct LDL assay แทนสูตรคำนวณ']
       },
-      { id:'panc', name:'Amylase / Lipase', specimen:'Serum',
+      { id:'panc', name:'Amylase / Lipase', specimen:'Serum', tat:'1–2 ชั่วโมง',
         params:[{name:'Amylase', range:'30–110 U/L'},{name:'Lipase', range:'10–140 U/L'}],
         method:'ค่า >3 เท่าของค่าสูงสุดปกติ (ULN) เข้าได้กับ acute pancreatitis',
         procedure:[
@@ -601,7 +628,7 @@ const SECTIONS = [
           'รายงานผลเทียบกับค่าอ้างอิงของห้องปฏิบัติการ และแจ้งเตือนหากสูงกว่า 3 เท่าของค่าสูงสุดปกติ'
         ]
       },
-      { id:'cardiac', name:'Cardiac Markers (Troponin, CK-MB)', specimen:'Serum/Plasma',
+      { id:'cardiac', name:'Cardiac Markers (Troponin, CK-MB)', specimen:'Serum/Plasma', tat:'30–60 นาที (STAT)',
         params:[
           {name:'Troponin I/T', range:'<99th percentile URL (ตามชุดทดสอบ)', critical:'ค่าใด ๆ ที่สูงเกิน cutoff = critical value'},
           {name:'CK-MB', range:'0–6.3 ng/mL'}
@@ -616,7 +643,7 @@ const SECTIONS = [
         ],
         qc:['ผล Troponin บวกต้องแจ้ง critical value ให้แพทย์ทราบทันที ตามนโยบายห้องปฏิบัติการ']
       },
-      { id:'probnp', name:'Pro-BNP (NT-proBNP)', specimen:'Serum หรือ EDTA Plasma',
+      { id:'probnp', name:'Pro-BNP (NT-proBNP)', specimen:'Serum หรือ EDTA Plasma', tat:'45–90 นาที (STAT สำหรับสงสัยหัวใจล้มเหลวเฉียบพลัน)',
         params:[
           {name:'อายุ <50 ปี', range:'<450 pg/mL'},
           {name:'อายุ 50–75 ปี', range:'<900 pg/mL'},
@@ -633,7 +660,7 @@ const SECTIONS = [
         ],
         qc:['ค่าอาจสูงขึ้นได้จากภาวะไตวายและอายุที่มากขึ้นโดยไม่มีหัวใจล้มเหลว ต้องแปลผลร่วมกับข้อมูลทางคลินิกเสมอ']
       },
-      { id:'abg', name:'Arterial Blood Gas (ABG) / Blood Gas Analysis', specimen:'Arterial blood (heparinized syringe, ไม่มีฟองอากาศ, วิเคราะห์ทันทีหรือแช่เย็นหากต้องรอ)',
+      { id:'abg', name:'Arterial Blood Gas (ABG) / Blood Gas Analysis', specimen:'Arterial blood (heparinized syringe, ไม่มีฟองอากาศ, วิเคราะห์ทันทีหรือแช่เย็นหากต้องรอ)', tat:'10–15 นาที (STAT)',
         params:[
           {name:'pH', range:'7.35–7.45'},
           {name:'pCO2', range:'35–45 mmHg'},
@@ -654,7 +681,7 @@ const SECTIONS = [
         ],
         qc:['ฟองอากาศและความล่าช้าในการวิเคราะห์เป็นสาเหตุความคลาดเคลื่อนที่พบบ่อยที่สุด','รัน quality control ตามระดับที่เครื่องกำหนดทุกกะการทำงาน']
       },
-      { id:'ketone_blood', name:'Serum/Blood Ketone (Beta-hydroxybutyrate)', specimen:'Serum, Plasma หรือ Capillary whole blood (point-of-care meter)',
+      { id:'ketone_blood', name:'Serum/Blood Ketone (Beta-hydroxybutyrate)', specimen:'Serum, Plasma หรือ Capillary whole blood (point-of-care meter)', tat:'ทันที (POCT) / 15–30 นาที (ส่งห้องแล็บกลาง)',
         params:[
           {name:'ปกติ', range:'<0.6 mmol/L'},
           {name:'เริ่มมี ketosis', range:'0.6–1.5 mmol/L'},
@@ -669,7 +696,7 @@ const SECTIONS = [
         ],
         qc:['ในผู้ป่วย DKA ค่า beta-hydroxybutyrate ควรลดลงเมื่อรักษาได้ผล — ใช้ติดตามการตอบสนองต่อการรักษาได้ดีกว่า urine ketone']
       },
-      { id:'rpr_chem', name:'RPR (Rapid Plasma Reagin) — การตรวจคัดกรองที่ห้องเคมี/POCT', specimen:'Serum หรือ Plasma',
+      { id:'rpr_chem', name:'RPR (Rapid Plasma Reagin) — การตรวจคัดกรองที่ห้องเคมี/POCT', specimen:'Serum หรือ Plasma', tat:'30–60 นาที',
         params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'ต้องรายงาน titer และส่งยืนยันด้วย treponemal test'}],
         method:'หลักการเดียวกับ VDRL/RPR — ดูรายละเอียดวิธีตรวจแบบเต็มในหมวด Immunology / Serology (การ์ดทดสอบ RPR มักใช้เป็น point-of-care/rapid screening ที่ห้องเคมีหรือ ANC เนื่องจากอ่านผลง่ายและรวดเร็วกว่า VDRL)',
         procedure:[
@@ -679,7 +706,7 @@ const SECTIONS = [
       }
     ]},
     { name:'Renal Function (เพิ่มเติม)', tests:[
-      { id:'crcl', name:'Creatinine Clearance (CrCl)', specimen:'Serum (พร้อมเวลาที่เจาะ) + Urine เก็บสะสม 24 ชั่วโมง (24-hour urine collection)',
+      { id:'crcl', name:'Creatinine Clearance (CrCl)', specimen:'Serum (พร้อมเวลาที่เจาะ) + Urine เก็บสะสม 24 ชั่วโมง (24-hour urine collection)', tat:'1–2 วัน (ต้องเก็บปัสสาวะครบ 24 ชม.ก่อนวิเคราะห์)',
         params:[
           {name:'ชาย', range:'97–137 mL/min'},
           {name:'หญิง', range:'88–128 mL/min'},
@@ -705,7 +732,7 @@ const SECTIONS = [
   id:'bb', name:'Blood Bank / Immunohematology', sub:'ธนาคารเลือด',
   categories:[
     { name:'การรับบริจาคโลหิต (Blood Donation)', tests:[
-      { id:'donation', name:'เกณฑ์และขั้นตอนการรับบริจาคโลหิต (Blood Donation Criteria & Procedure)', specimen:'-',
+      { id:'donation', name:'เกณฑ์และขั้นตอนการรับบริจาคโลหิต (Blood Donation Criteria & Procedure)', specimen:'-', tat:'30–45 นาทีต่อราย (คัดกรอง+เจาะเก็บ) ผลตรวจคัดกรองโรคติดต่อทางเลือด 1–3 วัน',
         params:[
           {name:'อายุ', range:'17–70 ปี (ผู้บริจาคครั้งแรกไม่เกิน 60 ปี ตามระเบียบสภากาชาดไทย)'},
           {name:'น้ำหนัก', range:'≥45 กิโลกรัม'},
@@ -729,13 +756,13 @@ const SECTIONS = [
       }
     ]},
     { name:'การตรวจหมู่เลือดและความเข้ากันได้', tests:[
-      { id:'abo', name:'ABO & Rh(D) Typing', specimen:'EDTA whole blood + clotted serum',
+      { id:'abo', name:'ABO & Rh(D) Typing', specimen:'EDTA whole blood + clotted serum', tat:'30–45 นาที',
         params:[{name:'Forward vs Reverse typing', range:'ต้องสอดคล้องกันก่อนรายงานผล'},{name:'Rh(D)', range:'Positive / Negative (ตรวจ weak D หาก D negative เบื้องต้น)'}],
         method:'Tube / Gel / Column agglutination โดยใช้ anti-A, anti-B, anti-D และ A1/B reverse cells',
         procedure:['Forward type: ผสมเม็ดเลือดผู้ป่วยกับแอนติซีรั่มที่ทราบชนิด','Reverse type: ผสมซีรั่มผู้ป่วยกับเม็ดเลือด A1/B ที่ทราบชนิด','แก้ไข discrepancy ให้เสร็จก่อนรายงานผลหรือจ่ายเลือด'],
         qc:['รัน reagent antisera control (positive/negative) ทุกวันที่ใช้งาน','ABO discrepancy ต้องสอบสวนให้แล้วเสร็จก่อนจ่ายเลือด']
       },
-      { id:'absc', name:'Antibody Screen', specimen:'Clotted serum/plasma',
+      { id:'absc', name:'Antibody Screen', specimen:'Clotted serum/plasma', tat:'45–60 นาที',
         params:[{name:'ผลลบ', range:'ไม่พบ unexpected antibody'},{name:'ผลบวก', range:'ต้องทำ antibody identification panel ต่อ'}],
         method:'Indirect Antiglobulin Test (IAT) โดยใช้ screening cells 2–3 ชนิดที่ทราบ phenotype',
         procedure:[
@@ -747,7 +774,7 @@ const SECTIONS = [
           'หากผลบวก ส่งต่อทำ antibody identification panel เพื่อระบุชนิดแอนติบอดี'
         ]
       },
-      { id:'antibodyid', name:'Antibody Identification Panel (การระบุชนิดแอนติบอดี)', specimen:'Clotted serum/plasma ที่ผล Antibody Screen เป็นบวก',
+      { id:'antibodyid', name:'Antibody Identification Panel (การระบุชนิดแอนติบอดี)', specimen:'Clotted serum/plasma ที่ผล Antibody Screen เป็นบวก', tat:'2–4 ชั่วโมง (อาจถึง 1 วันหากพบแอนติบอดีหลายชนิด)',
         params:[
           {name:'Panel cell', range:'ใช้เม็ดเลือดแดง reagent panel 10–11 ชนิดที่ทราบ antigen profile ครบถ้วน (commercial identification panel)'},
           {name:'การแปลผล Rule-out/Rule-in', range:'ตัดแอนติบอดีออก (rule out) เมื่อ panel cell ที่ไม่มีแอนติเจนนั้นให้ผลลบ; ยืนยัน (rule in) เมื่อรูปแบบ reactivity ตรงกับ antigen ที่คาดว่ามีแอนติบอดีอย่างสม่ำเสมอในทุกเซลล์'}
@@ -765,7 +792,7 @@ const SECTIONS = [
         ],
         qc:['ต้องมี autocontrol ทุกครั้งเพื่อแยกแอนติบอดีจำเพาะ (alloantibody) ออกจากแอนติบอดีต่อเซลล์ตนเอง (autoantibody)','บันทึกผลการระบุแอนติบอดีในเวชระเบียนถาวรของผู้ป่วยเพื่อใช้อ้างอิงการรับเลือดในอนาคต']
       },
-      { id:'xm', name:'Crossmatch', specimen:'ตัวอย่างผู้รับ + เลือดผู้ให้ (donor unit)',
+      { id:'xm', name:'Crossmatch', specimen:'ตัวอย่างผู้รับ + เลือดผู้ให้ (donor unit)', tat:'15 นาที (immediate spin) / 45–60 นาที (full AHG crossmatch)',
         params:[{name:'Compatible', range:'ไม่มี agglutination/hemolysis ใน major crossmatch'}],
         method:'Immediate spin crossmatch (กรณี antibody screen ลบ) หรือ full AHG crossmatch (กรณี antibody screen บวก/มีประวัติ)',
         procedure:[
@@ -776,7 +803,7 @@ const SECTIONS = [
           'บันทึกผลว่า compatible หรือ incompatible ก่อนจ่ายเลือดให้ผู้ป่วย'
         ]
       },
-      { id:'coombs', name:'Direct / Indirect Antiglobulin Test (Coombs) — รวมการเตรียม Screening Cell O1/O2', specimen:'EDTA whole blood (DAT) / Serum (IAT)',
+      { id:'coombs', name:'Direct / Indirect Antiglobulin Test (Coombs) — รวมการเตรียม Screening Cell O1/O2', specimen:'EDTA whole blood (DAT) / Serum (IAT)', tat:'45–60 นาที',
         params:[
           {name:'DAT', range:'ตรวจ antibody ที่เกาะเม็ดเลือดแดงในร่างกาย (HDFN, hemolytic transfusion reaction, AIHA)'},
           {name:'IAT', range:'ตรวจ antibody อิสระในซีรั่ม'},
@@ -797,7 +824,7 @@ const SECTIONS = [
         ],
         qc:['ตรวจสอบวันหมดอายุและใบรับรอง phenotype ของ reagent cell O1/O2 ทุกล็อตก่อนนำมาใช้','เก็บรักษา reagent cell ตามอุณหภูมิที่กำหนดเคร่งครัด — การเก็บผิดวิธีทำให้เม็ดเลือดแดงแตกหรือ antigen เสื่อมสภาพ ส่งผลให้ผลตรวจคลาดเคลื่อน']
       },
-      { id:'reaction', name:'การสอบสวน Transfusion Reaction', specimen:'Post-reaction clotted + EDTA sample, urine',
+      { id:'reaction', name:'การสอบสวน Transfusion Reaction', specimen:'Post-reaction clotted + EDTA sample, urine', tat:'2–4 ชั่วโมงสำหรับผลเบื้องต้น (การสอบสวนฉบับสมบูรณ์อาจใช้เวลานานกว่านี้)',
         procedure:[
           'หยุดการให้เลือดทันทีเมื่อสงสัยปฏิกิริยา',
           'ตรวจสอบ clerical error (ชื่อ/HN ผู้ป่วยตรงกับป้ายถุงเลือดหรือไม่)',
@@ -814,7 +841,7 @@ const SECTIONS = [
   id:'micro', name:'Microbiology', sub:'จุลชีววิทยา',
   categories:[
     { name:'การย้อมสีและอาหารเลี้ยงเชื้อ', tests:[
-      { id:'gram', name:'Gram Stain', specimen:'สิ่งส่งตรวจต่าง ๆ (สารคัดหลั่ง, colony, body fluid)',
+      { id:'gram', name:'Gram Stain', specimen:'สิ่งส่งตรวจต่าง ๆ (สารคัดหลั่ง, colony, body fluid)', tat:'30–45 นาที',
         params:[
           {name:'Gram-positive', range:'ติดสีม่วง/น้ำเงิน (ผนังเซลล์หนา peptidoglycan)'},
           {name:'Gram-negative', range:'ติดสีชมพู/แดง (ผนังบาง + outer membrane)'}
@@ -823,7 +850,7 @@ const SECTIONS = [
         procedure:['fix สไลด์ด้วยความร้อนหรือ methanol','ย้อม Crystal violet 1 นาที ล้างน้ำ','หยด Gram\'s iodine 1 นาที ล้างน้ำ','Decolorize ด้วย acetone-alcohol (ควบคุมเวลาให้แม่นยำ ~10 วินาที)','Counterstain ด้วย Safranin 30–60 วินาที ล้าง ผึ่งแห้ง','ตรวจด้วยกำลังขยาย 100x oil immersion'],
         qc:['รัน known gram-positive/negative control ทุกครั้งที่เปลี่ยน lot น้ำยา','ข้อผิดพลาดที่พบบ่อยที่สุดคือ over-decolorization (ทำให้ผลเป็น gram-negative เทียม)']
       },
-      { id:'media', name:'อาหารเลี้ยงเชื้อที่ใช้บ่อย', specimen:'-',
+      { id:'media', name:'อาหารเลี้ยงเชื้อที่ใช้บ่อย', specimen:'-', tat:'– (ข้อมูลอ้างอิงอาหารเลี้ยงเชื้อ ไม่มี TAT เฉพาะ)',
         params:[
           {name:'Blood Agar (BAP)', range:'ใช้ทั่วไป ดูรูปแบบ hemolysis (alpha/beta/gamma)'},
           {name:'MacConkey Agar', range:'เลือก/แยกเชื้อ gram-negative rods, lactose fermenter = ชมพู, non-fermenter = ใส'},
@@ -832,13 +859,13 @@ const SECTIONS = [
           {name:'Thayer-Martin', range:'เลือกเชื้อ Neisseria gonorrhoeae'}
         ]
       },
-      { id:'ast', name:'Antibiotic Susceptibility Testing (Kirby-Bauer)', specimen:'Pure colony',
+      { id:'ast', name:'Antibiotic Susceptibility Testing (Kirby-Bauer)', specimen:'Pure colony', tat:'16–18 ชั่วโมงหลังได้ pure colony (รวมจากวันรับตัวอย่าง ~2–3 วัน)',
         params:[{name:'การแปลผล', range:'S (Susceptible) / I (Intermediate) / R (Resistant) ตามตาราง CLSI breakpoint'}],
         method:'Disk diffusion บนอาหาร Mueller-Hinton',
         procedure:['เตรียม suspension เชื้อความเข้มข้น 0.5 McFarland','swab ให้เป็น lawn บนอาหาร Mueller-Hinton','วางแผ่นยาปฏิชีวนะ บ่ม 16–18 ชม. ที่ 35°C','วัดเส้นผ่านศูนย์กลาง zone of inhibition และแปลผลตาม CLSI'],
         qc:['รัน reference strain ทุกวันที่ทดสอบ (เช่น E. coli ATCC 25922, S. aureus ATCC 25923)','ตรวจความหนาอาหาร (4 มม.) และความแรงของแผ่นยา']
       },
-      { id:'bc', name:'Blood Culture', specimen:'เลือดจากหลอดเลือดดำ (aerobic + anaerobic bottle)',
+      { id:'bc', name:'Blood Culture', specimen:'เลือดจากหลอดเลือดดำ (aerobic + anaerobic bottle)', tat:'เบื้องต้น 1–5 วัน (จนกว่าเครื่องจะ flag ผลบวก) / รายงานผลลบสุดท้ายที่ 5 วัน',
         procedure:[
           'เก็บ 2 ชุดจากตำแหน่งต่างกัน ก่อนเริ่มยาปฏิชีวนะถ้าทำได้',
           'ทำความสะอาดผิวหนังด้วยน้ำยาฆ่าเชื้ออย่างเคร่งครัดเพื่อลดการปนเปื้อน',
@@ -849,7 +876,7 @@ const SECTIONS = [
       }
     ]},
     { name:'Mycology & AFB Staining (เชื้อรา / เชื้อวัณโรค)', tests:[
-      { id:'koh', name:'KOH Preparation (10–20% Potassium Hydroxide Wet Mount)', specimen:'สะเก็ดผิวหนัง, เศษเล็บ, เส้นผม, หรือสิ่งส่งตรวจอื่นที่สงสัยเชื้อรา',
+      { id:'koh', name:'KOH Preparation (10–20% Potassium Hydroxide Wet Mount)', specimen:'สะเก็ดผิวหนัง, เศษเล็บ, เส้นผม, หรือสิ่งส่งตรวจอื่นที่สงสัยเชื้อรา', tat:'30–60 นาที',
         params:[
           {name:'ผลบวก (Positive)', range:'พบ hyphae (เส้นใยมีผนังกั้นหรือไม่มีก็ได้), spore, หรือ yeast with pseudohyphae'},
           {name:'ผลลบ (Negative)', range:'ไม่พบโครงสร้างเชื้อรา — ไม่ตัดโรคเชื้อราออกทั้งหมด ควร correlate กับอาการทางคลินิก'},
@@ -868,7 +895,7 @@ const SECTIONS = [
         qc:['ควรมี positive control หรือทบทวนกับผู้ชำนาญเป็นระยะเพื่อฝึกแยกเส้นใยเชื้อราจากเส้นใยผ้า/ฟองอากาศที่มักสร้างความสับสน (fiber/artifact มักมีขอบคมและหักเป็นมุมฉาก ต่างจาก hyphae ที่มีผนังขนานสม่ำเสมอ)','ผลลบไม่ได้ตัดการติดเชื้อราออกเสมอไป หากสงสัยทางคลินิกสูงควรส่งเพาะเชื้อรา (fungal culture) เพิ่มเติม'],
         photos:{ note:'แนบภาพถ่ายจากกล้องจุลทรรศน์จริงของทุกผลบวก KOH ที่พบในห้องปฏิบัติการ (เช่น septate hyphae, pseudohyphae, spore) เพื่อใช้เป็นคลังภาพอ้างอิงประกอบการรายงานผล', placeholderCount:6 }
       },
-      { id:'afb', name:'AFB Smear (Acid-Fast Bacilli Staining)', specimen:'เสมหะ (sputum), body fluid, หรือสิ่งส่งตรวจอื่นที่สงสัยวัณโรค/ non-tuberculous mycobacteria',
+      { id:'afb', name:'AFB Smear (Acid-Fast Bacilli Staining)', specimen:'เสมหะ (sputum), body fluid, หรือสิ่งส่งตรวจอื่นที่สงสัยวัณโรค/ non-tuberculous mycobacteria', tat:'2–4 ชั่วโมง (STAT สำหรับผลเบื้องต้น)',
         params:[
           {name:'การรายงานผล (WHO/IUATLD grading)', range:'Negative (ไม่พบ AFB ใน 100 ฟิลด์) / Scanty 1–9 AFB ต่อ 100 ฟิลด์ / 1+ 10–99 ต่อ 100 ฟิลด์ / 2+ 1–10 ต่อฟิลด์ (ตรวจ ≥50 ฟิลด์) / 3+ >10 ต่อฟิลด์ (ตรวจ ≥20 ฟิลด์)'}
         ],
@@ -886,7 +913,7 @@ const SECTIONS = [
       }
     ]},
     { name:'Workflow: การเพาะเชื้อ ระบุชนิด และทดสอบความไวต่อยา', tests:[
-      { id:'workflow', name:'ขั้นตอนตั้งแต่การเพาะเชื้อ → Identification → Antibiotic Susceptibility (แบคทีเรียและเชื้อรา)', specimen:'สิ่งส่งตรวจทางจุลชีววิทยาทุกชนิด (เลือด, เสมหะ, หนอง, ปัสสาวะ, body fluid ฯลฯ)',
+      { id:'workflow', name:'ขั้นตอนตั้งแต่การเพาะเชื้อ → Identification → Antibiotic Susceptibility (แบคทีเรียและเชื้อรา)', specimen:'สิ่งส่งตรวจทางจุลชีววิทยาทุกชนิด (เลือด, เสมหะ, หนอง, ปัสสาวะ, body fluid ฯลฯ)', tat:'2–3 วัน (แบคทีเรียทั่วไป) / 3–14 วัน (เชื้อรา ขึ้นกับชนิด)',
         params:[
           {name:'ระยะเวลาโดยประมาณ (แบคทีเรียทั่วไป)', range:'เพาะเชื้อ 18–24 ชม. → Iden 4–24 ชม. → AST 16–18 ชม. (รวม ~2–3 วัน)'},
           {name:'ระยะเวลาโดยประมาณ (เชื้อรา — yeast)', range:'เพาะเชื้อ 24–72 ชม. → Iden (germ tube/chromogenic agar/biochemical) 1–3 วัน → AST (หากจำเป็น) เพิ่มอีก 1–2 วัน'},
@@ -906,7 +933,7 @@ const SECTIONS = [
         ],
         qc:['ควบคุมคุณภาพอาหารเลี้ยงเชื้อทุก lot ด้วย reference strain ก่อนนำมาใช้งาน','บันทึกเวลาในแต่ละขั้นตอน (turnaround time) เพื่อติดตามประสิทธิภาพงานบริการ','ทวนสอบผล identification กับผลย้อม Gram/ลักษณะโคโลนีเสมอ หากไม่สอดคล้องกันต้องตรวจสอบซ้ำ']
       },
-      { id:'resistreport', name:'แนวทางการรายงานเชื้อดื้อยา (MDR / XDR / PDR & Alert Organism)', specimen:'-',
+      { id:'resistreport', name:'แนวทางการรายงานเชื้อดื้อยา (MDR / XDR / PDR & Alert Organism)', specimen:'-', tat:'– (แนวทางปฏิบัติ ไม่มี TAT เฉพาะ ขึ้นกับ TAT ของผล AST)',
         params:[
           {name:'MDR (Multidrug-Resistant)', range:'ดื้อยาอย่างน้อย 1 ชนิดใน ≥3 กลุ่มยาต้านจุลชีพขึ้นไป'},
           {name:'XDR (Extensively Drug-Resistant)', range:'ดื้อยาเกือบทุกกลุ่ม เหลือยาที่ยังได้ผลเพียง 1–2 กลุ่ม'},
@@ -923,7 +950,7 @@ const SECTIONS = [
         ],
         qc:['ทบทวนนิยาม MDR/XDR/PDR ให้เป็นปัจจุบันตามแนวทาง CDC/ECDC หรือแนวทางกระทรวงสาธารณสุขที่ใช้ในประเทศ','เชื้อดื้อยากลุ่ม alert organism ทุกตัวถือเป็น critical value ต้องรายงานทันทีเสมอ ไม่รอรวมกับผลตรวจอื่น']
       },
-      { id:'flora', name:'Normal Flora ของร่างกายแต่ละตำแหน่ง', specimen:'-',
+      { id:'flora', name:'Normal Flora ของร่างกายแต่ละตำแหน่ง', specimen:'-', tat:'– (ข้อมูลอ้างอิง ไม่มี TAT)',
         params:[
           {name:'ผิวหนัง (Skin)', range:'Coagulase-negative Staphylococcus, Corynebacterium spp., Cutibacterium (Propionibacterium) acnes, Malassezia spp.'},
           {name:'ช่องปาก/คอ (Oral/Oropharynx)', range:'Viridans streptococci, Neisseria spp. (non-pathogenic), Corynebacterium spp., anaerobes (Fusobacterium, Prevotella)'},
@@ -943,7 +970,7 @@ const SECTIONS = [
   id:'ua', name:'Urinalysis & Body Fluids', sub:'ปัสสาวะและสารน้ำในร่างกาย',
   categories:[
     { name:'Urinalysis', tests:[
-      { id:'ua', name:'Routine Urinalysis', specimen:'Midstream clean-catch urine (ตรวจภายใน 1 ชม. หรือแช่เย็น)',
+      { id:'ua', name:'Routine Urinalysis', specimen:'Midstream clean-catch urine (ตรวจภายใน 1 ชม. หรือแช่เย็น)', tat:'30–45 นาที',
         params:[
           {name:'สี', range:'เหลืองอ่อนถึงอำพัน'},
           {name:'ความใส', range:'ใส (clear)'},
@@ -965,7 +992,7 @@ const SECTIONS = [
       }
     ]},
     { name:'Body Fluids', tests:[
-      { id:'csf', name:'CSF Analysis', specimen:'Cerebrospinal fluid (STAT specimen — วิเคราะห์ทันที)',
+      { id:'csf', name:'CSF Analysis', specimen:'Cerebrospinal fluid (STAT specimen — วิเคราะห์ทันที)', tat:'1 ชั่วโมง (STAT)',
         params:[
           {name:'ลักษณะ', range:'ใส ไม่มีสี'},
           {name:'Opening pressure', range:'10–20 cmH2O'},
@@ -976,12 +1003,12 @@ const SECTIONS = [
         procedure:['แบ่งเป็นหลายหลอด: หลอด 1 เคมี/serology, หลอด 2 microbiology (culture/Gram stain), หลอด 3 cell count','นับเซลล์ภายใน 1 ชม. เพื่อป้องกันเซลล์สลายตัว'],
         qc:['พบเชื้อจาก Gram stain หรือ WBC สูงมากชนิด neutrophil เด่น = สงสัย bacterial meningitis ต้องรายงาน STAT ทันที']
       },
-      { id:'pleural', name:'Pleural/Peritoneal Fluid (Light\'s Criteria)', specimen:'Body fluid + serum คู่กัน',
+      { id:'pleural', name:'Pleural/Peritoneal Fluid (Light\'s Criteria)', specimen:'Body fluid + serum คู่กัน', tat:'2–3 ชั่วโมง (ต้องรอผลเคมีคู่กับซีรั่ม)',
         params:[
           {name:'Exudate หากเข้าเกณฑ์ข้อใดข้อหนึ่ง', range:'Fluid/serum protein >0.5, Fluid/serum LDH >0.6, Fluid LDH >2/3 ของค่าสูงสุดปกติในเลือด'}
         ]
       },
-      { id:'synovial', name:'Synovial Fluid', specimen:'Joint fluid (heparinized tube สำหรับ cell count)',
+      { id:'synovial', name:'Synovial Fluid', specimen:'Joint fluid (heparinized tube สำหรับ cell count)', tat:'1–2 ชั่วโมง',
         params:[
           {name:'ปกติ', range:'ใส เหลืองอ่อน หนืด WBC <200/µL'},
           {name:'Non-inflammatory', range:'WBC <2,000/µL'},
@@ -990,7 +1017,7 @@ const SECTIONS = [
         ],
         method:'ตรวจผลึกด้วยกล้อง polarized microscope: เข็มปลายแหลม negatively birefringent = เกาต์ (monosodium urate); รูปสี่เหลี่ยมข้าวหลามตัด positively birefringent = pseudogout (CPPD)'
       },
-      { id:'bfcell', name:'Body Fluid Cell Differential & Reporting (การนับแยกชนิดเซลล์ใน Body Fluid)', specimen:'CSF, Pleural/Peritoneal/Pericardial fluid, Synovial fluid (cytospin preparation แนะนำสำหรับ fluid ที่มีเซลล์น้อย)',
+      { id:'bfcell', name:'Body Fluid Cell Differential & Reporting (การนับแยกชนิดเซลล์ใน Body Fluid)', specimen:'CSF, Pleural/Peritoneal/Pericardial fluid, Synovial fluid (cytospin preparation แนะนำสำหรับ fluid ที่มีเซลล์น้อย)', tat:'2–4 ชั่วโมง (นานกว่านี้หากต้องทำ cytospin/ส่งต่อ cytology)',
         params:[
           {name:'Neutrophil', range:'บ่งชี้การอักเสบเฉียบพลัน/ติดเชื้อแบคทีเรีย'},
           {name:'Lymphocyte', range:'บ่งชี้การติดเชื้อไวรัส/วัณโรค/เรื้อรัง'},
@@ -1009,7 +1036,7 @@ const SECTIONS = [
         qc:['เปรียบเทียบผลนับแยกชนิดเซลล์กับผลนับเซลล์รวม (total cell count) และลักษณะทางคลินิกเสมอ','เซลล์ผิดปกติ/สงสัย malignant cell ถือเป็นผลที่ต้องรายงานด่วนและปรึกษาแพทย์/พยาธิแพทย์ทันที'],
         photos:{ note:'เพิ่มภาพถ่ายเซลล์ทุกชนิดที่พบจากกล้องจุลทรรศน์จริงของห้องปฏิบัติการ (neutrophil, lymphocyte, mesothelial cell, macrophage, malignant cell ฯลฯ) เพื่อใช้เป็นคลังภาพอ้างอิงประกอบการรายงานผล', placeholderCount:8 }
       },
-      { id:'sperm', name:'Semen Analysis (การตรวจอสุจิ)', specimen:'น้ำอสุจิที่เก็บโดยการช่วยตัวเอง หลังงดหลั่งอสุจิ 2–7 วัน ส่งตรวจภายใน 1 ชม. และเก็บที่อุณหภูมิร่างกาย/ห้องระหว่างขนส่ง',
+      { id:'sperm', name:'Semen Analysis (การตรวจอสุจิ)', specimen:'น้ำอสุจิที่เก็บโดยการช่วยตัวเอง หลังงดหลั่งอสุจิ 2–7 วัน ส่งตรวจภายใน 1 ชม. และเก็บที่อุณหภูมิร่างกาย/ห้องระหว่างขนส่ง', tat:'2–3 ชั่วโมง (ต้องรอ liquefaction ก่อนเริ่มตรวจ)',
         params:[
           {name:'Volume', range:'≥1.5 mL'},
           {name:'Liquefaction time', range:'ภายใน 15–60 นาทีที่อุณหภูมิห้อง'},
@@ -1035,6 +1062,30 @@ const SECTIONS = [
           'รายงานผลตามค่าอ้างอิงของ WHO ฉบับล่าสุด พร้อมระบุระยะเวลาการงดหลั่งและระยะเวลาตรวจหลังเก็บตัวอย่าง'
         ],
         qc:['ตรวจซ้ำอย่างน้อย 2 ครั้งห่างกัน ≥7 วัน (สูงสุด 3 เดือน) ก่อนสรุปผลผิดปกติ เนื่องจากคุณภาพอสุจิแปรปรวนได้ตามช่วงเวลา','ควบคุมอุณหภูมิและเวลาตรวจอย่างเคร่งครัด — ตัวอย่างที่เย็นเกินไปหรือตรวจช้าเกิน 1 ชม. ทำให้ motility ต่ำเทียม']
+      },
+      { id:'amniotic', name:'Amniotic Fluid Analysis (การตรวจน้ำคร่ำสำหรับหญิงตั้งครรภ์)', specimen:'น้ำคร่ำที่ได้จากการเจาะ amniocentesis ใส่หลอดปลอดเชื้อป้องกันแสง (บางรายการ เช่น bilirubin ไวต่อแสง)', tat:'2–4 ชั่วโมง (บางรายการ เช่น L/S ratio ต้องส่งต่อห้องแล็บเฉพาะทาง 1–2 วัน)',
+        params:[
+          {name:'สี/ลักษณะ (ปกติ)', range:'ใสถึงขุ่นเล็กน้อย สีเหลืองอ่อนหรือไม่มีสี'},
+          {name:'สีเขียว (Meconium staining)', range:'บ่งชี้ fetal distress หรือทารกถ่ายขี้เทาในถุงน้ำคร่ำ'},
+          {name:'สีเหลืองเข้ม/น้ำตาล (Port-wine)', range:'บ่งชี้ภาวะเลือดออกเก่าในถุงน้ำคร่ำ (previous hemorrhage)'},
+          {name:'AFP (Alpha-fetoprotein)', range:'สูงผิดปกติ: บ่งชี้ neural tube defect (spina bifida, anencephaly); ต่ำผิดปกติ: สัมพันธ์กับ Down syndrome'},
+          {name:'L/S Ratio (Lecithin/Sphingomyelin)', range:'≥2.0 บ่งชี้ fetal lung maturity เพียงพอ'},
+          {name:'Bilirubin (ΔOD450)', range:'ใช้ประเมินความรุนแรงของ Rh isoimmunization ตาม Liley graph'},
+          {name:'Creatinine', range:'≥2.0 mg/dL มักบ่งชี้ fetal maturity (ใช้ร่วมกับ gestational age)'},
+          {name:'Glucose', range:'<45 mg/dL ปกติในไตรมาสสุดท้าย; ค่าสูงอาจสัมพันธ์กับ chorioamnionitis'}
+        ],
+        method:'ตรวจ macroscopic (สี ความขุ่น) ร่วมกับการตรวจทางเคมี/immunoassay จำเพาะ (AFP, L/S ratio, bilirubin, creatinine) เพื่อประเมินความผิดปกติแต่กำเนิดของทารกในครรภ์ ภาวะ Rh isoimmunization และความสมบูรณ์ของปอดทารกก่อนคลอด',
+        procedure:[
+          'รับตัวอย่างน้ำคร่ำจากแพทย์ที่เจาะ amniocentesis ใส่หลอดปลอดเชื้อ ป้องกันแสงทันที (ห่อฟอยล์/ใช้หลอดสีชา) เนื่องจาก bilirubin สลายตัวเร็วเมื่อโดนแสง',
+          'บันทึกลักษณะภายนอกก่อนวิเคราะห์: สี ความขุ่น กลิ่น และปริมาตรที่ได้รับ',
+          'ปั่นเหวี่ยงแยกเซลล์ตะกอนออกก่อนวัดค่าทางเคมี (เซลล์ที่ปนอยู่รบกวนผลตรวจ)',
+          'วัด AFP ด้วยวิธี immunoassay เทียบกับค่าอ้างอิงตามอายุครรภ์ (gestational age-specific reference)',
+          'วัด Bilirubin ΔOD450 ด้วย spectrophotometer แล้วพล็อตลงกราฟ Liley เพื่อประเมินความรุนแรงของภาวะ Rh isoimmunization',
+          'ส่งตรวจ L/S ratio และ phosphatidylglycerol (PG) ที่ห้องปฏิบัติการเฉพาะทาง (thin-layer chromatography หรือ immunoassay) เมื่อต้องประเมินความสมบูรณ์ของปอดทารกก่อนคลอดก่อนกำหนด',
+          'ส่งตรวจ chromosome/genetic study เพิ่มเติม (cell culture) หากมีข้อบ่งชี้ทางพันธุกรรม — ใช้เวลาแยกต่างหาก (มักหลายวันถึงสัปดาห์) ไม่รวมใน TAT ของรายการเคมีพื้นฐาน',
+          'รายงานผลพร้อมอายุครรภ์ที่แน่นอน เนื่องจากค่าอ้างอิงส่วนใหญ่ขึ้นกับ gestational age'
+        ],
+        qc:['ป้องกันตัวอย่างจากแสงตลอดเวลาสำหรับการตรวจ bilirubin','สีเขียวจาก meconium staining อาจรบกวนการอ่านค่า ΔOD450 ต้องระบุในรายงานผลเสมอ','ผล AFP ผิดปกติต้องแจ้งแพทย์เพื่อพิจารณาตรวจยืนยันเพิ่มเติม (เช่น ultrasound, genetic counseling) ไม่ใช้ผลเดี่ยวในการวินิจฉัย']
       }
     ]}
   ]
@@ -1043,7 +1094,7 @@ const SECTIONS = [
   id:'sero', name:'Immunology / Serology', sub:'ภูมิคุ้มกันวิทยา/เซรุ่มวิทยา',
   categories:[
     { name:'การตรวจคัดกรองที่พบบ่อย', tests:[
-      { id:'hbsag', name:'HBsAg', specimen:'Serum', params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'บ่งชี้การติดเชื้อ HBV — ยืนยันตาม protocol ของห้องปฏิบัติการ'}], method:'CLIA/ECLIA หรือ rapid lateral flow immunochromatography',
+      { id:'hbsag', name:'HBsAg', specimen:'Serum', tat:'30–60 นาที (rapid) / 1–2 ชั่วโมง (CLIA แบบ batch)', params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'บ่งชี้การติดเชื้อ HBV — ยืนยันตาม protocol ของห้องปฏิบัติการ'}], method:'CLIA/ECLIA หรือ rapid lateral flow immunochromatography',
         procedure:[
           'หยดซีรั่ม/พลาสมาลงในหลุมทดสอบ (rapid test) หรือใส่เข้าเครื่อง CLIA/ECLIA อัตโนมัติ',
           'สำหรับ rapid test: รอสารไหลผ่านแผ่น membrane ตามเวลาที่กำหนด (โดยทั่วไป 15–20 นาที) แล้วอ่านแถบสี',
@@ -1051,7 +1102,7 @@ const SECTIONS = [
           'ผลบวกต้องรายงานตาม protocol ของห้องปฏิบัติการ (อาจต้องยืนยันด้วย neutralization test)'
         ]
       },
-      { id:'hiv', name:'Anti-HIV (Screening & Testing Algorithm)', specimen:'Serum/Plasma',
+      { id:'hiv', name:'Anti-HIV (Screening & Testing Algorithm)', specimen:'Serum/Plasma', tat:'30–60 นาที (A1) — เพิ่ม 1–2 ชั่วโมงถึง 1 วันหากต้องตรวจ A2/A3 ต่อ',
         params:[
           {name:'A1 (Screening test แรก)', range:'Non-reactive = รายงานผลลบ (ยกเว้นสงสัย window period ให้แนะนำตรวจซ้ำ)'},
           {name:'A1 Reactive → A2 (ชุดทดสอบที่ 2 ต่างหลักการ/ต่าง antigen)', range:'A1+/A2+ = รายงานผลบวก (Positive)'},
@@ -1071,7 +1122,7 @@ const SECTIONS = [
         ],
         qc:['ห้ามรายงานผลบวกให้ผู้ป่วยจากผลชุดทดสอบเดียว (A1 อย่างเดียว) โดยเด็ดขาด ต้องผ่าน algorithm ให้ครบก่อนเสมอ','บันทึก lot number และผลของทุกชุดทดสอบที่ใช้ในกระบวนการยืนยันผล เพื่อการตรวจสอบย้อนกลับ']
       },
-      { id:'vdrl', name:'VDRL / RPR (Syphilis Screening)', specimen:'Serum', params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'ต้องรายงาน titer และยืนยันด้วย treponemal test (TPHA/FTA-ABS)'}],
+      { id:'vdrl', name:'VDRL / RPR (Syphilis Screening)', specimen:'Serum', tat:'1–2 ชั่วโมง', params:[{name:'ผลปกติ', range:'Non-reactive'},{name:'ผลบวก', range:'ต้องรายงาน titer และยืนยันด้วย treponemal test (TPHA/FTA-ABS)'}],
         method:'Non-treponemal flocculation test ตรวจ antibody ต่อ cardiolipin antigen',
         procedure:[
           'หยดซีรั่มที่ไม่ได้เจือจางลงบนกระจกทดสอบ (สำหรับ VDRL) หรือการ์ดทดสอบ (สำหรับ RPR)',
@@ -1083,7 +1134,7 @@ const SECTIONS = [
         ],
         qc:['ระวัง prozone phenomenon ในซีรั่มที่มี titer สูงมาก อาจให้ผลลบเทียม — เจือจางซ้ำหากสงสัยทางคลินิก']
       },
-      { id:'aso', name:'ASO (Anti-Streptolysin O)', specimen:'Serum', params:[{name:'ผู้ใหญ่', range:'<200 IU/mL'}], method:'ค่าสูงบ่งชี้การติดเชื้อ Group A Streptococcus ล่าสุด (ใช้ประกอบวินิจฉัย rheumatic fever)',
+      { id:'aso', name:'ASO (Anti-Streptolysin O)', specimen:'Serum', tat:'1–2 ชั่วโมง', params:[{name:'ผู้ใหญ่', range:'<200 IU/mL'}], method:'ค่าสูงบ่งชี้การติดเชื้อ Group A Streptococcus ล่าสุด (ใช้ประกอบวินิจฉัย rheumatic fever)',
         procedure:[
           'เจือจางซีรั่มผู้ป่วยตามที่ชุดทดสอบกำหนด (สำหรับวิธี latex agglutination) หรือใส่ตรงเข้าเครื่อง immunoturbidimetric',
           'ผสมกับ latex particle ที่เคลือบ streptolysin O antigen',
@@ -1091,7 +1142,7 @@ const SECTIONS = [
           'รายงานผลเป็น IU/mL เทียบกับค่าอ้างอิง'
         ]
       },
-      { id:'crp', name:'CRP (C-Reactive Protein)', specimen:'Serum', params:[{name:'ปกติ', range:'<1.0 mg/dL (<10 mg/L)'}], method:'สูงขึ้นอย่างรวดเร็วเมื่อมีการอักเสบ/ติดเชื้อเฉียบพลัน เหมาะสำหรับติดตามแนวโน้ม',
+      { id:'crp', name:'CRP (C-Reactive Protein)', specimen:'Serum', tat:'30–60 นาที', params:[{name:'ปกติ', range:'<1.0 mg/dL (<10 mg/L)'}], method:'สูงขึ้นอย่างรวดเร็วเมื่อมีการอักเสบ/ติดเชื้อเฉียบพลัน เหมาะสำหรับติดตามแนวโน้ม',
         procedure:[
           'ปั่นเหวี่ยงแยกซีรั่ม ใส่เข้าเครื่อง immunoturbidimetric หรือ immunonephelometric analyzer',
           'ซีรั่มทำปฏิกิริยากับ latex particle ที่เคลือบ anti-CRP antibody',
@@ -1099,7 +1150,7 @@ const SECTIONS = [
           'รายงานผลและเปรียบเทียบกับค่าครั้งก่อนเพื่อดูแนวโน้มการอักเสบ'
         ]
       },
-      { id:'rf', name:'RF (Rheumatoid Factor)', specimen:'Serum', params:[{name:'ปกติ', range:'<20 IU/mL'}], method:'ใช้ประกอบการวินิจฉัยข้ออักเสบรูมาตอยด์ ไม่ใช้วินิจฉัยเดี่ยว',
+      { id:'rf', name:'RF (Rheumatoid Factor)', specimen:'Serum', tat:'1–2 ชั่วโมง', params:[{name:'ปกติ', range:'<20 IU/mL'}], method:'ใช้ประกอบการวินิจฉัยข้ออักเสบรูมาตอยด์ ไม่ใช้วินิจฉัยเดี่ยว',
         procedure:[
           'ปั่นเหวี่ยงแยกซีรั่ม',
           'ผสมกับ latex particle ที่เคลือบ human IgG (RF จะจับกับ Fc portion ของ IgG)',
@@ -1107,7 +1158,7 @@ const SECTIONS = [
           'รายงานผลเป็น IU/mL พร้อมระบุว่าต้องแปลผลร่วมกับอาการทางคลินิกและการตรวจอื่น (เช่น Anti-CCP)'
         ]
       },
-      { id:'hcg', name:'Urine/Serum hCG (Pregnancy Test)', specimen:'Urine หรือ Serum', params:[{name:'Qualitative', range:'Negative/Positive'},{name:'Quantitative β-hCG', range:'>25 mIU/mL = positive; ระยะแรกควรเพิ่มเป็น 2 เท่าใน 48–72 ชม.'}],
+      { id:'hcg', name:'Urine/Serum hCG (Pregnancy Test)', specimen:'Urine หรือ Serum', tat:'15–30 นาที (rapid) / 1–2 ชั่วโมง (quantitative)', params:[{name:'Qualitative', range:'Negative/Positive'},{name:'Quantitative β-hCG', range:'>25 mIU/mL = positive; ระยะแรกควรเพิ่มเป็น 2 เท่าใน 48–72 ชม.'}],
         procedure:[
           'Qualitative (urine): หยดปัสสาวะ (ควรเป็น first-morning urine เพื่อความเข้มข้นสูงสุด) ลงบน test strip/cassette',
           'รอสารไหลผ่าน membrane ตามเวลาที่กำหนด อ่านผลจากแถบควบคุม (control line) และแถบทดสอบ (test line)',
@@ -1115,7 +1166,7 @@ const SECTIONS = [
           'รายงานผลเชิงปริมาณเป็น mIU/mL และเปรียบเทียบแนวโน้มการเพิ่มขึ้นหากมีการตรวจซ้ำ'
         ]
       },
-      { id:'widal', name:'Widal Test', specimen:'Serum', params:[{name:'Titer ที่มีนัยสำคัญ', range:'≥1:160 (ขึ้นกับพื้นที่ระบาด) — titer เดี่ยวความน่าเชื่อถือต่ำกว่า paired titer ที่เพิ่มขึ้น'}],
+      { id:'widal', name:'Widal Test', specimen:'Serum', tat:'1–2 ชั่วโมง', params:[{name:'Titer ที่มีนัยสำคัญ', range:'≥1:160 (ขึ้นกับพื้นที่ระบาด) — titer เดี่ยวความน่าเชื่อถือต่ำกว่า paired titer ที่เพิ่มขึ้น'}],
         method:'Slide/tube agglutination ตรวจ antibody ต่อ O และ H antigen ของ Salmonella',
         procedure:[
           'เจือจางซีรั่มผู้ป่วยเป็นลำดับ (serial dilution) ในหลอดหรือบนแผ่นสไลด์',
@@ -1131,7 +1182,7 @@ const SECTIONS = [
   id:'para', name:'Parasitology', sub:'ปรสิตวิทยา',
   categories:[
     { name:'Stool Examination', tests:[
-      { id:'ova', name:'Stool for Ova & Parasite (O&P)', specimen:'อุจจาระสด (หรือใส่สารกันเสีย formalin/SAF)',
+      { id:'ova', name:'Stool for Ova & Parasite (O&P)', specimen:'อุจจาระสด (หรือใส่สารกันเสีย formalin/SAF)', tat:'1–2 ชั่วโมง (direct wet mount) / เพิ่มอีก ~1 วันหากทำ concentration technique',
         method:'Direct wet mount (saline + iodine) เพื่อดูการเคลื่อนไหว/สัณฐาน ร่วมกับ concentration technique (formalin-ethyl acetate) เพื่อเพิ่มความไว',
         procedure:['ตรวจ 3 ตัวอย่างจากคนละวันหากสงสัยทางคลินิกสูงและผลแรกลบ','หากต้องการดู trophozoite ที่เคลื่อนไหว ต้องตรวจภายใน 30 นาทีหลังถ่าย หรือใส่สารกันเสียทันที'],
         params:[
@@ -1142,6 +1193,45 @@ const SECTIONS = [
           {name:'Giardia lamblia', range:'Cyst รูปไข่ 2–4 นิวเคลียส; Trophozoite รูปลูกแพร์ เคลื่อนไหวแบบ "falling leaf"'}
         ],
         qc:['สหสัมพันธ์กับประวัติทางคลินิกและประวัติการเดินทางเสมอ']
+      }
+    ]}
+  ]
+},
+{
+  id:'outlab', name:'Send-out Laboratory (Out Lab)', sub:'ห้องปฏิบัติการส่งตรวจภายนอก',
+  categories:[
+    { name:'แนวทางการส่งตรวจภายนอก (Send-out Workflow)', tests:[
+      { id:'outlab_workflow', name:'ขั้นตอนการส่งตรวจ Out Lab (Referral Testing Procedure)', specimen:'สิ่งส่งตรวจที่ห้องปฏิบัติการภายในไม่สามารถวิเคราะห์ได้เอง', tat:'ขึ้นกับห้องปฏิบัติการรับส่งตรวจแต่ละแห่ง โดยทั่วไป 1–14 วัน (ดูรายละเอียดตามชนิดการตรวจ)',
+        params:[
+          {name:'เอกสารที่ต้องแนบทุกครั้ง', range:'ใบส่งตรวจ (requisition) ระบุชื่อ-สกุล HN, วันเดือนปีเกิด, การวินิจฉัย/ข้อบ่งชี้ทางคลินิก, แพทย์ผู้สั่ง, วันเวลาที่เก็บตัวอย่าง'},
+          {name:'อุณหภูมิขนส่งทั่วไป', range:'Refrigerated (2–8°C): ตัวอย่างส่วนใหญ่ / Frozen (−20°C ขึ้นไป): molecular test, hormone บางชนิด / Ambient (room temp): บาง test เฉพาะ — ตรวจสอบคู่มือของห้องปฏิบัติการรับส่งตรวจก่อนทุกครั้ง'},
+          {name:'Chain of custody', range:'บันทึกผู้รับ-ผู้ส่งตัวอย่างทุกจุดพร้อมเวลา สำหรับตัวอย่างที่มีผลทางกฎหมาย (forensic, DNA paternity)'}
+        ],
+        method:'กระบวนการมาตรฐานสำหรับสิ่งส่งตรวจที่ห้องปฏิบัติการของโรงพยาบาลไม่มีศักยภาพวิเคราะห์เอง (เช่น การตรวจเฉพาะทางที่ใช้น้อย เครื่องมือราคาสูง หรือต้องใช้ผู้เชี่ยวชาญเฉพาะ) จำเป็นต้องส่งต่อไปยังห้องปฏิบัติการอ้างอิง (reference laboratory) ภายนอก',
+        procedure:[
+          'ตรวจสอบรายชื่อห้องปฏิบัติการที่โรงพยาบาลทำสัญญาส่งตรวจไว้ (approved referral laboratory) และเงื่อนไขการเก็บ/ขนส่งเฉพาะของแต่ละรายการตรวจจากคู่มือ/เว็บไซต์ของห้องปฏิบัติการนั้น',
+          'ตรวจสอบความถูกต้องของใบสั่งตรวจแพทย์ ความครบถ้วนของข้อมูลผู้ป่วย และความเหมาะสมของชนิด/ปริมาณสิ่งส่งตรวจก่อนเตรียมส่ง',
+          'เตรียมสิ่งส่งตรวจตามข้อกำหนดเฉพาะของแต่ละรายการ (ชนิดหลอด, ปริมาณขั้นต่ำ, การปั่นแยกหรือไม่, การแช่แข็ง) — ระบุไว้ในคู่มือของห้องปฏิบัติการรับส่งตรวจ',
+          'บรรจุตัวอย่างในภาชนะกันกระแทก 3 ชั้นตามมาตรฐานการขนส่งวัตถุติดเชื้อ (Primary receptacle → Secondary packaging กันรั่วซึม → Outer shipping container) พร้อม cold pack/dry ice ตามอุณหภูมิที่กำหนด',
+          'แนบใบส่งตรวจ (requisition form) ที่กรอกข้อมูลครบถ้วน พร้อมติดฉลากระบุ UN3373 (Biological Substance, Category B) หากเป็นสิ่งส่งตรวจที่มีความเสี่ยงติดเชื้อ',
+          'บันทึกข้อมูลการส่งตรวจลงระบบของโรงพยาบาล (LIS) ระบุวันเวลาที่ส่ง ผู้ส่ง และเลขที่อ้างอิงของห้องปฏิบัติการปลายทาง เพื่อติดตามสถานะและระยะเวลาที่คาดว่าจะได้ผล',
+          'ติดตามผลตรวจตามกำหนด TAT ของแต่ละรายการ หากเกินกำหนดให้ติดต่อห้องปฏิบัติการปลายทางเพื่อสอบถามสถานะ',
+          'เมื่อผลตรวจส่งกลับมา ให้ตรวจสอบความถูกต้องของข้อมูลผู้ป่วยก่อนบันทึกเข้าระบบ (LIS/HIS) และแจ้งแพทย์เจ้าของไข้ โดยเฉพาะผลที่เป็น critical value ต้องแจ้งทันที',
+          'เก็บสำเนาใบส่งตรวจและผลตรวจไว้เป็นหลักฐานตามระยะเวลาที่กำหนดในนโยบายเก็บเอกสารของโรงพยาบาล'
+        ],
+        qc:['ห้ามส่งตัวอย่างที่ไม่ผ่านเกณฑ์คุณภาพ (hemolyzed, clotted, ปริมาณไม่พอ) ไปยัง Out Lab เนื่องจากเสียเวลาและค่าใช้จ่ายเมื่อถูกปฏิเสธตัวอย่างที่ปลายทาง','ตรวจสอบอุณหภูมิขนส่งให้ตรงตามข้อกำหนดเสมอ ความคลาดเคลื่อนด้านอุณหภูมิเป็นสาเหตุการปฏิเสธตัวอย่างที่พบบ่อยที่สุด','ตัวอย่างที่มีผลทางกฎหมาย/นิติเวชต้องมี chain of custody ที่สมบูรณ์ไม่ขาดตอน']
+      },
+      { id:'outlab_examples', name:'ตัวอย่างรายการตรวจที่มักส่งภายนอก (Common Send-out Tests)', specimen:'-', tat:'– (แตกต่างกันตามรายการและห้องปฏิบัติการปลายทาง โดยทั่วไป 1–14 วัน)',
+        params:[
+          {name:'Molecular/Genetic testing', range:'เช่น Karyotyping, Chromosomal microarray, Whole exome sequencing, Thalassemia gene mutation analysis, HLA typing (transplant)'},
+          {name:'Specialized hormone/tumor marker', range:'เช่น Calcitonin, Renin/Aldosterone ratio, บาง tumor marker ที่ใช้น้อย'},
+          {name:'Specialized coagulation', range:'เช่น Factor assay เฉพาะ (Factor VIII/IX inhibitor), Protein C/S, Antithrombin, Lupus anticoagulant confirmatory panel'},
+          {name:'Autoimmune/Specialized serology', range:'เช่น Extractable nuclear antigen (ENA) panel เฉพาะตัว, Myositis panel, Paraneoplastic panel'},
+          {name:'Toxicology/Therapeutic drug monitoring เฉพาะทาง', range:'เช่น ยาบางชนิดที่เครื่องมือในโรงพยาบาลตรวจไม่ได้'},
+          {name:'Microbiology เฉพาะทาง', range:'เช่น Mycobacterium species identification ขั้นสูง, Viral genotyping, การเพาะเชื้อไวรัสบางชนิด'}
+        ],
+        method:'รายการนี้เป็นตัวอย่างทั่วไปเท่านั้น รายการจริงขึ้นกับศักยภาพและเครื่องมือของแต่ละโรงพยาบาล ควรตรวจสอบ test menu ของห้องปฏิบัติการภายในให้เป็นปัจจุบันก่อนตัดสินใจส่งตรวจภายนอก',
+        qc:['ทบทวนรายการ send-out test เป็นระยะ เนื่องจากบางรายการอาจมีการนำเข้ามาตรวจเองในโรงพยาบาลได้ในภายหลังเมื่อมีเครื่องมือ/ปริมาณงานเพียงพอ']
       }
     ]}
   ]
@@ -1469,27 +1559,118 @@ links:[{label:'CDC DPDx — ภาพปรสิตจริงจากกล�
 }
 };
 
-/* ===================== STATE & STORAGE ===================== */
+/* ===================== STATE & STORAGE (localStorage — ใช้งานได้บน GitHub Pages/โฮสต์ทั่วไป) ===================== */
 let state = { sectionId: SECTIONS[0].id, query:'', openTest:null };
-const noteCache = {};
+const LS_PREFIX = 'mtq_';
 
-async function loadNote(testId){
-  if(noteCache[testId] !== undefined) return noteCache[testId];
-  try{
-    const res = await window.storage.get('note:'+testId, false);
-    noteCache[testId] = res ? res.value : '';
-  }catch(e){ noteCache[testId] = ''; }
-  return noteCache[testId];
+function loadNote(testId){
+  try{ return localStorage.getItem(LS_PREFIX+'note_'+testId) || ''; }
+  catch(e){ return ''; }
 }
-async function saveNote(testId, value, statusEl){
+function saveNote(testId, value, statusEl){
   try{
-    await window.storage.set('note:'+testId, value, false);
-    noteCache[testId] = value;
-    if(statusEl) statusEl.textContent = 'บันทึกแล้ว';
+    localStorage.setItem(LS_PREFIX+'note_'+testId, value);
+    if(statusEl) statusEl.textContent = 'บันทึกแล้ว (เก็บไว้ในเบราว์เซอร์นี้)';
   }catch(e){
-    if(statusEl) statusEl.textContent = 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง';
+    if(statusEl) statusEl.textContent = 'บันทึกไม่สำเร็จ (พื้นที่จัดเก็บของเบราว์เซอร์อาจเต็ม)';
   }
 }
+
+/* ---------- Photo gallery (เพิ่มภาพเองจากมือถือ/คอมพิวเตอร์ — เก็บใน localStorage ของเบราว์เซอร์นี้) ---------- */
+function resizeImageToBlob(file, maxDim, quality){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > maxDim || height > maxDim){
+          if(width > height){ height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('canvas_failed')), 'image/jpeg', quality);
+      };
+      img.onerror = () => reject(new Error('image_decode_failed'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('file_read_failed'));
+    reader.readAsDataURL(file);
+  });
+}
+function blobToDataURL(blob){
+  return new Promise((resolve, reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(new Error('blob_read_failed'));
+    r.readAsDataURL(blob);
+  });
+}
+function getPhotos(testId){
+  try{ return JSON.parse(localStorage.getItem(LS_PREFIX+'photos_'+testId) || '[]'); }
+  catch(e){ return []; }
+}
+function setPhotos(testId, arr){
+  try{ localStorage.setItem(LS_PREFIX+'photos_'+testId, JSON.stringify(arr)); return true; }
+  catch(e){ return false; }
+}
+
+async function handlePhotoSelect(testId, inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file) return;
+  const statusEl = document.getElementById('upload-status-'+testId);
+  const captionEl = document.getElementById('caption-'+testId);
+  const caption = captionEl ? captionEl.value.trim() : '';
+  if(statusEl) statusEl.textContent = 'กำลังประมวลผลภาพ...';
+  try{
+    const resized = await resizeImageToBlob(file, 1024, 0.72);
+    const dataUrl = await blobToDataURL(resized);
+    const photos = getPhotos(testId);
+    photos.unshift({ id:'p'+Date.now()+Math.random().toString(36).slice(2,7), caption, ts:new Date().toISOString(), dataUrl });
+    const ok = setPhotos(testId, photos);
+    if(!ok){
+      if(statusEl) statusEl.textContent = 'พื้นที่จัดเก็บของเบราว์เซอร์เต็ม ลองลบภาพเก่าบางส่วนก่อน';
+      return;
+    }
+    inputEl.value = '';
+    if(captionEl) captionEl.value = '';
+    if(statusEl) statusEl.textContent = 'เพิ่มภาพสำเร็จ (เก็บไว้ในเบราว์เซอร์นี้เท่านั้น)';
+    renderUserPhotoGallery(testId);
+  }catch(e){
+    if(statusEl) statusEl.textContent = 'เพิ่มภาพไม่สำเร็จ ลองใหม่อีกครั้ง';
+  }
+}
+
+function handlePhotoDelete(testId, photoId){
+  if(!confirm('ลบภาพนี้ใช่หรือไม่? การลบไม่สามารถย้อนกลับได้')) return;
+  const photos = getPhotos(testId).filter(p => p.id !== photoId);
+  setPhotos(testId, photos);
+  renderUserPhotoGallery(testId);
+}
+
+function loadAndRenderUserPhotos(testId){
+  renderUserPhotoGallery(testId);
+}
+
+function renderUserPhotoGallery(testId){
+  const container = document.getElementById('user-photos-'+testId);
+  if(!container) return;
+  const photos = getPhotos(testId);
+  if(!photos.length){
+    container.innerHTML = '<p class="photo-hint">ยังไม่มีภาพที่บันทึกไว้สำหรับรายการนี้ (จัดเก็บเฉพาะในเบราว์เซอร์นี้) — เพิ่มภาพแรกได้จากปุ่มด้านล่าง</p>';
+    return;
+  }
+  container.innerHTML = `<div class="photo-grid">${photos.map(p => `
+    <div class="photo-img-wrap">
+      <img src="${p.dataUrl}" alt="${esc(p.caption||'')}" loading="lazy">
+      ${p.caption? `<div class="cap">${esc(p.caption)}</div>`:''}
+      <button class="photo-del" onclick="handlePhotoDelete('${testId}','${p.id}')" title="ลบภาพนี้">✕</button>
+    </div>`).join('')}</div>`;
+}
+
 
 /* ===================== HELPERS ===================== */
 function esc(s){
@@ -1522,6 +1703,7 @@ function renderTestCard(test, pathLabel){
         ${pathLabel? `<div class="badge-path">${esc(pathLabel)}</div>`:''}
         <div class="name">${esc(test.name)}</div>
         ${test.specimen? `<div class="specimen">สิ่งส่งตรวจ: ${esc(test.specimen)}</div>`:''}
+        ${test.tat? `<div class="tat">⏱ TAT: ${esc(test.tat)}</div>`:''}
       </div>
       <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
@@ -1541,30 +1723,29 @@ function renderTestCard(test, pathLabel){
 }
 
 function renderPhotoBlock(test){
-  if(!test.photos) return '';
-  const ph = test.photos;
-  const items = ph.items || [];
-  if(items.length){
-    return `<div class="block photo-block">
-      <h4>ภาพถ่ายจากกล้องจุลทรรศน์จริงของห้องปฏิบัติการ</h4>
-      ${ph.note? `<p style="color:var(--muted);font-size:12.5px;margin:0 0 8px;">${esc(ph.note)}</p>`:''}
+  const preset = (test.photos && test.photos.items) || [];
+  return `<div class="block photo-block">
+    <h4>คลังภาพของรายการนี้ (เพิ่มภาพเองได้จากมือถือหรือคอมพิวเตอร์)</h4>
+    ${test.photos && test.photos.note? `<p style="color:var(--muted);font-size:12.5px;margin:0 0 8px;">${esc(test.photos.note)}</p>`:''}
+    ${preset.length? `
+      <p class="photo-hint" style="margin-top:0;">ภาพอ้างอิงจากทีมพัฒนา</p>
       <div class="photo-grid">
-        ${items.map(it=>`
+        ${preset.map(it=>`
           <div class="photo-img-wrap">
             <img src="${esc(it.src)}" alt="${esc(it.caption||test.name)}" loading="lazy">
             ${it.caption? `<div class="cap">${esc(it.caption)}</div>`:''}
           </div>`).join('')}
-      </div>
-    </div>`;
-  }
-  const n = ph.placeholderCount || 4;
-  return `<div class="block photo-block">
-    <h4>ภาพถ่ายจากกล้องจุลทรรศน์จริงของห้องปฏิบัติการ</h4>
-    ${ph.note? `<p style="color:var(--muted);font-size:12.5px;margin:0 0 8px;">${esc(ph.note)}</p>`:''}
-    <div class="photo-grid">
-      ${Array.from({length:n}).map((_,i)=>`<div class="photo-slot"><span class="cam">📷</span>ยังไม่มีภาพ<br>ตำแหน่งที่ ${i+1}</div>`).join('')}
+      </div>`:''}
+    <p class="photo-hint" style="margin-top:${preset.length?'10px':'0'};">ภาพที่ห้องปฏิบัติการของคุณบันทึกไว้ (เช่น ภาพเซลล์/เชื้อที่พบจริง)</p>
+    <div id="user-photos-${test.id}" class="user-photos"><p class="photo-hint">กำลังโหลดภาพ...</p></div>
+    <div class="upload-row">
+      <label class="upload-btn">
+        📷 ถ่ายรูป / เลือกรูปภาพ
+        <input type="file" accept="image/*" capture="environment" onchange="handlePhotoSelect('${test.id}', this)">
+      </label>
+      <input type="text" id="caption-${test.id}" class="caption-input" placeholder="คำอธิบายภาพ (ไม่บังคับ)">
     </div>
-    <p class="photo-hint">ห้องปฏิบัติการสามารถแนบภาพถ่ายจริงได้ โดยเพิ่มไฟล์ในโฟลเดอร์ images/ แล้วเติมลงใน <code>test.photos.items</code> ของรายการนี้ในโค้ด เช่น <code>{src:'images/koh-1.jpg', caption:'Septate hyphae, 40x'}</code></p>
+    <div class="upload-status" id="upload-status-${test.id}"></div>
   </div>`;
 }
 
@@ -1635,10 +1816,9 @@ function render(){
   // restore focus to search input if it was focused
   // load any notes for currently open test
   if(state.openTest){
-    loadNote(state.openTest).then(v=>{
-      const ta = document.getElementById('note-'+state.openTest);
-      if(ta) ta.value = v;
-    });
+    const ta = document.getElementById('note-'+state.openTest);
+    if(ta) ta.value = loadNote(state.openTest);
+    loadAndRenderUserPhotos(state.openTest);
   }
 }
 
