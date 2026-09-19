@@ -120,6 +120,7 @@
   .photo-hint{font-size:12px;color:var(--muted);margin:6px 0 4px;}
   .upload-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center;}
   .upload-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--teal-deep);background:var(--teal-tint);border:1px solid var(--teal);border-radius:20px;padding:7px 14px;cursor:pointer;white-space:nowrap;}
+  .upload-btn-cam{background:var(--surface);color:var(--ink-soft);border:1px solid var(--line);}
   .upload-btn:hover{filter:brightness(0.97);}
   .upload-btn input[type="file"]{display:none;}
   .caption-input{flex:1;min-width:160px;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);}
@@ -1235,6 +1236,150 @@ const SECTIONS = [
       }
     ]}
   ]
+},
+{
+  id:'molecular', name:'Molecular Biology / PCR', sub:'อณูชีววิทยา/พีซีอาร์',
+  categories:[
+    { name:'PCR Workflow (ขั้นตอนปฏิบัติงานพื้นฐาน)', tests:[
+      { id:'dna_extraction', name:'DNA/RNA Extraction (การสกัดสารพันธุกรรม)', specimen:'EDTA whole blood, Swab (VTM/UTM), Tissue, Body fluid, ตามชนิดการตรวจ', tat:'45–90 นาที (manual) / 20–40 นาที (automated extractor)',
+        params:[
+          {name:'ความบริสุทธิ์ (Purity) A260/280', range:'1.8–2.0 สำหรับ DNA / ~2.0 สำหรับ RNA'},
+          {name:'ความเข้มข้นขั้นต่ำที่ใช้ได้', range:'ขึ้นกับชุดน้ำยา/วิธี PCR ปลายทาง (ตรวจสอบ insert sheet ของชุดตรวจ)'}
+        ],
+        method:'สกัดสารพันธุกรรมด้วยหลักการ silica-membrane column, magnetic bead-based extraction (automated), หรือ phenol-chloroform (บางห้องปฏิบัติการเฉพาะทาง) เพื่อแยก DNA/RNA จากสิ่งส่งตรวจให้บริสุทธิ์พอสำหรับปฏิกิริยา PCR',
+        procedure:[
+          'ปฏิบัติงานในพื้นที่ "Specimen Preparation Room" ซึ่งแยกจากพื้นที่เตรียมน้ำยา (reagent prep) และพื้นที่ขยายสัญญาณ (amplification) โดยเด็ดขาด',
+          'Lysis: ผสมตัวอย่างกับ lysis buffer ± proteinase K เพื่อสลายผนังเซลล์/เยื่อหุ้มไวรัสและปลดปล่อยกรดนิวคลีอิก บ่มตามอุณหภูมิ/เวลาที่ชุดน้ำยากำหนด',
+          'Binding: ผสมกับ binding buffer (มักมี chaotropic salt/แอลกอฮอล์) แล้วผ่านคอลัมน์ silica membrane หรือจับกับ magnetic bead เพื่อดักจับกรดนิวคลีอิก',
+          'Washing: ล้างคอลัมน์/บีดด้วย wash buffer 1–2 ครั้ง เพื่อกำจัดโปรตีน เกลือ และสารยับยั้งปฏิกิริยา (PCR inhibitor) ที่ปนเปื้อน',
+          'Elution: ชะกรดนิวคลีอิกออกด้วย elution buffer หรือน้ำปลอดนิวคลีเอส ปริมาณตามที่ต้องการ',
+          'วัดความเข้มข้นและความบริสุทธิ์ด้วย spectrophotometer (Nanodrop) หรือ fluorometer (Qubit) ตามความจำเป็นของแต่ละ assay',
+          'เก็บสารสกัดที่ 2–8°C หากใช้ภายในไม่กี่ชั่วโมง หรือแช่แข็ง −20°C/−80°C หากต้องเก็บนาน (RNA ควรแช่แข็งทันทีและหลีกเลี่ยง freeze-thaw ซ้ำ)'
+        ],
+        qc:['รัน extraction control (negative control ไม่มีสารพันธุกรรม) ทุกชุดสกัดเพื่อตรวจสอบการปนเปื้อนระหว่างขั้นตอน','เปลี่ยนถุงมือและใช้ filter tip ทุกครั้งที่เปลี่ยนตัวอย่าง ป้องกัน cross-contamination','สารสกัดที่มีค่า A260/280 ต่ำกว่า 1.6 หรือสูงกว่า 2.2 มักมีการปนเปื้อนโปรตีน/สารเคมี ควรสกัดใหม่หากเป็นไปได้']
+      },
+      { id:'conventional_pcr', name:'Conventional PCR (End-point PCR)', specimen:'DNA/cDNA ที่สกัดแล้ว (ตัวอย่าง RNA ต้องผ่านขั้นตอน Reverse Transcription เป็น cDNA ก่อน)', tat:'3–5 ชั่วโมง (รวม thermal cycling + gel electrophoresis + อ่านผล)',
+        params:[
+          {name:'Denaturation', range:'94–95°C, 30 วินาที–1 นาที'},
+          {name:'Annealing', range:'50–65°C (ขึ้นกับ Tm ของไพรเมอร์), 30–45 วินาที'},
+          {name:'Extension', range:'72°C, 30 วินาที–2 นาที (ขึ้นกับความยาวชิ้นดีเอ็นเอเป้าหมาย)'},
+          {name:'จำนวนรอบ (Cycle)', range:'โดยทั่วไป 30–40 รอบ'}
+        ],
+        method:'ขยายชิ้นส่วนดีเอ็นเอเป้าหมายด้วยเอนไซม์ Taq polymerase ผ่านการเปลี่ยนอุณหภูมิเป็นรอบ (denaturation-annealing-extension) แล้วตรวจผลด้วย gel electrophoresis',
+        procedure:[
+          'เตรียม PCR master mix (buffer, dNTPs, primer คู่หน้า-หลัง, Taq polymerase, MgCl2) ในพื้นที่ "Reagent Preparation Room" ซึ่งเป็นพื้นที่สะอาดที่สุด ไม่มีการนำ DNA ที่ขยายแล้วเข้ามาเด็ดขาด',
+          'นำ master mix ไปยังพื้นที่ "Specimen/Template Addition Room" เพื่อเติมสารสกัด DNA/cDNA ลงในแต่ละหลอด/หลุมปฏิกิริยา พร้อมตั้ง positive control และ negative (no template) control ทุกครั้ง',
+          'นำหลอดปฏิกิริยาไปยังพื้นที่ "Amplification Room" ที่มีเครื่อง thermal cycler ตั้งโปรแกรมอุณหภูมิตามที่ระบุ (initial denaturation → cycling → final extension → hold ที่ 4°C)',
+          'หลังขยายเสร็จ นำผลิตภัณฑ์ไปยังพื้นที่ "Post-PCR/Detection Room" (แยกต่างหาก) เพื่อทำ agarose gel electrophoresis ผสม loading dye แล้ว load ลงเจล พร้อม DNA ladder',
+          'รัน electrophoresis ตามแรงดันไฟฟ้าและเวลาที่กำหนด แล้วย้อมด้วย ethidium bromide หรือสีย้อมทางเลือกที่ปลอดภัยกว่า (SYBR Safe)',
+          'อ่านผลภายใต้ UV transilluminator/gel documentation system เปรียบเทียบตำแหน่งแถบ (band) กับ DNA ladder และ control',
+          'รายงานผลบวก/ลบตามการปรากฏของแถบที่ตำแหน่งขนาด (bp) ที่คาดหวัง พร้อมยืนยันว่า positive control ขึ้นและ negative control ไม่ขึ้นแถบใด ๆ'
+        ],
+        qc:['ห้องปฏิบัติการ PCR ต้องแบ่งพื้นที่ 4 โซนแยกกันเด็ดขาด (reagent prep → specimen/template addition → amplification → post-PCR detection) พร้อมทิศทางการไหลของงานแบบทางเดียว (unidirectional workflow) ไม่ย้อนกลับ','ใช้ pipette, เสื้อกาวน์ และอุปกรณ์แยกเฉพาะแต่ละโซน ห้ามนำกลับไปใช้ข้ามโซน','Negative control ขึ้นแถบ = สงสัยการปนเปื้อน (carry-over contamination) ต้องตรวจสอบและอาจต้องทำซ้ำทั้งชุด','เปลี่ยนถุงมือบ่อยครั้งและใช้ filter tip ทุกครั้งเพื่อลด aerosol contamination']
+      },
+      { id:'realtime_pcr', name:'Real-time PCR (qPCR / RT-PCR)', specimen:'DNA/cDNA ที่สกัดแล้ว', tat:'2–3 ชั่วโมง (รวมเตรียมปฏิกิริยา + รัน + วิเคราะห์ผล)',
+        params:[
+          {name:'Ct (Cycle threshold) ผลบวก', range:'ขึ้นกับ cutoff ของแต่ละชุดน้ำยา (โดยทั่วไป Ct <35–40 ถือว่าตรวจพบ ตรวจสอบ insert sheet เสมอ)'},
+          {name:'Internal Control (IC)', range:'ต้องขึ้นสัญญาณในทุกตัวอย่าง เพื่อยืนยันว่าไม่มีการยับยั้งปฏิกิริยา (PCR inhibition) และการสกัดมีประสิทธิภาพ'}
+        ],
+        method:'ตรวจวัดปริมาณผลิตภัณฑ์ PCR แบบ real-time ด้วยสารเรืองแสง (SYBR Green หรือ TaqMan probe) ระหว่างการขยายในแต่ละรอบ ทำให้ทราบผลเชิงคุณภาพ/ปริมาณโดยไม่ต้องทำ gel electrophoresis',
+        procedure:[
+          'เตรียม reaction mix (master mix สำหรับ real-time PCR, primer/probe, template) ตามหลักการแยกโซนเช่นเดียวกับ conventional PCR',
+          'หยด/แจกจ่ายปฏิกิริยาลงแผ่น 96/384-well plate หรือหลอดเฉพาะของเครื่อง พร้อม positive control, negative control และ internal control ทุกแผ่น',
+          'ปิดผนึกแผ่นด้วย optical seal ให้แน่นสนิท (ป้องกันการระเหยและการปนเปื้อนระหว่างหลุม) แล้วปั่นเหวี่ยงเบา ๆ ให้ของเหลวลงก้นหลุม',
+          'ใส่แผ่นเข้าเครื่อง real-time PCR ตั้งโปรแกรมอุณหภูมิและจำนวนรอบตามชุดน้ำยา เครื่องจะบันทึกค่าความเข้มแสงเรืองแสงทุกรอบ',
+          'วิเคราะห์กราฟ amplification curve และค่า Ct ของแต่ละตัวอย่างเทียบกับ cutoff ที่กำหนด ตรวจสอบ internal control ว่าขึ้นสัญญาณปกติ',
+          'สำหรับ quantitative PCR: คำนวณปริมาณ viral load/copy number เทียบกับ standard curve ที่ทำจาก standard ความเข้มข้นที่ทราบค่า',
+          'รายงานผลตามเกณฑ์ที่ชุดน้ำยากำหนด (Detected/Not Detected หรือค่าปริมาณ copies/mL) พร้อมแจ้ง critical value ทันทีสำหรับเชื้อที่ต้องรายงานด่วน (เช่น กลุ่ม select agent, HIV viral load สูงผิดปกติ)'
+        ],
+        qc:['Internal control ไม่ขึ้นสัญญาณในตัวอย่างใด บ่งชี้ปัญหาการสกัด/สารยับยั้งปฏิกิริยา ต้องสกัดและตรวจซ้ำ ห้ามรายงานผลลบทันที','Positive/Negative control ต้องผ่านเกณฑ์ทุกแผ่น หากไม่ผ่านต้องทำซ้ำทั้งแผ่น ห้ามรายงานผลตัวอย่างในแผ่นนั้น','สอบเทียบเครื่อง real-time PCR และตรวจสอบ standard curve (slope, R²) เป็นระยะตามตารางบำรุงรักษา']
+      },
+      { id:'pcr_contam', name:'การควบคุมการปนเปื้อนและการจัดพื้นที่ห้องปฏิบัติการ PCR', specimen:'-', tat:'– (แนวทางปฏิบัติของห้องปฏิบัติการ ไม่ใช่รายการตรวจ)',
+        params:[
+          {name:'โซนที่ 1: Reagent Preparation', range:'เตรียม master mix เท่านั้น ห้ามนำตัวอย่างหรือ DNA ที่ขยายแล้วเข้ามาเด็ดขาด (ความดันอากาศเป็นบวกเทียบพื้นที่อื่น)'},
+          {name:'โซนที่ 2: Specimen/Template Preparation', range:'สกัดสารพันธุกรรมและเติม template ลงปฏิกิริยา'},
+          {name:'โซนที่ 3: Amplification', range:'บริเวณตั้งเครื่อง thermal cycler/real-time PCR'},
+          {name:'โซนที่ 4: Post-PCR/Detection', range:'เปิดฝาหลอด/plate หลังขยายเสร็จ, gel electrophoresis, วิเคราะห์ผล (ความดันอากาศเป็นลบ ป้องกัน aerosol ฟุ้งย้อนกลับ)'}
+        ],
+        method:'หลักการ Unidirectional Workflow — บุคลากร อุปกรณ์ และตัวอย่างเคลื่อนที่ไปในทิศทางเดียวจากโซนสะอาดที่สุด (reagent prep) ไปยังโซนที่มีความเสี่ยงปนเปื้อนสูงสุด (post-PCR) เท่านั้น ไม่ย้อนกลับ เพื่อป้องกัน carry-over/amplicon contamination',
+        procedure:[
+          'จัดให้แต่ละโซนมีชุดปฏิบัติการ (เสื้อกาวน์, ถุงมือ, pipette, เครื่องมือ) แยกเฉพาะ ไม่ใช้ร่วมกันข้ามโซนโดยเด็ดขาด',
+          'กำหนดทิศทางการเดินของบุคลากร: เริ่มจาก reagent prep → specimen prep → amplification → post-PCR เท่านั้น ห้ามเดินย้อนกลับเข้าโซนสะอาดหลังเข้าโซน post-PCR แล้วโดยไม่เปลี่ยนชุด/ล้างมือ',
+          'ทำความสะอาดพื้นผิวปฏิบัติงานด้วยน้ำยาฟอกขาว (10% bleach) หรือ DNA-away และฉายรังสี UV ในตู้ปฏิบัติการ (biosafety cabinet/PCR hood) ก่อนและหลังปฏิบัติงานทุกครั้ง',
+          'ใช้ filter (aerosol-barrier) tip ทุกครั้งเพื่อลดการฟุ้งกระจายของละอองสารพันธุกรรมเข้าไปในกระบอก pipette',
+          'แบ่งสารเคมี/reagent เป็น aliquot ปริมาณน้อยสำหรับใช้งานระยะสั้น ลดจำนวนครั้งที่เปิดขวดสต็อกหลัก',
+          'ตรวจติดตามผล negative control อย่างเคร่งครัดทุกรอบการทดสอบ หากพบผลบวกใน negative control ให้หยุดรายงานผลชุดนั้น สอบสวนหาสาเหตุ (wipe test พื้นผิว/อุปกรณ์) และทำความสะอาดครั้งใหญ่ก่อนเริ่มงานใหม่'
+        ],
+        qc:['ตรวจ wipe test พื้นผิวและอุปกรณ์เป็นระยะเพื่อเฝ้าระวัง amplicon contamination ในสิ่งแวดล้อม','ทบทวนบันทึกผล control ย้อนหลังเป็นระยะเพื่อตรวจจับแนวโน้มการปนเปื้อนก่อนที่จะกระทบผลตรวจผู้ป่วย']
+      }
+    ]}
+  ]
+},
+{
+  id:'art', name:'Andrology & ART Lab (IUI / IVF / ICSI)', sub:'ห้องปฏิบัติการเทคโนโลยีช่วยการเจริญพันธุ์',
+  categories:[
+    { name:'ขั้นตอนปฏิบัติงานห้องปฏิบัติการ ART', tests:[
+      { id:'iui', name:'Intrauterine Insemination (IUI) — การเตรียมและล้างอสุจิ', specimen:'น้ำอสุจิสด เก็บโดยการช่วยตัวเอง หลังงดหลั่ง 2–5 วัน ณ สถานที่ใกล้ห้องปฏิบัติการ', tat:'1–2 ชั่วโมง (เตรียมให้เสร็จก่อนเวลานัดฉีดตามช่วง ovulation)',
+        params:[
+          {name:'จำนวนอสุจิเคลื่อนไหวดีหลังล้าง (Total Motile Sperm Count, TMSC) ที่แนะนำ', range:'≥5–10 ล้านตัว ต่อโดสที่ฉีด (ยิ่งสูงยิ่งเพิ่มโอกาสสำเร็จ ขึ้นกับเกณฑ์ของแต่ละคลินิก)'},
+          {name:'ปริมาตรสุดท้ายที่ฉีด', range:'0.3–0.5 mL'},
+          {name:'ช่วงเวลาที่เหมาะสมในการฉีด', range:'36–40 ชั่วโมงหลังฉีดกระตุ้นไข่ตก (hCG trigger) หรือช่วง LH surge ตามการติดตามของแพทย์'}
+        ],
+        method:'เทคนิค Density Gradient Centrifugation หรือ Swim-up เพื่อคัดแยกอสุจิที่เคลื่อนไหวดีและมีสัณฐานปกติออกจากน้ำอสุจิ พลาสมาน้ำอสุจิ เม็ดเลือดขาว และเชื้ออสุจิที่ตายแล้ว ก่อนนำไปฉีดเข้าโพรงมดลูกโดยตรง (หลีกเลี่ยงปฏิกิริยาจากพลาสมาน้ำอสุจิที่ทำให้เกิดตะคริวมดลูกรุนแรงหากฉีดน้ำอสุจิดิบเข้าโพรงมดลูก)',
+        procedure:[
+          'รับตัวอย่างน้ำอสุจิ บันทึกเวลาที่เก็บ ปล่อยให้ liquefy ที่อุณหภูมิห้อง 15–30 นาที',
+          'ประเมิน macroscopic และ microscopic เบื้องต้น (ปริมาตร, ความเข้มข้น, motility) ก่อนเริ่มขั้นตอนล้าง',
+          'Density Gradient Centrifugation: วางชั้นสารละลาย gradient เข้มข้น 90%/45% (หรือตามชุดน้ำยา) ในหลอดปั่นเหวี่ยง แล้วค่อย ๆ วางน้ำอสุจิด้านบนสุด ปั่นเหวี่ยง 300–400 g นาน 20 นาที เพื่อให้อสุจิที่แข็งแรงตกตะกอนผ่านชั้น gradient ลงด้านล่าง ในขณะที่เศษเซลล์/อสุจิผิดปกติค้างอยู่ชั้นบน',
+          'ดูดตะกอนอสุจิ (pellet) ที่ก้นหลอดออก ล้างด้วย sperm wash medium ปั่นเหวี่ยงซ้ำ 200 g นาน 5–10 นาที เพื่อกำจัด gradient medium ที่เหลือ',
+          'Resuspend ตะกอนอสุจิในปริมาตรน้อย (0.3–0.5 mL) ด้วย culture medium ที่อุ่นไว้ที่ 37°C',
+          'ประเมินผลหลังล้าง: นับความเข้มข้นและ % motility ด้วย hemocytometer/CASA เพื่อยืนยัน total motile count เพียงพอตามเกณฑ์',
+          'บรรจุอสุจิที่เตรียมแล้วในไซริงค์/สายสวนสำหรับ IUI ส่งมอบให้แพทย์ทำการฉีดเข้าโพรงมดลูกภายในเวลาที่กำหนด (โดยทั่วไปภายใน 30–60 นาทีหลังเตรียมเสร็จ)',
+          'บันทึกผลการเตรียม (TMSC, % motility, เวลาที่เตรียมเสร็จ) ลงในเวชระเบียนของผู้ป่วยพร้อมระบบยืนยันตัวตนคู่ (double-witnessing) เพื่อป้องกันความผิดพลาดในการสลับตัวอย่าง'
+        ],
+        qc:['ควบคุมอุณหภูมิของตัวอย่างและอุปกรณ์ให้ใกล้เคียง 37°C ตลอดกระบวนการ','ใช้ระบบยืนยันตัวตนคู่ (two-person witnessing หรือ electronic witnessing) ทุกขั้นตอนที่มีการย้าย/สัมผัสตัวอย่างของผู้ป่วย เพื่อป้องกันการสลับตัวอย่างซึ่งเป็นความผิดพลาดร้ายแรงที่สุดของห้องปฏิบัติการ ART','หากจำนวนอสุจิหลังล้างต่ำกว่าเกณฑ์ ให้แจ้งแพทย์พิจารณาปรับแผนการรักษา (เช่น เปลี่ยนเป็น IVF/ICSI)']
+      },
+      { id:'ivf', name:'In Vitro Fertilization (IVF) — ขั้นตอนปฏิบัติงานห้องปฏิบัติการตัวอ่อน', specimen:'ไข่ (oocyte) จากการเจาะดูดผ่านช่องคลอดด้วยคลื่นเสียงความถี่สูง (transvaginal ultrasound-guided oocyte retrieval) + อสุจิที่เตรียมแล้ว', tat:'กระบวนการหลายวัน: วันเก็บไข่ (Day 0) → ตรวจการปฏิสนธิ (Day 1) → เพาะเลี้ยงตัวอ่อน (Day 3 หรือ Day 5–6) → ย้ายตัวอ่อน/แช่แข็ง',
+        params:[
+          {name:'อัตราการปฏิสนธิปกติ (2PN)', range:'ตรวจที่ 16–18 ชั่วโมงหลังผสม: พบ 2 pronuclei และ 2 polar body = ปฏิสนธิปกติ'},
+          {name:'การให้เกรดตัวอ่อนระยะ Cleavage (Day 3)', range:'ประเมินจำนวนเซลล์ (ควร 6–8 เซลล์), ความสม่ำเสมอของเซลล์ (symmetry), และเปอร์เซ็นต์ fragmentation (<10% ดีที่สุด)'},
+          {name:'การให้เกรดระยะ Blastocyst (Day 5–6)', range:'ประเมิน 3 ส่วน: ระดับการขยายตัว (expansion 1–6), Inner Cell Mass (ICM, เกรด A–C), Trophectoderm (TE, เกรด A–C)'},
+          {name:'สภาวะตู้เพาะเลี้ยง (Incubator)', range:'37°C, CO2 5–6%, O2 5% (tri-gas incubator), ความชื้นสูง'}
+        ],
+        method:'Conventional Insemination — ผสมไข่ที่เก็บได้กับอสุจิที่เตรียมแล้วในจานเพาะเลี้ยง ให้เกิดการปฏิสนธิตามธรรมชาตินอกร่างกาย แล้วเพาะเลี้ยงตัวอ่อนในสภาวะควบคุมจนถึงระยะที่เหมาะสมสำหรับการย้ายกลับเข้าโพรงมดลูกหรือแช่แข็งเก็บไว้',
+        procedure:[
+          'รับของเหลวจากรูขุมขน (follicular fluid) จากแพทย์ที่เจาะดูดไข่ ค้นหาไข่ (oocyte-cumulus complex) ภายใต้กล้อง stereomicroscope บนแผ่นความร้อน (heated stage) รักษาอุณหภูมิ 37°C ตลอดเวลา',
+          'ล้างไข่ที่พบด้วย culture medium อุ่น แล้วประเมินจำนวนและคุณภาพเบื้องต้น (ยังไม่ลอกเซลล์ cumulus ออกสำหรับ conventional IVF)',
+          'เตรียมอสุจิด้วยวิธี Density Gradient Centrifugation หรือ Swim-up เช่นเดียวกับ IUI เพื่อคัดอสุจิที่เคลื่อนไหวดี',
+          'Insemination: หยดอสุจิที่เตรียมแล้วลงในจานเพาะเลี้ยงที่มีไข่ ในความเข้มข้นประมาณ 50,000–100,000 ตัวเคลื่อนไหวดี/mL แล้วนำเข้าตู้เพาะเลี้ยง (incubator) บ่มร่วมกัน 4–18 ชั่วโมง',
+          'ตรวจการปฏิสนธิ (fertilization check) ที่ 16–18 ชั่วโมงหลังผสม ภายใต้กล้อง inverted microscope มองหา 2 pronuclei (2PN) และ 2 polar body ซึ่งบ่งชี้การปฏิสนธิปกติ',
+          'ย้ายตัวอ่อนที่ปฏิสนธิปกติไปเพาะเลี้ยงต่อในหยดอาหารเลี้ยงเซลล์ (culture drop) ภายใต้น้ำมันแร่ (mineral oil overlay) ในตู้เพาะเลี้ยง tri-gas ควบคุมอุณหภูมิ/แก๊ส/ความชื้นตลอดเวลา',
+          'ประเมินและให้เกรดตัวอ่อนที่ Day 3 (cleavage stage: จำนวนเซลล์, symmetry, fragmentation) และ/หรือเพาะเลี้ยงต่อถึง Day 5–6 (blastocyst stage: expansion, ICM, trophectoderm grade) ตามแผนการรักษา',
+          'คัดเลือกตัวอ่อนคุณภาพดีที่สุดสำหรับย้ายกลับเข้าโพรงมดลูก (embryo transfer) หรือแช่แข็งด้วยวิธี vitrification เก็บไว้ใช้ในรอบถัดไป',
+          'บันทึกข้อมูลทุกขั้นตอน (จำนวนไข่, อัตราปฏิสนธิ, เกรดตัวอ่อนแต่ละใบ) พร้อมระบบยืนยันตัวตนคู่ (double witnessing) ทุกครั้งที่มีการเคลื่อนย้าย/เปลี่ยนภาชนะของไข่หรือตัวอ่อน'
+        ],
+        qc:['ตรวจสอบและบันทึกสภาวะตู้เพาะเลี้ยง (อุณหภูมิ, ระดับ CO2/O2, ความชื้น) ทุกวันและมี alarm/backup gas ระบบสำรอง','ทดสอบคุณภาพอาหารเลี้ยงเซลล์ทุกล็อตด้วย Mouse Embryo Assay หรือ Human Sperm Survival Assay ก่อนนำมาใช้ทางคลินิก','ระบบยืนยันตัวตนคู่ (double-witnessing หรือ electronic witnessing) เป็นมาตรการบังคับทุกขั้นตอนที่สัมผัส/ย้ายไข่หรือตัวอ่อนของผู้ป่วย เพื่อป้องกันการสลับตัวอย่างซึ่งถือเป็นความผิดพลาดร้ายแรงที่สุด','จำกัดเวลาที่ไข่/ตัวอ่อนอยู่นอกตู้เพาะเลี้ยง (time-out-of-incubator) ให้น้อยที่สุดในทุกขั้นตอน']
+      },
+      { id:'icsi', name:'Intracytoplasmic Sperm Injection (ICSI) — การฉีดอสุจิเข้าสู่เซลล์ไข่โดยตรง', specimen:'ไข่ระยะสมบูรณ์ (Metaphase II, MII oocyte) + อสุจิคัดเลือกเดี่ยวต่อไข่หนึ่งใบ', tat:'30–60 นาทีต่อรอบการฉีด (คอฮอร์ตไข่ทั้งหมด) จากนั้นเพาะเลี้ยงต่อเนื่องตามขั้นตอนเดียวกับ IVF',
+        params:[
+          {name:'ข้อบ่งชี้หลัก', range:'ภาวะมีบุตรยากจากปัจจัยชาย (severe male factor: จำนวน/การเคลื่อนไหว/รูปร่างอสุจิผิดปกติมาก), ผลปฏิสนธิล้มเหลวจาก conventional IVF ในรอบก่อนหน้า, ใช้อสุจิจากการเจาะ (TESE/PESA)'},
+          {name:'ไข่ที่ใช้ฉีดได้', range:'เฉพาะไข่ระยะ MII (มี polar body ที่หนึ่งชัดเจน) เท่านั้น'},
+          {name:'อัตราการปฏิสนธิปกติ (2PN) หลัง ICSI', range:'ตรวจที่ 16–18 ชั่วโมงหลังฉีด เช่นเดียวกับ IVF'}
+        ],
+        method:'ใช้กล้อง inverted microscope ร่วมกับชุด micromanipulator ควบคุม holding pipette (ตรึงไข่) และ injection pipette (ดูดอสุจิและแทงผ่านเปลือกไข่เพื่อฉีดอสุจิเข้าสู่ไซโทพลาซึมโดยตรง เป็นการข้ามขั้นตอนธรรมชาติที่อสุจิต้องเจาะผ่านเปลือกไข่เอง',
+        procedure:[
+          'Denudation: ลอกเซลล์ cumulus/corona ที่ล้อมรอบไข่ออกด้วยเอนไซม์ hyaluronidase ความเข้มข้นต่ำ ร่วมกับการดูด-ปล่อยเบา ๆ ผ่านปิเปตขนาดเล็ก (denuding pipette) เพื่อให้มองเห็นไข่ชัดเจน',
+          'ประเมินระยะไข่ภายใต้กล้องกำลังขยายสูง: ใช้เฉพาะไข่ระยะ MII (มี polar body ที่หนึ่ง) เท่านั้นสำหรับฉีด ไข่ระยะ MI หรือ GV คัดออกหรือเพาะเลี้ยงต่อรอดูพัฒนาการ',
+          'เตรียมจานฉีด (injection dish) โดยหยดอสุจิที่เตรียมแล้วในหยด PVP (polyvinylpyrrolidone) เพื่อชะลอการเคลื่อนไหวให้จับตัวได้ง่ายขึ้น ล้อมรอบด้วยหยดไข่แต่ละใบภายใต้น้ำมันแร่',
+          'คัดเลือกอสุจิที่เคลื่อนไหวดีและมีสัณฐานปกติทีละตัว ใช้ injection pipette แตะที่หางเบา ๆ เพื่อทำให้อสุจิเคลื่อนไหวช้าลง (immobilization) แล้วดูดเข้าปิเปตจากหางไปหัว',
+          'ใช้ holding pipette ตรึงไข่ให้ polar body อยู่ตำแหน่ง 12 หรือ 6 นาฬิกา (หลีกเลี่ยงการแทงโดนแกน spindle) แล้วแทง injection pipette ผ่านเปลือกไข่ (zona pellucida) และเยื่อหุ้มเซลล์เข้าสู่ไซโทพลาซึม',
+          'ฉีดอสุจิเข้าสู่ไซโทพลาซึมพร้อมดูดไซโทพลาซึมเล็กน้อยยืนยันว่าเยื่อหุ้มเซลล์แตกแล้ว (aspiration technique) จึงค่อย ๆ ดึงปิเปตออก ทำซ้ำกับไข่ทุกใบในคอฮอร์ต',
+          'นำไข่ที่ฉีดแล้วเข้าตู้เพาะเลี้ยงทันที ควบคุมเวลาที่อยู่นอกตู้เพาะเลี้ยง (time-out) ให้สั้นที่สุด',
+          'ตรวจการปฏิสนธิที่ 16–18 ชั่วโมงหลังฉีด และดำเนินการเพาะเลี้ยง/ให้เกรด/ย้ายตัวอ่อนหรือแช่แข็งตามขั้นตอนเดียวกับ IVF'
+        ],
+        qc:['ใช้เฉพาะไข่ระยะ MII เท่านั้นในการฉีด ไข่ระยะอื่นมีอัตราปฏิสนธิและพัฒนาการต่ำกว่ามาก','คัดเลือกอสุจิด้วยเกณฑ์สัณฐานอย่างเคร่งครัด (อาจใช้เทคนิคขั้นสูง เช่น PICSI หรือ IMSI ในรายที่มีข้อบ่งชี้)','สอบเทียบและบำรุงรักษาชุด micromanipulator, microforge (สำหรับทำปิเปต) เป็นประจำตามตารางที่กำหนด','เฝ้าระวังอัตราไข่เสียหาย/เสื่อมสภาพ (degeneration/lysis) หลังฉีด หากสูงผิดปกติให้ทบทวนเทคนิคและแรงดันที่ใช้','ระบบยืนยันตัวตนคู่ (double-witnessing) บังคับใช้ทุกขั้นตอนเช่นเดียวกับ IVF/IUI']
+      }
+    ]}
+  ]
 }
 ];
 
@@ -1740,7 +1885,11 @@ function renderPhotoBlock(test){
     <div id="user-photos-${test.id}" class="user-photos"><p class="photo-hint">กำลังโหลดภาพ...</p></div>
     <div class="upload-row">
       <label class="upload-btn">
-        📷 ถ่ายรูป / เลือกรูปภาพ
+        🖼️ เลือกรูปจากคลังภาพ
+        <input type="file" accept="image/*" onchange="handlePhotoSelect('${test.id}', this)">
+      </label>
+      <label class="upload-btn upload-btn-cam">
+        📷 ถ่ายรูปใหม่
         <input type="file" accept="image/*" capture="environment" onchange="handlePhotoSelect('${test.id}', this)">
       </label>
       <input type="text" id="caption-${test.id}" class="caption-input" placeholder="คำอธิบายภาพ (ไม่บังคับ)">
